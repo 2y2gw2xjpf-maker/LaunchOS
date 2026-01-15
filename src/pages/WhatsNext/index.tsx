@@ -113,8 +113,8 @@ export const WhatsNextPage = () => {
         ) : (
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-navy/5 flex items-center justify-center mx-auto mb-4 animate-pulse">
-                <RefreshCw className="w-8 h-8 text-navy animate-spin" />
+              <div className="w-16 h-16 rounded-full bg-brand-100 flex items-center justify-center mx-auto mb-4 animate-pulse">
+                <RefreshCw className="w-8 h-8 text-brand-600 animate-spin" />
               </div>
               <p className="text-charcoal/60">Analysiere deine Eingaben...</p>
             </div>
@@ -162,7 +162,7 @@ export const WhatsNextPage = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="font-display text-display-sm text-navy mb-2">
+          <h1 className="font-display text-display-sm text-charcoal mb-2">
             {STEPS[currentStep].title}
           </h1>
           <p className="text-charcoal/60">{STEPS[currentStep].description}</p>
@@ -198,7 +198,7 @@ export const WhatsNextPage = () => {
 
         {/* Results Actions */}
         {showResults && (
-          <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-8 border-t border-navy/10">
+          <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-8 border-t border-brand-100">
             <Button variant="secondary" onClick={handleRecalculate}>
               <RefreshCw className="w-4 h-4 mr-2" />
               Neu berechnen

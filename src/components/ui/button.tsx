@@ -8,14 +8,14 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: 'bg-navy text-white hover:bg-navy/90 focus:ring-navy/50',
+        primary: 'bg-gradient-to-r from-brand-600 to-brand-700 text-white hover:from-brand-500 hover:to-brand-600 focus:ring-brand-500/50 shadow-glow-brand',
         secondary:
-          'bg-white text-navy border-2 border-navy/10 hover:border-navy/30 focus:ring-navy/30',
-        gold: 'bg-gold text-navy hover:bg-gold/90 shadow-glow-gold focus:ring-gold/50',
-        ghost: 'text-navy hover:bg-navy/5 focus:ring-navy/20',
-        sage: 'bg-sage text-white hover:bg-sage/90 shadow-glow-sage focus:ring-sage/50',
+          'bg-white text-charcoal border-2 border-brand-200 hover:border-brand-400 hover:bg-brand-50 focus:ring-brand-300',
+        gold: 'bg-gradient-to-r from-brand-500 to-accent-500 text-white hover:from-brand-400 hover:to-accent-400 shadow-glow-brand focus:ring-brand-500/50',
+        ghost: 'text-brand-700 hover:bg-brand-50 focus:ring-brand-200',
+        sage: 'bg-gradient-to-r from-accent-500 to-accent-600 text-white hover:from-accent-400 hover:to-accent-500 shadow-glow-accent focus:ring-accent-500/50',
         destructive: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-500/50',
-        outline: 'border-2 border-navy/20 text-navy hover:bg-navy/5 focus:ring-navy/20',
+        outline: 'border-2 border-brand-300 text-brand-700 hover:bg-brand-50 focus:ring-brand-200',
       },
       size: {
         sm: 'h-9 px-4 text-sm',

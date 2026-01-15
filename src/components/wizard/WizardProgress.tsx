@@ -28,9 +28,9 @@ export const WizardProgress = ({
     <div className={cn('w-full', className)}>
       {/* Progress bar */}
       <div className="relative mb-8">
-        <div className="absolute top-4 left-0 right-0 h-0.5 bg-navy/10" />
+        <div className="absolute top-4 left-0 right-0 h-0.5 bg-brand-100" />
         <motion.div
-          className="absolute top-4 left-0 h-0.5 bg-navy"
+          className="absolute top-4 left-0 h-0.5 bg-gradient-to-r from-brand-500 to-accent-500"
           initial={{ width: '0%' }}
           animate={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
           transition={{ duration: 0.3 }}
@@ -58,15 +58,15 @@ export const WizardProgress = ({
                   animate={{
                     scale: isCurrent ? 1.1 : 1,
                     backgroundColor: isCompleted
-                      ? '#4A7C59'
+                      ? '#8B5CF6' // brand-500
                       : isCurrent
-                      ? '#0A1628'
+                      ? '#7c3aed' // brand-600
                       : '#FFFFFF',
                     borderColor: isCompleted
-                      ? '#4A7C59'
+                      ? '#8B5CF6' // brand-500
                       : isCurrent
-                      ? '#0A1628'
-                      : 'rgba(10, 22, 40, 0.2)',
+                      ? '#7c3aed' // brand-600
+                      : 'rgba(139, 92, 246, 0.3)', // brand-500/30
                   }}
                   className={cn(
                     'w-8 h-8 rounded-full border-2 flex items-center justify-center',
@@ -89,7 +89,7 @@ export const WizardProgress = ({
                 <span
                   className={cn(
                     'mt-2 text-xs font-medium hidden sm:block',
-                    isCurrent ? 'text-navy' : 'text-charcoal/40'
+                    isCurrent ? 'text-brand-700' : 'text-charcoal/40'
                   )}
                 >
                   {step.title}

@@ -50,11 +50,11 @@ export const TrustSection = () => {
                     transition={{ delay: index * 0.1 }}
                     className="flex gap-4"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-navy/5 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-5 h-5 text-navy" />
+                    <div className="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-brand-600" />
                     </div>
                     <div>
-                      <h4 className="font-display font-semibold text-navy mb-1">
+                      <h4 className="font-display font-semibold text-charcoal mb-1">
                         {point.title}
                       </h4>
                       <p className="text-charcoal/60 text-sm">{point.description}</p>
@@ -71,8 +71,8 @@ export const TrustSection = () => {
             viewport={{ once: true }}
             className="relative"
           >
-            <div className="bg-navy rounded-3xl p-8 text-white">
-              <div className="absolute top-4 right-4 w-20 h-20 bg-gold/20 rounded-full blur-xl" />
+            <div className="bg-gradient-to-br from-brand-600 to-brand-700 rounded-3xl p-8 text-white shadow-glow-brand">
+              <div className="absolute top-4 right-4 w-20 h-20 bg-accent-400/30 rounded-full blur-xl" />
 
               <h3 className="font-display text-2xl font-semibold mb-4 relative z-10">
                 Du entscheidest,
@@ -112,7 +112,7 @@ export const TrustSection = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gold flex items-center justify-center text-navy">
+                  <div className="w-8 h-8 rounded-full bg-accent-400 flex items-center justify-center text-white">
                     <span className="text-sm font-semibold">4</span>
                   </div>
                   <div>

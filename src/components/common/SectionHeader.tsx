@@ -32,11 +32,11 @@ export const SectionHeader = ({
       )}
     >
       {badge && (
-        <span className="inline-block px-4 py-1.5 mb-4 text-sm font-semibold text-sage bg-sage/10 rounded-full">
+        <span className="inline-block px-4 py-1.5 mb-4 text-sm font-semibold text-brand-700 bg-brand-100 rounded-full">
           {badge}
         </span>
       )}
-      <h2 className="font-display text-display-sm md:text-display-md text-navy mb-4">
+      <h2 className="font-display text-display-sm md:text-display-md text-charcoal mb-4">
         {title}
       </h2>
       {subtitle && (

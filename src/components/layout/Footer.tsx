@@ -23,13 +23,13 @@ export const Footer = ({ className }: FooterProps) => {
   };
 
   return (
-    <footer className={cn('bg-navy text-white', className)}>
+    <footer className={cn('bg-gradient-to-br from-brand-700 via-brand-800 to-brand-900 text-white', className)}>
       <div className="container-wide py-16">
         <div className="grid md:grid-cols-4 gap-12">
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
-                <Rocket className="w-5 h-5 text-gold" />
+                <Rocket className="w-5 h-5 text-accent-400" />
               </div>
               <span className="font-display font-bold text-xl">LaunchOS</span>
             </Link>
@@ -96,7 +96,7 @@ export const Footer = ({ className }: FooterProps) => {
           </p>
           <p className="text-white/40 text-sm">
             Made with{' '}
-            <span className="text-gold" role="img" aria-label="love">
+            <span className="text-accent-400" role="img" aria-label="love">
               love
             </span>{' '}
             fur Grunder
