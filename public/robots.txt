@@ -1,0 +1,11 @@
+# LaunchOS Robots.txt
+User-agent: *
+Allow: /
+
+# Disallow auth and app routes from indexing
+Disallow: /auth/
+Disallow: /app/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://launchos.io/sitemap.xml
