@@ -91,8 +91,8 @@ export const ProjectFolder = ({
           onClick={onToggleExpanded}
           className={cn(
             'w-full p-2 rounded-lg transition-colors',
-            'hover:bg-navy/5',
-            isDropTarget && 'ring-2 ring-gold/50 bg-gold/5'
+            'hover:bg-brand-50',
+            isDropTarget && 'ring-2 ring-accent-300 bg-accent-50'
           )}
           title={`${project.name} (${analyses.length})`}
         >
@@ -111,14 +111,14 @@ export const ProjectFolder = ({
     <div
       className={cn(
         'rounded-xl transition-colors',
-        isDropTarget && 'ring-2 ring-gold/50 bg-gold/5'
+        isDropTarget && 'ring-2 ring-accent-300 bg-accent-50'
       )}
     >
       {/* Folder Header */}
       <div className="group flex items-center gap-2 px-3 py-2">
         <button
           onClick={onToggleExpanded}
-          className="p-1 rounded hover:bg-navy/10 transition-colors"
+          className="p-1 rounded hover:bg-brand-100 transition-colors"
         >
           <motion.div
             animate={{ rotate: project.isExpanded ? 90 : 0 }}
@@ -149,12 +149,12 @@ export const ProjectFolder = ({
                 setIsEditing(false);
               }
             }}
-            className="flex-1 px-2 py-1 text-sm font-medium rounded border border-navy/20 focus:border-navy/40 focus:outline-none"
+            className="flex-1 px-2 py-1 text-sm font-medium rounded border border-brand-200 focus:border-brand-300 focus:outline-none"
           />
         ) : (
           <button
             onClick={onToggleExpanded}
-            className="flex-1 text-left text-sm font-medium text-navy truncate"
+            className="flex-1 text-left text-sm font-medium text-charcoal truncate"
           >
             {project.name}
           </button>
@@ -169,7 +169,7 @@ export const ProjectFolder = ({
               e.stopPropagation();
               setShowMenu(!showMenu);
             }}
-            className="p-1 rounded hover:bg-navy/10 transition-colors opacity-0 group-hover:opacity-100"
+            className="p-1 rounded hover:bg-brand-100 transition-colors opacity-0 group-hover:opacity-100"
           >
             <MoreHorizontal className="w-4 h-4 text-charcoal/40" />
           </button>
@@ -178,14 +178,14 @@ export const ProjectFolder = ({
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-medium border border-navy/10 py-1 z-50"
+              className="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-medium border border-brand-100 py-1 z-50"
             >
               <button
                 onClick={() => {
                   setIsEditing(true);
                   setShowMenu(false);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-navy/5"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50"
               >
                 <Pencil className="w-4 h-4" />
                 Umbenennen
@@ -194,14 +194,14 @@ export const ProjectFolder = ({
               <div className="relative">
                 <button
                   onClick={() => setShowColorPicker(!showColorPicker)}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-navy/5"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50"
                 >
                   <Palette className="w-4 h-4" />
                   Farbe andern
                 </button>
 
                 {showColorPicker && (
-                  <div className="absolute left-full top-0 ml-1 w-32 bg-white rounded-xl shadow-medium border border-navy/10 p-2">
+                  <div className="absolute left-full top-0 ml-1 w-32 bg-white rounded-xl shadow-medium border border-brand-100 p-2">
                     <div className="grid grid-cols-4 gap-1">
                       {DEFAULT_PROJECT_COLORS.map((color) => (
                         <button
@@ -213,7 +213,7 @@ export const ProjectFolder = ({
                           }}
                           className={cn(
                             'w-6 h-6 rounded transition-transform hover:scale-110',
-                            project.color === color && 'ring-2 ring-navy ring-offset-1'
+                            project.color === color && 'ring-2 ring-brand-600 ring-offset-1'
                           )}
                           style={{ backgroundColor: color }}
                         />
@@ -223,7 +223,7 @@ export const ProjectFolder = ({
                 )}
               </div>
 
-              <div className="border-t border-navy/10 my-1" />
+              <div className="border-t border-brand-100 my-1" />
               <button
                 onClick={() => {
                   onDeleteProject();

@@ -99,11 +99,11 @@ export const AnalysisItem = ({
   const getRouteColor = (route?: string) => {
     switch (route) {
       case 'bootstrap':
-        return 'bg-sage/20 text-sage';
+        return 'bg-brand-100 text-brand-600';
       case 'investor':
-        return 'bg-gold/20 text-gold';
+        return 'bg-accent-100 text-accent-500';
       case 'hybrid':
-        return 'bg-navy/20 text-navy';
+        return 'bg-brand-100 text-charcoal';
       default:
         return 'bg-charcoal/10 text-charcoal/60';
     }
@@ -115,8 +115,8 @@ export const AnalysisItem = ({
         onClick={handleSelect}
         className={cn(
           'w-full p-2 rounded-lg transition-colors relative group',
-          isActive ? 'bg-navy/10' : 'hover:bg-navy/5',
-          isInComparison && 'ring-2 ring-gold/50'
+          isActive ? 'bg-brand-100' : 'hover:bg-brand-50',
+          isInComparison && 'ring-2 ring-accent-300'
         )}
         title={analysis.name}
       >
@@ -129,7 +129,7 @@ export const AnalysisItem = ({
           {analysis.name.charAt(0).toUpperCase()}
         </div>
         {analysis.isFavorite && (
-          <Star className="absolute top-1 right-1 w-3 h-3 text-gold fill-gold" />
+          <Star className="absolute top-1 right-1 w-3 h-3 text-accent-500 fill-accent-500" />
         )}
       </button>
     );
@@ -142,8 +142,8 @@ export const AnalysisItem = ({
       exit={{ opacity: 0, y: -10 }}
       className={cn(
         'group relative rounded-xl transition-all',
-        isActive ? 'bg-navy/10' : 'hover:bg-navy/5',
-        isInComparison && 'ring-2 ring-gold/50'
+        isActive ? 'bg-brand-100' : 'hover:bg-brand-50',
+        isInComparison && 'ring-2 ring-accent-300'
       )}
     >
       <div className="flex items-start gap-2 p-3">
@@ -171,11 +171,11 @@ export const AnalysisItem = ({
                   setIsEditing(false);
                 }
               }}
-              className="w-full px-2 py-1 text-sm font-medium rounded border border-navy/20 focus:border-navy/40 focus:outline-none"
+              className="w-full px-2 py-1 text-sm font-medium rounded border border-brand-200 focus:border-brand-300 focus:outline-none"
               onClick={(e) => e.stopPropagation()}
             />
           ) : (
-            <p className="text-sm font-medium text-navy truncate">{analysis.name}</p>
+            <p className="text-sm font-medium text-charcoal truncate">{analysis.name}</p>
           )}
           <div className="flex items-center gap-2 mt-1">
             {analysis.routeResult && (
@@ -202,12 +202,12 @@ export const AnalysisItem = ({
             e.stopPropagation();
             onToggleFavorite();
           }}
-          className="p-1 rounded hover:bg-navy/10 transition-colors"
+          className="p-1 rounded hover:bg-brand-100 transition-colors"
         >
           <Star
             className={cn(
               'w-4 h-4',
-              analysis.isFavorite ? 'text-gold fill-gold' : 'text-charcoal/20'
+              analysis.isFavorite ? 'text-accent-500 fill-accent-500' : 'text-charcoal/20'
             )}
           />
         </button>
@@ -219,7 +219,7 @@ export const AnalysisItem = ({
               e.stopPropagation();
               setShowMenu(!showMenu);
             }}
-            className="p-1 rounded hover:bg-navy/10 transition-colors opacity-0 group-hover:opacity-100"
+            className="p-1 rounded hover:bg-brand-100 transition-colors opacity-0 group-hover:opacity-100"
           >
             <MoreHorizontal className="w-4 h-4 text-charcoal/40" />
           </button>
@@ -228,14 +228,14 @@ export const AnalysisItem = ({
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-medium border border-navy/10 py-1 z-50"
+              className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-medium border border-brand-100 py-1 z-50"
             >
               <button
                 onClick={() => {
                   setIsEditing(true);
                   setShowMenu(false);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-navy/5"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50"
               >
                 <Pencil className="w-4 h-4" />
                 Umbenennen
@@ -245,7 +245,7 @@ export const AnalysisItem = ({
                   onDuplicate();
                   setShowMenu(false);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-navy/5"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50"
               >
                 <Copy className="w-4 h-4" />
                 Duplizieren
@@ -255,7 +255,7 @@ export const AnalysisItem = ({
                   onToggleComparison();
                   setShowMenu(false);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-navy/5"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50"
               >
                 <GitCompare className="w-4 h-4" />
                 {isInComparison ? 'Aus Vergleich entfernen' : 'Zum Vergleich hinzufugen'}
@@ -265,21 +265,21 @@ export const AnalysisItem = ({
               <div className="relative">
                 <button
                   onClick={() => setShowMoveMenu(!showMoveMenu)}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-navy/5"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50"
                 >
                   <FolderInput className="w-4 h-4" />
                   Verschieben...
                 </button>
 
                 {showMoveMenu && (
-                  <div className="absolute left-full top-0 ml-1 w-40 bg-white rounded-xl shadow-medium border border-navy/10 py-1">
+                  <div className="absolute left-full top-0 ml-1 w-40 bg-white rounded-xl shadow-medium border border-brand-100 py-1">
                     <button
                       onClick={() => {
                         onMoveToProject(null);
                         setShowMenu(false);
                         setShowMoveMenu(false);
                       }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-navy/5"
+                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50"
                     >
                       Ohne Ordner
                     </button>
@@ -291,7 +291,7 @@ export const AnalysisItem = ({
                           setShowMenu(false);
                           setShowMoveMenu(false);
                         }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-navy/5"
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50"
                       >
                         <div
                           className="w-3 h-3 rounded"
@@ -304,7 +304,7 @@ export const AnalysisItem = ({
                 )}
               </div>
 
-              <div className="border-t border-navy/10 my-1" />
+              <div className="border-t border-brand-100 my-1" />
               <button
                 onClick={() => {
                   onDelete();

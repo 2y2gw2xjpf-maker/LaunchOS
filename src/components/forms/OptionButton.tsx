@@ -29,11 +29,11 @@ export const OptionButton = ({
       disabled={disabled}
       className={cn(
         'relative w-full p-4 rounded-2xl border-2 text-left transition-all',
-        'hover:border-navy/30 hover:shadow-soft',
+        'hover:border-brand-300 hover:shadow-glow-brand',
         selected
-          ? 'border-navy bg-navy/5 shadow-soft'
-          : 'border-navy/10 bg-white',
-        disabled && 'opacity-50 cursor-not-allowed hover:border-navy/10',
+          ? 'border-brand-500 bg-brand-50 shadow-glow-brand'
+          : 'border-brand-100 bg-white',
+        disabled && 'opacity-50 cursor-not-allowed hover:border-brand-100',
         className
       )}
     >
@@ -41,7 +41,7 @@ export const OptionButton = ({
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="absolute top-3 right-3 w-6 h-6 rounded-full bg-navy flex items-center justify-center"
+          className="absolute top-3 right-3 w-6 h-6 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center"
         >
           <Check className="w-4 h-4 text-white" />
         </motion.div>
@@ -49,12 +49,12 @@ export const OptionButton = ({
 
       <div className="flex items-center gap-3">
         {icon && (
-          <div className="w-10 h-10 rounded-xl bg-navy/5 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center flex-shrink-0">
             {icon}
           </div>
         )}
         <div className={cn('flex-1', selected && 'pr-8')}>
-          <span className="font-semibold text-navy block">{label}</span>
+          <span className="font-semibold text-charcoal block">{label}</span>
           {description && (
             <span className="text-sm text-charcoal/60 mt-0.5 block">{description}</span>
           )}

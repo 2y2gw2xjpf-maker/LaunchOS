@@ -127,7 +127,7 @@ export const EnhancedSidebar = () => {
         transition={{ duration: 0.2 }}
         className={cn(
           'hidden md:flex flex-col fixed left-0 top-20 bottom-0 z-30',
-          'bg-cream border-r border-navy/10'
+          'bg-cream border-r border-brand-100'
         )}
       >
         {/* Header */}
@@ -142,7 +142,7 @@ export const EnhancedSidebar = () => {
         <div className="flex-1 overflow-y-auto scrollbar-hide">
           {isHistoryLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="w-6 h-6 border-2 border-navy/20 border-t-navy rounded-full animate-spin" />
+              <div className="w-6 h-6 border-2 border-brand-200 border-t-brand-600 rounded-full animate-spin" />
             </div>
           ) : (
             <div className="py-2">
@@ -165,7 +165,7 @@ export const EnhancedSidebar = () => {
               {favoriteAnalyses.length > 0 && (
                 <div className="mb-4">
                   <div className="px-3 py-2 flex items-center gap-2">
-                    <Star className="w-4 h-4 text-gold" />
+                    <Star className="w-4 h-4 text-accent-500" />
                     {sidebarOpen && (
                       <span className="text-xs font-medium text-charcoal/60 uppercase tracking-wider">
                         Favoriten
@@ -277,7 +277,7 @@ export const EnhancedSidebar = () => {
                 <div className="px-3 mt-4">
                   <button
                     onClick={handleCreateProject}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal/60 rounded-lg hover:bg-navy/5 transition-colors"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal/60 rounded-lg hover:bg-brand-50 transition-colors"
                   >
                     <FolderPlus className="w-4 h-4" />
                     Neuer Ordner
@@ -289,7 +289,7 @@ export const EnhancedSidebar = () => {
         </div>
 
         {/* Navigation */}
-        <div className="border-t border-navy/10 py-2">
+        <div className="border-t border-brand-100 py-2">
           {navItems.map((item) => {
             const isActive = location.pathname.startsWith(item.href);
             const Icon = item.icon;
@@ -300,7 +300,7 @@ export const EnhancedSidebar = () => {
                 onClick={() => navigate(item.href)}
                 className={cn(
                   'w-full flex items-center gap-3 px-4 py-2 transition-colors',
-                  isActive ? 'text-navy bg-navy/5' : 'text-charcoal/60 hover:bg-navy/5'
+                  isActive ? 'text-brand-600 bg-brand-50' : 'text-charcoal/60 hover:bg-brand-50'
                 )}
               >
                 <Icon className="w-5 h-5" />
@@ -324,7 +324,7 @@ export const EnhancedSidebar = () => {
         {/* Collapse Toggle */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="flex items-center justify-center gap-2 py-3 border-t border-navy/10 text-charcoal/60 hover:bg-navy/5 transition-colors"
+          className="flex items-center justify-center gap-2 py-3 border-t border-brand-100 text-charcoal/60 hover:bg-brand-50 transition-colors"
         >
           {sidebarOpen ? (
             <>
@@ -338,7 +338,7 @@ export const EnhancedSidebar = () => {
       </motion.aside>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-cream border-t border-navy/10 px-4 py-2">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-cream border-t border-brand-100 px-4 py-2">
         <div className="flex items-center justify-around">
           {navItems.slice(0, 4).map((item) => {
             const isActive = location.pathname.startsWith(item.href);
@@ -350,7 +350,7 @@ export const EnhancedSidebar = () => {
                 onClick={() => navigate(item.href)}
                 className={cn(
                   'flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors',
-                  isActive ? 'text-navy' : 'text-charcoal/60'
+                  isActive ? 'text-brand-600' : 'text-charcoal/60'
                 )}
               >
                 <Icon className="w-5 h-5" />

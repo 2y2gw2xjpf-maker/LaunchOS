@@ -52,7 +52,7 @@ export const SidebarHeader = ({
   }
 
   return (
-    <div className="p-4 space-y-3 border-b border-navy/10">
+    <div className="p-4 space-y-3 border-b border-brand-100">
       <Button variant="gold" onClick={onNewAnalysis} className="w-full">
         <Plus className="w-4 h-4 mr-2" />
         Neue Analyse
@@ -76,14 +76,14 @@ export const SidebarHeader = ({
                 placeholder="Analysen suchen..."
                 className={cn(
                   'w-full pl-9 pr-8 py-2 text-sm rounded-lg',
-                  'border border-navy/10 bg-white',
-                  'focus:border-navy/30 focus:outline-none'
+                  'border border-brand-100 bg-white',
+                  'focus:border-brand-200 focus:outline-none'
                 )}
               />
               {searchQuery && (
                 <button
                   onClick={() => onSearchChange('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-navy/5 rounded"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-brand-50 rounded"
                 >
                   <X className="w-3 h-3 text-charcoal/40" />
                 </button>
@@ -95,7 +95,7 @@ export const SidebarHeader = ({
             onClick={() => setIsSearchOpen(true)}
             className={cn(
               'w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal/60',
-              'rounded-lg hover:bg-navy/5 transition-colors'
+              'rounded-lg hover:bg-brand-50 transition-colors'
             )}
           >
             <Search className="w-4 h-4" />

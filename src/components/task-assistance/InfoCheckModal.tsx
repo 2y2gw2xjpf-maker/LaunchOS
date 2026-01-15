@@ -214,7 +214,7 @@ export const InfoCheckModal = ({
                           <Badge
                             variant={
                               req.importance === 'critical'
-                                ? 'gold'
+                                ? 'accent'
                                 : req.importance === 'important'
                                 ? 'default'
                                 : 'outline'

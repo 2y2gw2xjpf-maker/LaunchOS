@@ -38,10 +38,10 @@ const Tooltip = ({
   };
 
   const arrowClasses = {
-    top: 'top-full left-1/2 -translate-x-1/2 border-t-navy border-x-transparent border-b-transparent',
-    bottom: 'bottom-full left-1/2 -translate-x-1/2 border-b-navy border-x-transparent border-t-transparent',
-    left: 'left-full top-1/2 -translate-y-1/2 border-l-navy border-y-transparent border-r-transparent',
-    right: 'right-full top-1/2 -translate-y-1/2 border-r-navy border-y-transparent border-l-transparent',
+    top: 'top-full left-1/2 -translate-x-1/2 border-t-brand-700 border-x-transparent border-b-transparent',
+    bottom: 'bottom-full left-1/2 -translate-x-1/2 border-b-brand-700 border-x-transparent border-t-transparent',
+    left: 'left-full top-1/2 -translate-y-1/2 border-l-brand-700 border-y-transparent border-r-transparent',
+    right: 'right-full top-1/2 -translate-y-1/2 border-r-brand-700 border-y-transparent border-l-transparent',
   };
 
   return (
@@ -52,7 +52,7 @@ const Tooltip = ({
       {isVisible && (
         <div
           className={cn(
-            'absolute z-50 px-3 py-2 text-sm text-white bg-navy rounded-lg shadow-medium whitespace-nowrap animate-fade-in',
+            'absolute z-50 px-3 py-2 text-sm text-white bg-brand-700 rounded-lg shadow-medium whitespace-nowrap animate-fade-in',
             positionClasses[position],
             className
           )}

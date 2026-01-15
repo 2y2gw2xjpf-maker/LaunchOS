@@ -18,7 +18,7 @@ export const TimelineChart = ({
     <div className={cn('w-full', className)}>
       <div className="relative">
         {/* Timeline line */}
-        <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-navy/10" />
+        <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-brand-100" />
 
         {/* Phases */}
         <div className="space-y-6">
@@ -39,10 +39,10 @@ export const TimelineChart = ({
                   className={cn(
                     'absolute left-4 w-5 h-5 rounded-full border-2 transition-colors',
                     isCompleted
-                      ? 'bg-sage border-sage'
+                      ? 'bg-brand-500 border-brand-500'
                       : isActive
-                      ? 'bg-navy border-navy'
-                      : 'bg-white border-navy/20'
+                      ? 'bg-accent-500 border-accent-500'
+                      : 'bg-white border-brand-200'
                   )}
                 />
 
@@ -51,14 +51,14 @@ export const TimelineChart = ({
                   className={cn(
                     'p-4 rounded-2xl border-2 transition-colors',
                     isActive
-                      ? 'border-navy bg-navy/5'
+                      ? 'border-accent-300 bg-accent-50'
                       : isCompleted
-                      ? 'border-sage/30 bg-sage/5'
-                      : 'border-navy/10 bg-white'
+                      ? 'border-brand-200 bg-brand-50'
+                      : 'border-brand-100 bg-white'
                   )}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-display font-semibold text-navy">
+                    <h4 className="font-display font-semibold text-charcoal">
                       {phase.title}
                     </h4>
                     <span className="text-sm text-charcoal/50">{phase.duration}</span>
@@ -67,20 +67,20 @@ export const TimelineChart = ({
                   <div className="flex flex-wrap gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <span className="text-charcoal/50">Budget:</span>
-                      <span className="font-mono text-navy">
+                      <span className="font-mono text-brand-700">
                         {phase.budget.min.toLocaleString('de-DE')} -{' '}
                         {phase.budget.max.toLocaleString('de-DE')} {phase.budget.currency}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-charcoal/50">Zeit/Woche:</span>
-                      <span className="font-mono text-navy">
+                      <span className="font-mono text-brand-700">
                         {phase.timePerWeek.min}-{phase.timePerWeek.max}h
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-charcoal/50">Tasks:</span>
-                      <span className="font-mono text-navy">{phase.tasks.length}</span>
+                      <span className="font-mono text-brand-700">{phase.tasks.length}</span>
                     </div>
                   </div>
                 </div>

@@ -28,15 +28,15 @@ export const ResultCard = ({
   className,
 }: ResultCardProps) => {
   const variantClasses = {
-    default: 'bg-white border-navy/10',
-    highlighted: 'bg-navy text-white border-navy',
-    sage: 'bg-sage/10 border-sage/20',
-    gold: 'bg-gold/10 border-gold/30',
+    default: 'bg-white border-brand-100',
+    highlighted: 'bg-gradient-to-br from-brand-600 to-brand-700 text-white border-brand-600',
+    sage: 'bg-brand-50 border-brand-200',
+    gold: 'bg-accent-50 border-accent-200',
   };
 
   const getTrendIcon = () => {
     if (!trend) return <Minus className="w-4 h-4" />;
-    if (trend > 0) return <TrendingUp className="w-4 h-4 text-sage" />;
+    if (trend > 0) return <TrendingUp className="w-4 h-4 text-brand-600" />;
     return <TrendingDown className="w-4 h-4 text-red-500" />;
   };
 
@@ -63,7 +63,7 @@ export const ResultCard = ({
           <div
             className={cn(
               'w-10 h-10 rounded-xl flex items-center justify-center',
-              variant === 'highlighted' ? 'bg-white/10' : 'bg-navy/5'
+              variant === 'highlighted' ? 'bg-white/10' : 'bg-brand-50'
             )}
           >
             {icon}
@@ -77,7 +77,7 @@ export const ResultCard = ({
             value={value}
             className={cn(
               'text-3xl',
-              variant === 'highlighted' ? 'text-white' : 'text-navy'
+              variant === 'highlighted' ? 'text-white' : 'text-charcoal'
             )}
           />
         )}
@@ -86,7 +86,7 @@ export const ResultCard = ({
             value={value}
             className={cn(
               'text-3xl',
-              variant === 'highlighted' ? 'text-white' : 'text-navy'
+              variant === 'highlighted' ? 'text-white' : 'text-charcoal'
             )}
           />
         )}
@@ -94,7 +94,7 @@ export const ResultCard = ({
           <span
             className={cn(
               'text-3xl font-mono font-semibold',
-              variant === 'highlighted' ? 'text-white' : 'text-navy'
+              variant === 'highlighted' ? 'text-white' : 'text-charcoal'
             )}
           >
             {value.toLocaleString('de-DE')}
@@ -119,7 +119,7 @@ export const ResultCard = ({
           <span
             className={cn(
               'text-sm font-medium',
-              trend > 0 ? 'text-sage' : trend < 0 ? 'text-red-500' : 'text-charcoal/50'
+              trend > 0 ? 'text-brand-600' : trend < 0 ? 'text-red-500' : 'text-charcoal/50'
             )}
           >
             {trend > 0 ? '+' : ''}

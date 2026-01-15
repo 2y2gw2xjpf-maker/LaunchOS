@@ -40,7 +40,7 @@ const TabsList = ({ children, className }: TabsListProps) => {
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-1 p-1 bg-navy/5 rounded-xl',
+        'inline-flex items-center gap-1 p-1 bg-brand-50 rounded-xl',
         className
       )}
     >
@@ -68,8 +68,8 @@ const TabsTrigger = ({ value, children, className, disabled }: TabsTriggerProps)
       className={cn(
         'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
         isSelected
-          ? 'bg-white text-navy shadow-soft'
-          : 'text-charcoal/60 hover:text-navy hover:bg-white/50',
+          ? 'bg-white text-brand-700 shadow-soft'
+          : 'text-charcoal/60 hover:text-brand-600 hover:bg-white/50',
         disabled && 'opacity-50 cursor-not-allowed',
         className
       )}

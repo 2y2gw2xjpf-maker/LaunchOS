@@ -26,7 +26,7 @@ const methodLabels: Record<string, string> = {
   cost_to_duplicate: 'Cost to Duplicate',
 };
 
-const COLORS = ['#0A1628', '#4A7C59', '#F5A623', '#717D99', '#9BC0A7'];
+const COLORS = ['#8B5CF6', '#EC4899', '#A78BFA', '#F472B6', '#7C3AED'];
 
 export const ValuationChart = ({ results, className }: ValuationChartProps) => {
   const data = results.map((result, index) => ({
@@ -50,9 +50,9 @@ export const ValuationChart = ({ results, className }: ValuationChartProps) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-4 rounded-xl shadow-medium border border-navy/10">
-          <p className="font-semibold text-navy mb-1">{data.name}</p>
-          <p className="font-mono text-lg text-navy">{formatCurrency(data.value)}</p>
+        <div className="bg-white p-4 rounded-xl shadow-medium border border-brand-100">
+          <p className="font-semibold text-charcoal mb-1">{data.name}</p>
+          <p className="font-mono text-lg text-brand-600">{formatCurrency(data.value)}</p>
           <p className="text-sm text-charcoal/60 mt-1">
             Confidence: {data.confidence}%
           </p>
@@ -69,18 +69,18 @@ export const ValuationChart = ({ results, className }: ValuationChartProps) => {
           data={data}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(10, 22, 40, 0.1)" />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(139, 92, 246, 0.2)" />
           <XAxis
             dataKey="name"
             tick={{ fill: '#2D3436', fontSize: 12 }}
             tickLine={false}
-            axisLine={{ stroke: 'rgba(10, 22, 40, 0.1)' }}
+            axisLine={{ stroke: 'rgba(139, 92, 246, 0.2)' }}
           />
           <YAxis
             tickFormatter={formatCurrency}
             tick={{ fill: '#2D3436', fontSize: 12 }}
             tickLine={false}
-            axisLine={{ stroke: 'rgba(10, 22, 40, 0.1)' }}
+            axisLine={{ stroke: 'rgba(139, 92, 246, 0.2)' }}
           />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="value" radius={[8, 8, 0, 0]}>

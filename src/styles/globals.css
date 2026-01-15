@@ -3,11 +3,16 @@
 @import "tailwindcss";
 
 @theme {
-  --color-navy: #1e3a5f;
-  --color-gold: #d4af37;
-  --color-sage: #7c9a8a;
-  --color-cream: #faf8f5;
+  /* Brand Colors - Lovable Lavender */
+  --color-brand: #8B5CF6;
+  --color-accent: #EC4899;
+  --color-cream: #FFFBF5;
   --color-charcoal: #2d3436;
+
+  /* Legacy colors for backwards compatibility */
+  --color-navy: #8B5CF6;
+  --color-gold: #EC4899;
+  --color-sage: #A78BFA;
 
   --font-family-display: 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-family-body: 'DM Sans', system-ui, sans-serif;
@@ -21,11 +26,13 @@
   --font-size-display-sm: 2rem;
   --font-size-display-sm--line-height: 1.25;
 
-  --shadow-soft: 0 4px 20px rgba(30, 58, 95, 0.06);
-  --shadow-medium: 0 8px 30px rgba(30, 58, 95, 0.12);
-  --shadow-hard: 0 12px 40px rgba(30, 58, 95, 0.18);
-  --shadow-glow-gold: 0 0 40px rgba(212, 175, 55, 0.3);
-  --shadow-glow-sage: 0 0 40px rgba(124, 154, 138, 0.3);
+  --shadow-soft: 0 4px 20px rgba(139, 92, 246, 0.06);
+  --shadow-medium: 0 8px 30px rgba(139, 92, 246, 0.12);
+  --shadow-hard: 0 12px 40px rgba(139, 92, 246, 0.18);
+  --shadow-glow-brand: 0 0 40px rgba(139, 92, 246, 0.3);
+  --shadow-glow-accent: 0 0 40px rgba(236, 72, 153, 0.3);
+  --shadow-glow-gold: 0 0 40px rgba(236, 72, 153, 0.3);
+  --shadow-glow-sage: 0 0 40px rgba(139, 92, 246, 0.3);
 
   --animate-fade-in: fade-in 0.3s ease-out;
   --animate-slide-up: slide-up 0.4s ease-out;
@@ -75,11 +82,11 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-family-display);
     font-weight: 600;
-    color: var(--color-navy);
+    color: var(--color-charcoal);
   }
 
   ::selection {
-    background-color: color-mix(in srgb, var(--color-gold) 30%, transparent);
+    background-color: color-mix(in srgb, var(--color-brand) 30%, transparent);
   }
 }
 
@@ -93,23 +100,82 @@
   }
 
   .btn-primary {
-    @apply px-6 py-3 bg-navy text-white rounded-xl font-semibold
-           hover:bg-navy/90 active:scale-[0.98] transition-all duration-200
-           focus:outline-none focus:ring-2 focus:ring-navy/50 focus:ring-offset-2;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(to right, #8B5CF6, #9333ea);
+    color: white;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover {
+    background: linear-gradient(to right, #7c3aed, #8B5CF6);
+  }
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+  .btn-primary:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.5);
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-white text-navy rounded-xl font-semibold
-           border-2 border-navy/10 hover:border-navy/30
-           active:scale-[0.98] transition-all duration-200
-           focus:outline-none focus:ring-2 focus:ring-navy/30 focus:ring-offset-2;
+    padding: 0.75rem 1.5rem;
+    background-color: white;
+    color: #8B5CF6;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    border: 2px solid #f3e8ff;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover {
+    border-color: #d8b4fe;
+  }
+  .btn-secondary:active {
+    transform: scale(0.98);
+  }
+  .btn-secondary:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+  }
+
+  .btn-accent {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(to right, #EC4899, #db2777);
+    color: white;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
+    transition: all 0.2s;
+  }
+  .btn-accent:hover {
+    background: linear-gradient(to right, #db2777, #EC4899);
+  }
+  .btn-accent:active {
+    transform: scale(0.98);
+  }
+  .btn-accent:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.5);
   }
 
   .btn-gold {
-    @apply px-6 py-3 bg-gold text-navy rounded-xl font-semibold
-           hover:bg-gold/90 active:scale-[0.98] transition-all duration-200
-           shadow-glow-gold focus:outline-none focus:ring-2
-           focus:ring-gold/50 focus:ring-offset-2;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(to right, #EC4899, #db2777);
+    color: white;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
+    transition: all 0.2s;
+  }
+  .btn-gold:hover {
+    background: linear-gradient(to right, #db2777, #EC4899);
+  }
+  .btn-gold:active {
+    transform: scale(0.98);
+  }
+  .btn-gold:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.5);
   }
 
   .card {
@@ -121,13 +187,28 @@
   }
 
   .input-field {
-    @apply w-full px-4 py-3 rounded-xl border-2 border-navy/10
-           bg-white text-navy placeholder:text-charcoal/40
-           focus:border-navy/30 focus:outline-none focus:ring-0 transition-colors;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 2px solid #f3e8ff;
+    background-color: white;
+    color: #2d3436;
+    transition: border-color 0.2s;
+  }
+  .input-field::placeholder {
+    color: rgba(45, 52, 54, 0.4);
+  }
+  .input-field:focus {
+    border-color: #d8b4fe;
+    outline: none;
   }
 
   .label {
-    @apply block text-sm font-medium text-navy mb-2;
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #2d3436;
+    margin-bottom: 0.5rem;
   }
 
   .section-padding {
@@ -135,7 +216,7 @@
   }
 
   .gradient-text {
-    background: linear-gradient(to right, var(--color-navy), color-mix(in srgb, var(--color-navy) 80%, transparent), var(--color-sage));
+    background: linear-gradient(to right, var(--color-brand), color-mix(in srgb, var(--color-brand) 80%, transparent), var(--color-accent));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;

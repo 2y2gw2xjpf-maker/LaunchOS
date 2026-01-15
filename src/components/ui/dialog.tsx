@@ -35,7 +35,7 @@ const Dialog = ({ open, onClose, children, className }: DialogProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-navy/50 backdrop-blur-sm"
+            className="fixed inset-0 bg-charcoal/50 backdrop-blur-sm"
             onClick={onClose}
           />
           <motion.div
@@ -71,7 +71,7 @@ const DialogTitle = ({
   ...props
 }: React.HTMLAttributes<HTMLHeadingElement>) => (
   <h2
-    className={cn('font-display text-2xl font-semibold text-navy', className)}
+    className={cn('font-display text-2xl font-semibold text-charcoal', className)}
     {...props}
   >
     {children}
@@ -121,7 +121,7 @@ const DialogClose = ({
   <button
     onClick={onClose}
     className={cn(
-      'absolute right-4 top-4 p-2 rounded-lg text-charcoal/40 hover:text-navy hover:bg-navy/5 transition-colors',
+      'absolute right-4 top-4 p-2 rounded-lg text-charcoal/40 hover:text-brand-600 hover:bg-brand-50 transition-colors',
       className
     )}
   >

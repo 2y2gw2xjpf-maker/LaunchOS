@@ -29,9 +29,9 @@ export const QuestionCard = ({
     >
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
-          <h3 className="font-display text-lg font-semibold text-navy">
+          <h3 className="font-display text-lg font-semibold text-charcoal">
             {question}
-            {required && <span className="text-gold ml-1">*</span>}
+            {required && <span className="text-accent-500 ml-1">*</span>}
           </h3>
           {description && (
             <p className="text-charcoal/60 mt-1">{description}</p>
@@ -41,7 +41,7 @@ export const QuestionCard = ({
           <Tooltip content={helpText}>
             <button
               type="button"
-              className="p-1.5 rounded-lg text-charcoal/40 hover:text-navy hover:bg-navy/5 transition-colors"
+              className="p-1.5 rounded-lg text-charcoal/40 hover:text-brand-600 hover:bg-brand-50 transition-colors"
             >
               <HelpCircle className="w-5 h-5" />
             </button>

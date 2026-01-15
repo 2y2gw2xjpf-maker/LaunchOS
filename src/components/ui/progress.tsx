@@ -35,22 +35,22 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
     };
 
     const variantClasses = {
-      default: 'bg-navy',
-      sage: 'bg-sage',
-      gold: 'bg-gold',
+      default: 'bg-gradient-to-r from-brand-500 to-brand-600',
+      sage: 'bg-gradient-to-r from-accent-500 to-accent-600',
+      gold: 'bg-gradient-to-r from-brand-500 to-accent-500',
     };
 
     return (
       <div ref={ref} className={cn('w-full', className)}>
         {(label || showPercentage) && (
           <div className="flex justify-between items-center mb-2">
-            {label && <span className="text-sm font-medium text-navy">{label}</span>}
+            {label && <span className="text-sm font-medium text-charcoal">{label}</span>}
             {showPercentage && (
               <span className="text-sm font-mono text-charcoal/60">{Math.round(percentage)}%</span>
             )}
           </div>
         )}
-        <div className={cn('w-full bg-navy/10 rounded-full overflow-hidden', sizeClasses[size])}>
+        <div className={cn('w-full bg-brand-100 rounded-full overflow-hidden', sizeClasses[size])}>
           <div
             className={cn(
               'h-full rounded-full transition-all duration-500 ease-out',

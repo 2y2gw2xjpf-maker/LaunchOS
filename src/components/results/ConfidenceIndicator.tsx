@@ -22,9 +22,9 @@ export const ConfidenceIndicator = ({
   className,
 }: ConfidenceIndicatorProps) => {
   const getConfidenceLevel = () => {
-    if (value >= 80) return { level: 'high', color: 'sage', icon: CheckCircle };
-    if (value >= 60) return { level: 'medium', color: 'gold', icon: Info };
-    return { level: 'low', color: 'red-500', icon: AlertCircle };
+    if (value >= 80) return { level: 'high', color: 'brand', icon: CheckCircle };
+    if (value >= 60) return { level: 'medium', color: 'accent', icon: Info };
+    return { level: 'low', color: 'red', icon: AlertCircle };
   };
 
   const { level, color, icon: Icon } = getConfidenceLevel();
@@ -50,21 +50,20 @@ export const ConfidenceIndicator = ({
       <div
         className={cn(
           'rounded-lg flex items-center gap-2 font-medium',
-          sizeClasses[size],
-          `bg-${color}/10 text-${color}`
+          sizeClasses[size]
         )}
         style={{
           backgroundColor:
-            color === 'sage'
-              ? 'rgba(74, 124, 89, 0.1)'
-              : color === 'gold'
-              ? 'rgba(245, 166, 35, 0.1)'
+            color === 'brand'
+              ? 'rgba(139, 92, 246, 0.1)'
+              : color === 'accent'
+              ? 'rgba(236, 72, 153, 0.1)'
               : 'rgba(239, 68, 68, 0.1)',
           color:
-            color === 'sage'
-              ? '#4A7C59'
-              : color === 'gold'
-              ? '#D4890C'
+            color === 'brand'
+              ? '#8B5CF6'
+              : color === 'accent'
+              ? '#EC4899'
               : '#EF4444',
         }}
       >
@@ -77,7 +76,7 @@ export const ConfidenceIndicator = ({
         <Tooltip content={explanationText || getDefaultExplanation()}>
           <button
             type="button"
-            className="p-1 rounded-lg text-charcoal/40 hover:text-navy hover:bg-navy/5 transition-colors"
+            className="p-1 rounded-lg text-charcoal/40 hover:text-brand-600 hover:bg-brand-50 transition-colors"
           >
             <Info className="w-4 h-4" />
           </button>

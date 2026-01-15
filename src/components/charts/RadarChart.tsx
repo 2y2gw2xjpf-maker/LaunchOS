@@ -26,16 +26,16 @@ interface RadarChartProps {
 export const RadarChart = ({
   data,
   className,
-  fillColor = 'rgba(74, 124, 89, 0.3)',
-  strokeColor = '#4A7C59',
+  fillColor = 'rgba(139, 92, 246, 0.3)',
+  strokeColor = '#8B5CF6',
 }: RadarChartProps) => {
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-3 rounded-xl shadow-medium border border-navy/10">
-          <p className="font-semibold text-navy">{data.subject}</p>
-          <p className="font-mono text-lg text-sage">{data.value}/100</p>
+        <div className="bg-white p-3 rounded-xl shadow-medium border border-brand-100">
+          <p className="font-semibold text-charcoal">{data.subject}</p>
+          <p className="font-mono text-lg text-brand-600">{data.value}/100</p>
         </div>
       );
     }
@@ -46,7 +46,7 @@ export const RadarChart = ({
     <div className={cn('w-full h-[300px]', className)}>
       <ResponsiveContainer width="100%" height="100%">
         <RechartsRadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
-          <PolarGrid stroke="rgba(10, 22, 40, 0.1)" />
+          <PolarGrid stroke="rgba(139, 92, 246, 0.2)" />
           <PolarAngleAxis
             dataKey="subject"
             tick={{ fill: '#2D3436', fontSize: 12 }}

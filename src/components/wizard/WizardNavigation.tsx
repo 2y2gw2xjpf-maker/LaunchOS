@@ -38,7 +38,7 @@ export const WizardNavigation = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        'flex items-center justify-between pt-8 border-t border-navy/10',
+        'flex items-center justify-between pt-8 border-t border-brand-100',
         className
       )}
     >
@@ -58,7 +58,7 @@ export const WizardNavigation = ({
             key={index}
             className={cn(
               'w-2 h-2 rounded-full transition-colors',
-              index === currentStep ? 'bg-navy' : 'bg-navy/20'
+              index === currentStep ? 'bg-brand-600' : 'bg-brand-200'
             )}
           />
         ))}

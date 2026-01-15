@@ -2,18 +2,18 @@ import * as React from 'react';
 import { cn } from '@/lib/utils/cn';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'default' | 'sage' | 'gold' | 'navy' | 'outline';
+  variant?: 'default' | 'brand' | 'accent' | 'primary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
 }
 
 const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   ({ className, variant = 'default', size = 'md', ...props }, ref) => {
     const variantClasses = {
-      default: 'bg-navy/10 text-navy',
-      sage: 'bg-sage/10 text-sage',
-      gold: 'bg-gold/10 text-gold-700',
-      navy: 'bg-navy text-white',
-      outline: 'bg-transparent border border-navy/20 text-navy',
+      default: 'bg-brand-100 text-brand-700',
+      brand: 'bg-brand-50 text-brand-600',
+      accent: 'bg-accent-50 text-accent-600',
+      primary: 'bg-gradient-to-r from-brand-600 to-brand-700 text-white',
+      outline: 'bg-transparent border border-brand-200 text-brand-600',
     };
 
     const sizeClasses = {

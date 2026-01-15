@@ -38,9 +38,9 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
       <div className={cn('w-full', className)}>
         {(label || showValue) && (
           <div className="flex justify-between items-center mb-3">
-            {label && <span className="text-sm font-medium text-navy">{label}</span>}
+            {label && <span className="text-sm font-medium text-charcoal">{label}</span>}
             {showValue && (
-              <span className="text-sm font-mono font-semibold text-navy bg-navy/5 px-3 py-1 rounded-lg">
+              <span className="text-sm font-mono font-semibold text-brand-700 bg-brand-50 px-3 py-1 rounded-lg">
                 {formatValue(value)}
               </span>
             )}
@@ -57,20 +57,20 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
             onChange={(e) => onChange(Number(e.target.value))}
             disabled={disabled}
             className={cn(
-              'w-full h-2 bg-navy/10 rounded-full appearance-none cursor-pointer',
-              'focus:outline-none focus:ring-2 focus:ring-navy/20 focus:ring-offset-2',
+              'w-full h-2 bg-brand-100 rounded-full appearance-none cursor-pointer',
+              'focus:outline-none focus:ring-2 focus:ring-brand-200 focus:ring-offset-2',
               '[&::-webkit-slider-thumb]:appearance-none',
               '[&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5',
-              '[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-navy',
+              '[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-brand-600',
               '[&::-webkit-slider-thumb]:shadow-medium [&::-webkit-slider-thumb]:cursor-pointer',
               '[&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110',
               '[&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5',
-              '[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-navy',
+              '[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-brand-600',
               '[&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer',
               disabled && 'opacity-50 cursor-not-allowed'
             )}
             style={{
-              background: `linear-gradient(to right, #0A1628 0%, #0A1628 ${percentage}%, rgba(10, 22, 40, 0.1) ${percentage}%, rgba(10, 22, 40, 0.1) 100%)`,
+              background: `linear-gradient(to right, #8B5CF6 0%, #8B5CF6 ${percentage}%, rgba(139, 92, 246, 0.2) ${percentage}%, rgba(139, 92, 246, 0.2) 100%)`,
             }}
           />
         </div>

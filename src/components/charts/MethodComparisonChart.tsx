@@ -53,16 +53,16 @@ export const MethodComparisonChart = ({
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-4 rounded-xl shadow-medium border border-navy/10">
-          <p className="font-semibold text-navy mb-2">{data.name}</p>
+        <div className="bg-white p-4 rounded-xl shadow-medium border border-brand-100">
+          <p className="font-semibold text-charcoal mb-2">{data.name}</p>
           <div className="space-y-1">
             <p className="text-sm">
               <span className="text-charcoal/60">Bewertung: </span>
-              <span className="font-mono text-navy">{formatCurrency(data.value)}</span>
+              <span className="font-mono text-brand-600">{formatCurrency(data.value)}</span>
             </p>
             <p className="text-sm">
               <span className="text-charcoal/60">Confidence: </span>
-              <span className="font-mono text-sage">{data.confidence}%</span>
+              <span className="font-mono text-accent-500">{data.confidence}%</span>
             </p>
           </div>
         </div>
@@ -78,43 +78,43 @@ export const MethodComparisonChart = ({
           data={data}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(10, 22, 40, 0.1)" />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(139, 92, 246, 0.2)" />
           <XAxis
             dataKey="name"
             tick={{ fill: '#2D3436', fontSize: 12 }}
             tickLine={false}
-            axisLine={{ stroke: 'rgba(10, 22, 40, 0.1)' }}
+            axisLine={{ stroke: 'rgba(139, 92, 246, 0.2)' }}
           />
           <YAxis
             yAxisId="left"
             tickFormatter={formatCurrency}
             tick={{ fill: '#2D3436', fontSize: 12 }}
             tickLine={false}
-            axisLine={{ stroke: 'rgba(10, 22, 40, 0.1)' }}
+            axisLine={{ stroke: 'rgba(139, 92, 246, 0.2)' }}
           />
           <YAxis
             yAxisId="right"
             orientation="right"
             domain={[0, 100]}
             tickFormatter={(v) => `${v}%`}
-            tick={{ fill: '#4A7C59', fontSize: 12 }}
+            tick={{ fill: '#EC4899', fontSize: 12 }}
             tickLine={false}
-            axisLine={{ stroke: 'rgba(74, 124, 89, 0.3)' }}
+            axisLine={{ stroke: 'rgba(236, 72, 153, 0.3)' }}
           />
           <Tooltip content={<CustomTooltip />} />
           <Bar
             yAxisId="left"
             dataKey="value"
             radius={[8, 8, 0, 0]}
-            fill="#0A1628"
+            fill="#8B5CF6"
           />
           <Line
             yAxisId="right"
             type="monotone"
             dataKey="confidence"
-            stroke="#4A7C59"
+            stroke="#EC4899"
             strokeWidth={2}
-            dot={{ fill: '#4A7C59', strokeWidth: 2 }}
+            dot={{ fill: '#EC4899', strokeWidth: 2 }}
           />
         </ComposedChart>
       </ResponsiveContainer>

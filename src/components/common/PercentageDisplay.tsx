@@ -23,7 +23,7 @@ export const PercentageDisplay = ({
   };
 
   const colorClass =
-    value > 0 ? 'text-sage' : value < 0 ? 'text-red-500' : 'text-charcoal/60';
+    value > 0 ? 'text-brand-600' : value < 0 ? 'text-red-500' : 'text-charcoal/60';
 
   return (
     <span className={cn('font-mono font-semibold', showSign && colorClass, className)}>

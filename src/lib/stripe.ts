@@ -128,18 +128,20 @@ export interface CheckoutOptions {
 }
 
 export const createCheckoutSession = async (options: CheckoutOptions) => {
-  // In production, this would call your backend API
-  // which creates a Stripe Checkout Session
-  const response = await fetch('/api/stripe/create-checkout-session', {
+  // Call Supabase Edge Function for checkout
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const response = await fetch(`${supabaseUrl}/functions/v1/create-checkout-session`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
     },
     body: JSON.stringify(options),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to create checkout session');
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error || 'Failed to create checkout session');
   }
 
   const data = await response.json();
@@ -161,17 +163,20 @@ export const redirectToCheckout = async (sessionId: string) => {
 };
 
 export const createBillingPortalSession = async (customerId: string) => {
-  // In production, this would call your backend API
-  const response = await fetch('/api/stripe/create-portal-session', {
+  // Call Supabase Edge Function for billing portal
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const response = await fetch(`${supabaseUrl}/functions/v1/create-billing-portal`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
     },
     body: JSON.stringify({ customerId }),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to create billing portal session');
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error || 'Failed to create billing portal session');
   }
 
   const data = await response.json();

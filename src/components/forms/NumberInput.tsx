@@ -75,12 +75,12 @@ export const NumberInput = ({
             onClick={decrement}
             disabled={disabled || (value !== undefined && value <= min)}
             className={cn(
-              'p-3 rounded-l-xl border-2 border-r-0 border-navy/10 bg-white',
-              'hover:bg-navy/5 transition-colors',
+              'p-3 rounded-l-xl border-2 border-r-0 border-brand-100 bg-white',
+              'hover:bg-brand-50 transition-colors',
               'disabled:opacity-50 disabled:cursor-not-allowed'
             )}
           >
-            <Minus className="w-5 h-5 text-navy" />
+            <Minus className="w-5 h-5 text-brand-600" />
           </button>
         )}
         <input
@@ -114,12 +114,12 @@ export const NumberInput = ({
             onClick={increment}
             disabled={disabled || (max !== undefined && value !== undefined && value >= max)}
             className={cn(
-              'p-3 rounded-r-xl border-2 border-l-0 border-navy/10 bg-white',
-              'hover:bg-navy/5 transition-colors',
+              'p-3 rounded-r-xl border-2 border-l-0 border-brand-100 bg-white',
+              'hover:bg-brand-50 transition-colors',
               'disabled:opacity-50 disabled:cursor-not-allowed'
             )}
           >
-            <Plus className="w-5 h-5 text-navy" />
+            <Plus className="w-5 h-5 text-brand-600" />
           </button>
         )}
       </div>

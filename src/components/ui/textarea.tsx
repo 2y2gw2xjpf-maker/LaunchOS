@@ -42,7 +42,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             <p
               className={cn(
                 'text-sm text-charcoal/50',
-                currentLength > maxLength * 0.9 && 'text-gold',
+                currentLength > maxLength * 0.9 && 'text-accent-500',
                 currentLength >= maxLength && 'text-red-500'
               )}
             >
