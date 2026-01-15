@@ -9,29 +9,42 @@ export function calculateVCMethod(input: VCMethodInput): ValuationMethodResult {
     dilutionAssumption = 20,
   } = input;
 
-  // VC Method formula:
-  // Post-money valuation = Exit Value / (Expected Return ^ Years)
-  // Pre-money valuation = Post-money - Investment
+  // Standard VC Method formula:
+  // Post-Money (today) = Exit Value / Expected Return Multiple
+  // Pre-Money = Post-Money - Investment
+  //
+  // For multi-year horizon, we use compound return:
+  // Required Exit Ownership = 1 / (1 - dilution%)
+  // Post-Money = Exit Value / (Return Multiple * Required Exit Ownership)
 
-  const returnMultiple = Math.pow(expectedReturn, 1); // Already a multiple
-  const postMoneyToday = expectedExitValue / Math.pow(returnMultiple, yearsToExit / 5); // Normalize to 5-year horizon
-
-  // Account for dilution in future rounds
+  // Calculate the required return multiplier accounting for dilution
+  // If 20% dilution expected, investor needs to own more at start to achieve target return
   const dilutionFactor = 1 - dilutionAssumption / 100;
-  const adjustedPostMoney = postMoneyToday * dilutionFactor;
+  const requiredOwnershipMultiplier = 1 / dilutionFactor;
+
+  // Effective return multiple considering dilution
+  const effectiveReturn = expectedReturn * requiredOwnershipMultiplier;
+
+  // Post-money valuation today
+  // This is what the investor is willing to pay post-investment
+  const postMoneyToday = expectedExitValue / effectiveReturn;
 
   // Pre-money = Post-money - Investment
-  const preMoney = Math.max(0, adjustedPostMoney - investmentAmount);
+  const preMoney = Math.max(0, postMoneyToday - investmentAmount);
 
-  // Implied ownership
-  const impliedOwnership = (investmentAmount / adjustedPostMoney) * 100;
+  // Implied ownership at current round
+  const impliedOwnership = postMoneyToday > 0 ? (investmentAmount / postMoneyToday) * 100 : 0;
+
+  // Calculate dilution adjustment for display
+  const postMoneyWithoutDilution = expectedExitValue / expectedReturn;
+  const dilutionAdjustment = postMoneyWithoutDilution - postMoneyToday;
 
   const breakdown = {
     expectedExitValue,
-    postMoneyValuation: adjustedPostMoney,
+    postMoneyValuation: postMoneyToday,
     preMoneyValuation: preMoney,
     impliedOwnership,
-    dilutionAdjustment: postMoneyToday - adjustedPostMoney,
+    dilutionAdjustment: Math.max(0, dilutionAdjustment),
   };
 
   // Confidence depends on exit value realism and time horizon

@@ -5,6 +5,7 @@ import { useStore } from '@/store';
 import { Card, Tooltip } from '@/components/ui';
 import { SliderInput } from '@/components/forms';
 import { CurrencyDisplay } from '@/components/common';
+import { MethodApplicabilityWarning } from '@/components/results';
 import { calculateBerkus, BERKUS_FACTOR_DEFINITIONS } from '@/lib/calculations';
 import type { BerkusFactors } from '@/types';
 
@@ -17,8 +18,11 @@ const factors: (keyof BerkusFactors)[] = [
 ];
 
 export const BerkusMethodPage = () => {
-  const { berkusFactors, setBerkusFactors, addMethodResult } = useStore();
+  const { berkusFactors, setBerkusFactors, addMethodResult, wizardData } = useStore();
   const result = calculateBerkus(berkusFactors);
+
+  // Determine if startup has revenue (from wizard data if available)
+  const hasRevenue = wizardData?.projectBasics?.hasRevenue || false;
 
   React.useEffect(() => {
     addMethodResult(result);
@@ -26,8 +30,15 @@ export const BerkusMethodPage = () => {
 
   return (
     <div className="space-y-8">
+      {/* Method Applicability Warning */}
+      <MethodApplicabilityWarning
+        method="berkus"
+        hasRevenue={hasRevenue}
+        stage={wizardData?.projectBasics?.stage}
+      />
+
       {/* Info Card */}
-      <Card className="p-6 bg-navy/5 border-navy/10">
+      <Card className="p-6 bg-brand/5 border-brand/10">
         <h3 className="font-display font-semibold text-navy mb-2">Uber die Berkus-Methode</h3>
         <p className="text-charcoal/70">
           Die Berkus-Methode bewertet Pre-Revenue Startups anhand von 5 Risiko-Faktoren.

@@ -1,15 +1,19 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
-import { Info } from 'lucide-react';
+import { Info, Calculator } from 'lucide-react';
 import { useStore } from '@/store';
 import { Card, Tooltip } from '@/components/ui';
 import { CurrencyInput, NumberInput, SliderInput } from '@/components/forms';
 import { CurrencyDisplay } from '@/components/common';
+import { MethodApplicabilityWarning } from '@/components/results';
 import { calculateVCMethod } from '@/lib/calculations';
 
 export const VCMethodPage = () => {
-  const { vcMethodInput, setVCMethodInput, addMethodResult } = useStore();
+  const { vcMethodInput, setVCMethodInput, addMethodResult, wizardData } = useStore();
   const result = calculateVCMethod(vcMethodInput);
+
+  // Check if user has a clear exit scenario
+  const hasExitScenario = wizardData?.goals?.exitGoal && wizardData.goals.exitGoal !== 'lifestyle';
 
   React.useEffect(() => {
     addMethodResult(result);
@@ -17,14 +21,29 @@ export const VCMethodPage = () => {
 
   return (
     <div className="space-y-8">
+      {/* Method Applicability Warning */}
+      <MethodApplicabilityWarning
+        method="vcMethod"
+        stage={wizardData?.projectBasics?.stage}
+        hasExitScenario={hasExitScenario}
+      />
+
       {/* Info Card */}
-      <Card className="p-6 bg-navy/5 border-navy/10">
-        <h3 className="font-display font-semibold text-navy mb-2">Uber die VC-Methode</h3>
-        <p className="text-charcoal/70">
+      <Card className="p-6 bg-brand/5 border-brand/10">
+        <h3 className="font-display font-semibold text-navy mb-2 flex items-center gap-2">
+          <Calculator className="w-5 h-5 text-brand" />
+          Uber die VC-Methode
+        </h3>
+        <p className="text-charcoal/70 mb-3">
           Die VC-Methode rechnet vom erwarteten Exit-Wert zuruck. Sie zeigt, welche
           Pre-Money Bewertung ein Investor akzeptieren wurde, um seine Rendite-Erwartung
           zu erreichen.
         </p>
+        <div className="bg-white/50 p-3 rounded-lg text-sm">
+          <p className="font-mono text-charcoal/80">
+            <strong>Formel:</strong> Pre-Money = (Exit-Wert / ROI-Multiple) - Investment
+          </p>
+        </div>
       </Card>
 
       {/* Inputs */}

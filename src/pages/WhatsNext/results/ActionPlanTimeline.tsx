@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, CheckCircle, Clock, AlertCircle, ExternalLink } from 'lucide-react';
+import { ChevronDown, CheckCircle, Clock, AlertCircle, ExternalLink, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import { Card, Button, Progress } from '@/components/ui';
+import { Card, Button, Progress, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui';
 import { CurrencyDisplay } from '@/components/common';
+import { ProgressDashboard } from '@/components/results';
 import { useStore } from '@/store';
 import type { ActionPlan, ActionPhase, ActionTask } from '@/types';
 
@@ -13,29 +14,88 @@ interface ActionPlanTimelineProps {
 
 export const ActionPlanTimeline = ({ plan }: ActionPlanTimelineProps) => {
   const [expandedPhase, setExpandedPhase] = React.useState<number | null>(0);
+  const [activeView, setActiveView] = React.useState<'timeline' | 'dashboard'>('timeline');
   const { completedTasks, toggleTaskComplete, getPhaseCompletionRate } = useStore();
+
+  // Calculate overall progress for header
+  const totalTasks = plan.phases.reduce((sum, phase) => sum + phase.tasks.length, 0);
+  const completedCount = completedTasks.length;
+  const overallProgress = totalTasks > 0 ? Math.round((completedCount / totalTasks) * 100) : 0;
 
   return (
     <div className="space-y-6">
-      {/* Summary */}
-      <Card className="p-6">
-        <div className="grid sm:grid-cols-3 gap-6">
-          <div>
-            <p className="text-sm text-charcoal/60 mb-1">Gesamtdauer</p>
-            <p className="font-display text-xl font-semibold text-navy">{plan.totalDuration}</p>
+      {/* View Toggle */}
+      <div className="flex items-center justify-between">
+        <Tabs value={activeView} onChange={(v) => setActiveView(v as 'timeline' | 'dashboard')}>
+          <TabsList>
+            <TabsTrigger value="timeline">Timeline</TabsTrigger>
+            <TabsTrigger value="dashboard">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Dashboard
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        {/* Quick Progress Indicator */}
+        <div className="flex items-center gap-3 px-4 py-2 bg-white rounded-xl shadow-soft">
+          <div className="text-right">
+            <p className="text-xs text-charcoal/60">Fortschritt</p>
+            <p className="text-lg font-bold text-navy">{completedCount}/{totalTasks}</p>
           </div>
-          <div>
-            <p className="text-sm text-charcoal/60 mb-1">Gesamtbudget</p>
-            <p className="font-mono text-xl font-semibold text-navy">
-              {plan.totalBudget.min.toLocaleString('de-DE')} - {plan.totalBudget.max.toLocaleString('de-DE')} €
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-charcoal/60 mb-1">Phasen</p>
-            <p className="font-display text-xl font-semibold text-navy">{plan.phases.length}</p>
+          <div className="w-16 h-16 relative">
+            <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+              <path
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none"
+                stroke="#E8E8EC"
+                strokeWidth="3"
+              />
+              <path
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none"
+                stroke={overallProgress === 100 ? '#10B981' : '#8B5CF6'}
+                strokeWidth="3"
+                strokeDasharray={`${overallProgress}, 100`}
+                strokeLinecap="round"
+              />
+            </svg>
+            <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-navy">
+              {overallProgress}%
+            </span>
           </div>
         </div>
-      </Card>
+      </div>
+
+      {/* Dashboard View */}
+      {activeView === 'dashboard' && (
+        <ProgressDashboard
+          actionPlan={plan}
+          completedTasks={completedTasks}
+        />
+      )}
+
+      {/* Timeline View */}
+      {activeView === 'timeline' && (
+        <>
+          {/* Summary */}
+          <Card className="p-6">
+            <div className="grid sm:grid-cols-3 gap-6">
+              <div>
+                <p className="text-sm text-charcoal/60 mb-1">Gesamtdauer</p>
+                <p className="font-display text-xl font-semibold text-navy">{plan.totalDuration}</p>
+              </div>
+              <div>
+                <p className="text-sm text-charcoal/60 mb-1">Gesamtbudget</p>
+                <p className="font-mono text-xl font-semibold text-navy">
+                  {plan.totalBudget.min.toLocaleString('de-DE')} - {plan.totalBudget.max.toLocaleString('de-DE')} €
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-charcoal/60 mb-1">Phasen</p>
+                <p className="font-display text-xl font-semibold text-navy">{plan.phases.length}</p>
+              </div>
+            </div>
+          </Card>
 
       {/* Phases */}
       <div className="space-y-4">
@@ -194,6 +254,8 @@ export const ActionPlanTimeline = ({ plan }: ActionPlanTimelineProps) => {
             ))}
           </ol>
         </Card>
+      )}
+        </>
       )}
     </div>
   );

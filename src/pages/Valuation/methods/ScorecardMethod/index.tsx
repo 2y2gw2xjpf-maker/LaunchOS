@@ -5,6 +5,7 @@ import { useStore } from '@/store';
 import { Card, Tooltip } from '@/components/ui';
 import { SliderInput, CurrencyInput } from '@/components/forms';
 import { CurrencyDisplay } from '@/components/common';
+import { MethodApplicabilityWarning, ScoreBenchmark, STARTUP_BENCHMARKS } from '@/components/results';
 import { calculateScorecard, SCORECARD_FACTOR_DEFINITIONS } from '@/lib/calculations';
 import type { ScorecardFactors } from '@/types';
 
@@ -19,8 +20,9 @@ const factors: (keyof ScorecardFactors)[] = [
 ];
 
 export const ScorecardMethodPage = () => {
-  const { scorecardFactors, setScorecardFactors, addMethodResult } = useStore();
+  const { scorecardFactors, setScorecardFactors, addMethodResult, wizardData } = useStore();
   const [baseValuation, setBaseValuation] = React.useState(1500000);
+  const [showBenchmarks, setShowBenchmarks] = React.useState(true);
 
   const result = calculateScorecard(scorecardFactors, baseValuation);
 
@@ -41,14 +43,29 @@ export const ScorecardMethodPage = () => {
 
   return (
     <div className="space-y-8">
+      {/* Method Applicability Warning */}
+      <MethodApplicabilityWarning
+        method="scorecard"
+        stage={wizardData?.projectBasics?.stage}
+      />
+
       {/* Info Card */}
-      <Card className="p-6 bg-navy/5 border-navy/10">
+      <Card className="p-6 bg-brand/5 border-brand/10">
         <h3 className="font-display font-semibold text-navy mb-2">Uber die Scorecard-Methode</h3>
         <p className="text-charcoal/70">
           Die Scorecard-Methode vergleicht dein Startup mit einem durchschnittlichen Pre-Seed
           Unternehmen. Faktoren werden gewichtet und bewertet - uber 100% bedeutet besser als
           Durchschnitt.
         </p>
+        <label className="flex items-center gap-2 mt-4 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={showBenchmarks}
+            onChange={(e) => setShowBenchmarks(e.target.checked)}
+            className="w-4 h-4 rounded border-charcoal/20 text-brand focus:ring-brand"
+          />
+          <span className="text-sm text-charcoal/70">Benchmarks anzeigen</span>
+        </label>
       </Card>
 
       {/* Base Valuation */}
@@ -125,6 +142,16 @@ export const ScorecardMethodPage = () => {
                     rightLabel="Exzellent"
                   />
                 </div>
+
+                {/* Benchmark for this factor */}
+                {showBenchmarks && STARTUP_BENCHMARKS[factorKey] && (
+                  <ScoreBenchmark
+                    score={factor.score}
+                    benchmark={STARTUP_BENCHMARKS[factorKey]}
+                    label={`Vergleich: ${definition.name}`}
+                    className="mt-4"
+                  />
+                )}
               </Card>
             </motion.div>
           );
