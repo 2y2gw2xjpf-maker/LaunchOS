@@ -3,6 +3,7 @@ import { Header, Footer } from '@/components/layout';
 import { HeroSection } from './HeroSection';
 import { FeaturesSection } from './FeaturesSection';
 import { TrustSection } from './TrustSection';
+import { WaitlistSection } from './WaitlistSection';
 import { CTASection } from './CTASection';
 
 export const LandingPage = () => {
@@ -13,6 +14,7 @@ export const LandingPage = () => {
         <HeroSection />
         <FeaturesSection />
         <TrustSection />
+        <WaitlistSection />
         <CTASection />
       </main>
       <Footer />
