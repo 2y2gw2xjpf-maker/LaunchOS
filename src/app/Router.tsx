@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, ProtectedRoute, AuthCallback } from '@/components/auth';
+import { ErrorBoundary, ErrorPage } from '@/components/common/ErrorBoundary';
 
 // Lazy load pages for better performance
 const LandingPage = React.lazy(() => import('@/pages/Landing'));
@@ -11,6 +12,9 @@ const AboutPage = React.lazy(() => import('@/pages/About'));
 const ComparePage = React.lazy(() => import('@/pages/Compare'));
 const LoginPage = React.lazy(() => import('@/pages/Login'));
 const PricingPage = React.lazy(() => import('@/pages/Pricing'));
+const SettingsPage = React.lazy(() => import('@/pages/Settings'));
+const VerifyEmailPage = React.lazy(() => import('@/pages/Auth/VerifyEmail'));
+const ResetPasswordPage = React.lazy(() => import('@/pages/Auth/ResetPassword'));
 
 // Loading fallback
 const PageLoader = () => (
@@ -24,39 +28,44 @@ const PageLoader = () => (
 
 export const Router = () => {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <React.Suspense fallback={<PageLoader />}>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/pricing" element={<PricingPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/about/*" element={<AboutPage />} />
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <React.Suspense fallback={<PageLoader />}>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/about/*" element={<AboutPage />} />
 
-            {/* Auth Callback */}
-            <Route path="/auth/callback" element={<AuthCallback />} />
+              {/* Auth Routes */}
+              <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
+              <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
 
-            {/* App Routes (with optional auth) */}
-            <Route path="/tier-selection" element={<TierSelectionPage />} />
-            <Route path="/whats-next" element={<WhatsNextPage />} />
-            <Route path="/valuation" element={<ValuationPage />} />
-            <Route path="/compare" element={<ComparePage />} />
+              {/* App Routes (with optional auth) */}
+              <Route path="/tier-selection" element={<TierSelectionPage />} />
+              <Route path="/whats-next" element={<WhatsNextPage />} />
+              <Route path="/valuation" element={<ValuationPage />} />
+              <Route path="/compare" element={<ComparePage />} />
 
-            {/* Protected App Routes (require auth when Supabase is configured) */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/app" element={<Navigate to="/tier-selection" replace />} />
-              <Route path="/app/valuation" element={<ValuationPage />} />
-              <Route path="/app/whats-next" element={<WhatsNextPage />} />
-              <Route path="/app/compare" element={<ComparePage />} />
-            </Route>
+              {/* Protected App Routes (require auth when Supabase is configured) */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/app" element={<Navigate to="/tier-selection" replace />} />
+                <Route path="/app/valuation" element={<ValuationPage />} />
+                <Route path="/app/whats-next" element={<WhatsNextPage />} />
+                <Route path="/app/compare" element={<ComparePage />} />
+                <Route path="/app/settings" element={<SettingsPage />} />
+              </Route>
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </React.Suspense>
-      </AuthProvider>
-    </BrowserRouter>
+              {/* 404 Not Found */}
+              <Route path="*" element={<ErrorPage />} />
+            </Routes>
+          </React.Suspense>
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 };
