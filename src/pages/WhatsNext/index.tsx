@@ -129,91 +129,89 @@ export const WhatsNextPage = () => {
     <div className="min-h-screen bg-cream">
       <Header />
       <EnhancedSidebar />
-      <PageContainer withSidebar>
-        <div className="max-w-3xl mx-auto">
-          {/* Back button */}
-          {currentStep === 0 && (
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/tier-selection')}
-              className="mb-6"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Zuruck zur Tier-Auswahl
-            </Button>
-          )}
+      <PageContainer withSidebar maxWidth="wide">
+        {/* Back button */}
+        {currentStep === 0 && (
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/tier-selection')}
+            className="mb-6"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Zuruck zur Tier-Auswahl
+          </Button>
+        )}
 
-          {/* Progress */}
-          <WizardProgress
-            steps={STEPS}
-            currentStep={currentStep}
-            completedSteps={wizardData.completedSteps}
-            onStepClick={(index) => {
-              if (index <= currentStep || wizardData.completedSteps.includes(index - 1)) {
-                setCurrentStep(index);
-              }
-            }}
-            className="mb-8"
-          />
+        {/* Progress */}
+        <WizardProgress
+          steps={STEPS}
+          currentStep={currentStep}
+          completedSteps={wizardData.completedSteps}
+          onStepClick={(index) => {
+            if (index <= currentStep || wizardData.completedSteps.includes(index - 1)) {
+              setCurrentStep(index);
+            }
+          }}
+          className="mb-8"
+        />
 
-          {/* Step Title */}
+        {/* Step Title */}
+        <motion.div
+          key={currentStep}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <h1 className="font-display text-display-sm text-navy mb-2">
+            {STEPS[currentStep].title}
+          </h1>
+          <p className="text-charcoal/60">{STEPS[currentStep].description}</p>
+        </motion.div>
+
+        {/* Step Content */}
+        <AnimatePresence mode="wait">
           <motion.div
             key={currentStep}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
           >
-            <h1 className="font-display text-display-sm text-navy mb-2">
-              {STEPS[currentStep].title}
-            </h1>
-            <p className="text-charcoal/60">{STEPS[currentStep].description}</p>
+            {renderStep()}
           </motion.div>
+        </AnimatePresence>
 
-          {/* Step Content */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentStep}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {renderStep()}
-            </motion.div>
-          </AnimatePresence>
+        {/* Navigation */}
+        {!showResults && (
+          <WizardNavigation
+            currentStep={currentStep}
+            totalSteps={STEPS.length}
+            onNext={handleNext}
+            onPrev={handlePrev}
+            onComplete={handleComplete}
+            isLastStep={isLastStep}
+            canProceed={!isCalculating}
+            className="mt-8"
+            completeLabel="Analyse starten"
+          />
+        )}
 
-          {/* Navigation */}
-          {!showResults && (
-            <WizardNavigation
-              currentStep={currentStep}
-              totalSteps={STEPS.length}
-              onNext={handleNext}
-              onPrev={handlePrev}
-              onComplete={handleComplete}
-              isLastStep={isLastStep}
-              canProceed={!isCalculating}
-              className="mt-8"
-              completeLabel="Analyse starten"
-            />
-          )}
-
-          {/* Results Actions */}
-          {showResults && (
-            <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-8 border-t border-navy/10">
-              <Button variant="secondary" onClick={handleRecalculate}>
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Neu berechnen
-              </Button>
-              <Button variant="primary" onClick={() => navigate('/valuation')}>
-                Zur Bewertung
-              </Button>
-              <Button variant="gold">
-                <Download className="w-4 h-4 mr-2" />
-                PDF Export
-              </Button>
-            </div>
-          )}
-        </div>
+        {/* Results Actions */}
+        {showResults && (
+          <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-8 border-t border-navy/10">
+            <Button variant="secondary" onClick={handleRecalculate}>
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Neu berechnen
+            </Button>
+            <Button variant="primary" onClick={() => navigate('/valuation')}>
+              Zur Bewertung
+            </Button>
+            <Button variant="gold">
+              <Download className="w-4 h-4 mr-2" />
+              PDF Export
+            </Button>
+          </div>
+        )}
       </PageContainer>
     </div>
   );
