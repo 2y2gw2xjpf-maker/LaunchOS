@@ -441,3 +441,366 @@ export const COMPARISON_COLORS = [
   '#7c9a8a', // sage
   '#e74c3c', // red
 ];
+
+// ==================== TASK ASSISTANCE SYSTEM ====================
+
+// Info Field wrapper for each data field with metadata
+export interface InfoField<T> {
+  value: T | null;
+  status: 'missing' | 'partial' | 'complete' | 'verified';
+  confidence: number; // 0-100
+  source: 'user_input' | 'ai_generated' | 'research' | 'calculated';
+  lastUpdated: string | null;
+  notes?: string;
+}
+
+// Market Size data
+export interface MarketSize {
+  value: number;
+  currency: 'EUR' | 'USD';
+  year: number;
+  source: string;
+  methodology: string;
+}
+
+// Competitor analysis
+export interface CompetitorInfo {
+  name: string;
+  website?: string;
+  description: string;
+  funding?: number;
+  strengths: string[];
+  weaknesses: string[];
+  differentiator: string;
+}
+
+// Team member
+export interface TeamMember {
+  name: string;
+  role: string;
+  linkedin?: string;
+  background: string;
+  relevantExperience: string[];
+}
+
+// Revenue model types
+export type RevenueModelType = 'subscription' | 'transaction' | 'license' | 'advertising' | 'freemium' | 'marketplace' | 'other';
+
+export interface RevenueModel {
+  type: RevenueModelType;
+  description: string;
+  recurringPercentage: number;
+}
+
+// Pricing strategy
+export interface PricingStrategy {
+  model: 'fixed' | 'tiered' | 'usage_based' | 'freemium' | 'enterprise';
+  averagePrice: number;
+  currency: 'EUR' | 'USD';
+  tiers?: { name: string; price: number; features: string[] }[];
+}
+
+// Unit economics
+export interface UnitEconomics {
+  cac: number; // Customer Acquisition Cost
+  ltv: number; // Lifetime Value
+  paybackPeriod: number; // Months
+  grossMargin: number; // Percentage
+  churnRate?: number; // Monthly percentage
+}
+
+// Growth metrics
+export interface GrowthMetrics {
+  monthlyGrowthRate: number;
+  yearOverYearGrowth?: number;
+  retentionRate?: number;
+}
+
+// Milestone
+export interface StartupMilestone {
+  title: string;
+  date: string;
+  description: string;
+  category: 'product' | 'funding' | 'team' | 'traction' | 'partnership';
+}
+
+// Use of funds
+export interface UseOfFunds {
+  category: string;
+  percentage: number;
+  amount: number;
+  description: string;
+}
+
+// Previous funding
+export interface PreviousFunding {
+  round: string;
+  amount: number;
+  date: string;
+  investors: string[];
+}
+
+// Startup stage for task system
+export type StartupStage = 'idea' | 'mvp' | 'pre_seed' | 'seed' | 'series_a' | 'series_b_plus';
+
+// Investor types
+export type InvestorType = 'angel' | 'micro_vc' | 'vc' | 'corporate_vc' | 'family_office' | 'accelerator' | 'government_grant';
+
+// Funding round types
+export type FundingRoundType = 'pre_seed' | 'seed' | 'series_a' | 'series_b' | 'bridge';
+
+// Full Project Context for Task Assistance
+export interface ProjectContext {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+
+  // Core Information
+  core: {
+    problemStatement: InfoField<string>;
+    solution: InfoField<string>;
+    targetCustomer: InfoField<string>;
+    uniqueValueProposition: InfoField<string>;
+  };
+
+  // Market Information
+  market: {
+    tam: InfoField<MarketSize>;
+    sam: InfoField<MarketSize>;
+    som: InfoField<MarketSize>;
+    marketTrends: InfoField<string[]>;
+    competitors: InfoField<CompetitorInfo[]>;
+  };
+
+  // Business Model
+  business: {
+    revenueModel: InfoField<RevenueModel>;
+    pricingStrategy: InfoField<PricingStrategy>;
+    unitEconomics: InfoField<UnitEconomics>;
+    salesStrategy: InfoField<string>;
+  };
+
+  // Traction & Metrics
+  traction: {
+    currentStage: InfoField<StartupStage>;
+    users: InfoField<number>;
+    revenue: InfoField<number>;
+    growth: InfoField<GrowthMetrics>;
+    keyMilestones: InfoField<StartupMilestone[]>;
+  };
+
+  // Team
+  team: {
+    founders: InfoField<TeamMember[]>;
+    employees: InfoField<number>;
+    advisors: InfoField<TeamMember[]>;
+    keyHires: InfoField<string[]>;
+  };
+
+  // Funding
+  funding: {
+    currentRound: InfoField<FundingRoundType>;
+    targetAmount: InfoField<number>;
+    useOfFunds: InfoField<UseOfFunds[]>;
+    previousFunding: InfoField<PreviousFunding[]>;
+    runway: InfoField<number>; // Months
+  };
+
+  // Preferences (for Investor Matching)
+  preferences: {
+    investorTypes: InfoField<InvestorType[]>;
+    geographicFocus: InfoField<string[]>;
+    industryFocus: InfoField<string[]>;
+    dealBreakers: InfoField<string[]>;
+  };
+}
+
+// ==================== TASK SYSTEM ====================
+
+export type TaskHelpType = 'generate' | 'research' | 'guide' | 'calculate' | 'none';
+
+export interface TaskRequirement {
+  id: string;
+  label: string;
+  description: string;
+  contextPath: string; // e.g., 'core.problemStatement', 'market.tam'
+  importance: 'critical' | 'important' | 'nice_to_have';
+  helperConfig?: {
+    type: 'wizard' | 'calculator' | 'research' | 'template';
+    componentId: string;
+  };
+}
+
+export interface TaskAssistance {
+  canHelp: boolean;
+  helpType: TaskHelpType;
+  requirements: TaskRequirement[];
+  minimumRequirements: string[]; // Requirement IDs
+  qualityGate: {
+    minConfidenceToStart: number;
+    minConfidenceForDraft: number;
+    minConfidenceForFinal: number;
+  };
+  output: {
+    type: 'document' | 'list' | 'analysis' | 'calculation' | 'guide';
+    format: string;
+  };
+}
+
+export interface SuggestedTool {
+  name: string;
+  description: string;
+  cost: number;
+  alternative?: string;
+  url: string;
+}
+
+export interface AssistableTask extends ActionTask {
+  assistance: TaskAssistance;
+  dependencies: string[];
+  tags: string[];
+  suggestedTools: SuggestedTool[];
+}
+
+// ==================== TASK EXECUTION ====================
+
+export type TaskExecutionPhase =
+  | 'info_check'
+  | 'info_gathering'
+  | 'generating'
+  | 'reviewing'
+  | 'refining'
+  | 'completed';
+
+export interface RequirementStatus {
+  requirementId: string;
+  status: 'missing' | 'partial' | 'complete';
+  currentValue: unknown;
+  confidence: number;
+  message: string;
+}
+
+export interface Assumption {
+  id: string;
+  description: string;
+  impact: 'high' | 'medium' | 'low';
+  howToVerify: string;
+}
+
+export interface Source {
+  type: 'user_input' | 'web_research' | 'database' | 'calculation';
+  reference: string;
+  reliability: number; // 0-100
+}
+
+export interface TaskExecutionState {
+  taskId: string;
+  phase: TaskExecutionPhase;
+
+  infoCheck: {
+    requirements: RequirementStatus[];
+    overallReadiness: number;
+    canProceed: boolean;
+    canProceedWithWarnings: boolean;
+    blockers: string[];
+    warnings: string[];
+  };
+
+  output: {
+    content: unknown;
+    confidence: number;
+    assumptions: Assumption[];
+    sourcesUsed: Source[];
+  };
+
+  review: {
+    userFeedback: string[];
+    iterations: number;
+    approved: boolean;
+  };
+}
+
+// ==================== INVESTOR TYPES ====================
+
+export interface PortfolioCompany {
+  name: string;
+  sector: string;
+  stage: FundingRoundType;
+  year: number;
+}
+
+export interface Investor {
+  id: string;
+  name: string;
+  type: InvestorType;
+  website: string;
+
+  criteria: {
+    stages: FundingRoundType[];
+    ticketSize: { min: number; max: number };
+    sectors: string[];
+    geographies: string[];
+  };
+
+  portfolio: {
+    totalInvestments: number;
+    recentInvestments: PortfolioCompany[];
+    notableExits: string[];
+  };
+
+  contact: {
+    preferredMethod: 'warm_intro' | 'cold_email' | 'application' | 'event';
+    applicationUrl?: string;
+    keyPartners: string[];
+  };
+
+  matchScore?: {
+    overall: number;
+    breakdown: {
+      stageMatch: number;
+      sectorMatch: number;
+      ticketMatch: number;
+      geographyMatch: number;
+      activityScore: number;
+    };
+    reasoning: string;
+  };
+}
+
+// ==================== PITCH DECK TYPES ====================
+
+export interface PitchDeckSlide {
+  number: number;
+  title: string;
+  content: string;
+  speakerNotes: string;
+  dataConfidence: number;
+  assumptions?: string[];
+}
+
+export interface PitchDeckResult {
+  slides: PitchDeckSlide[];
+  overallConfidence: number;
+  assumptions: Assumption[];
+  missingForBetterDeck: string[];
+}
+
+// ==================== INVESTOR LIST TYPES ====================
+
+export interface InvestorSearchParams {
+  stage: string;
+  sector: string;
+  fundingTarget: number;
+  geography: string[];
+  investorTypes: string[];
+  uniqueAngle?: string;
+}
+
+export interface InvestorListResult {
+  investors: Investor[];
+  confidence: number;
+  assumptions: Assumption[];
+  searchMethodology: string;
+  limitations: string[];
+}

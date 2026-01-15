@@ -7,6 +7,8 @@ import { createUISlice, type UISlice } from './slices/uiSlice';
 import { createRouteSlice, type RouteSlice } from './slices/routeSlice';
 import { createHistorySlice, type HistorySlice } from './slices/historySlice';
 import { createComparisonSlice, type ComparisonSlice } from './slices/comparisonSlice';
+import { createProjectContextSlice, type ProjectContextSlice } from './slices/projectContextSlice';
+import { createTaskExecutionSlice, type TaskExecutionSlice } from './slices/taskExecutionSlice';
 
 export type StoreState = TierSlice &
   WizardSlice &
@@ -14,7 +16,9 @@ export type StoreState = TierSlice &
   UISlice &
   RouteSlice &
   HistorySlice &
-  ComparisonSlice;
+  ComparisonSlice &
+  ProjectContextSlice &
+  TaskExecutionSlice;
 
 export const useStore = create<StoreState>()(
   persist(
@@ -26,6 +30,8 @@ export const useStore = create<StoreState>()(
       ...createRouteSlice(...a),
       ...createHistorySlice(...a),
       ...createComparisonSlice(...a),
+      ...createProjectContextSlice(...a),
+      ...createTaskExecutionSlice(...a),
     }),
     {
       name: 'launchos-storage',
