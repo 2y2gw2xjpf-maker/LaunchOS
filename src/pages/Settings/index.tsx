@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/lib/supabase';
+import { Header, Footer } from '@/components/layout';
 import BillingSection from './BillingSection';
 
 type SettingsTab = 'profile' | 'billing' | 'security' | 'notifications';
@@ -31,18 +32,20 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-50 via-white to-purple-50/40 p-6">
-      <div className="max-w-5xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <h1 className="text-3xl font-display font-bold text-text-primary mb-2">
-            Einstellungen
-          </h1>
-          <p className="text-text-secondary mb-8">
-            Verwalte dein Konto und deine Präferenzen
-          </p>
+    <div className="min-h-screen bg-gradient-to-b from-white to-purple-50/30">
+      <Header />
+      <main className="pt-20">
+        <div className="max-w-4xl mx-auto px-6 py-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <h1 className="font-display text-display-sm md:text-display-md text-text-primary mb-4">
+              Einstellungen
+            </h1>
+            <p className="text-lg text-text-secondary mb-8">
+              Verwalte dein Konto und deine Präferenzen
+            </p>
 
           {/* Tabs */}
           <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
@@ -69,8 +72,10 @@ export default function SettingsPage() {
             {activeTab === 'security' && <SecuritySection />}
             {activeTab === 'notifications' && <NotificationsSection />}
           </div>
-        </motion.div>
-      </div>
+          </motion.div>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }
