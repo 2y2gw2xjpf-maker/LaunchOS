@@ -804,3 +804,217 @@ export interface InvestorListResult {
   searchMethodology: string;
   limitations: string[];
 }
+
+// ==================== JOURNEY SYSTEM ====================
+
+export type JourneyPhase = 'foundation' | 'legal' | 'branding' | 'product' | 'launch' | 'funding' | 'growth';
+
+export type JourneyCategory = 'legal' | 'finance' | 'product' | 'marketing' | 'operations' | 'funding' | 'compliance';
+
+export type StepStatus = 'not_started' | 'in_progress' | 'completed' | 'skipped' | 'not_applicable';
+
+export type ResourceType = 'official' | 'guide' | 'template' | 'tool' | 'service';
+
+export type JourneyHelpType = 'chat' | 'template' | 'generate' | 'guide';
+
+export type CompanyType = 'gmbh' | 'ug' | 'einzelunternehmen' | 'gbr' | 'ag' | 'not_yet_founded';
+
+export type FundingPath = 'bootstrap' | 'investor' | 'grant' | 'undecided';
+
+export type StartupStageJourney = 'idea' | 'building' | 'mvp' | 'launched' | 'scaling';
+
+export type DeliverableType =
+  | 'pitch_deck'
+  | 'business_plan'
+  | 'financial_model'
+  | 'investor_list'
+  | 'valuation_report'
+  | 'legal_docs'
+  | 'data_room'
+  | 'outreach_emails';
+
+// Journey Step (System-definiert)
+export interface JourneyStep {
+  id: string;
+  phase: JourneyPhase;
+  category: JourneyCategory;
+  title: string;
+  description: string;
+  requires: string[];
+  canHelp: boolean;
+  helpType: JourneyHelpType | null;
+  helpAction: string | null;
+  estimatedTime: string | null;
+  estimatedCost: string | null;
+  applicableWhen: {
+    stage?: StartupStageJourney[];
+    funding_path?: FundingPath[];
+    company_type?: CompanyType[];
+  };
+  sortOrder: number;
+}
+
+// Resource für einen Step
+export interface JourneyResource {
+  id: string;
+  stepId: string;
+  type: ResourceType;
+  title: string;
+  url: string;
+  description: string | null;
+  isFree: boolean;
+  sortOrder: number;
+}
+
+// User Progress für einen Step
+export interface UserJourneyProgress {
+  id: string;
+  userId: string;
+  stepId: string;
+  status: StepStatus;
+  notes: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Extended Step mit Resources und Progress
+export interface JourneyStepWithDetails extends JourneyStep {
+  resources: JourneyResource[];
+  progress: UserJourneyProgress | null;
+}
+
+// User Journey Profile (Erweiterung von profiles)
+export interface UserJourneyProfile {
+  id: string;
+  userId: string;
+  industry: string | null;
+  description: string | null;
+  companyType: CompanyType;
+  fundingPath: FundingPath;
+  stage: StartupStageJourney;
+  monthlyRevenue: number | null;
+  growthRate: number | null;
+  teamSize: number | null;
+  onboardingCompleted: boolean;
+}
+
+// Deliverable
+export interface Deliverable {
+  id: string;
+  userId: string;
+  type: DeliverableType;
+  title: string;
+  content: Record<string, unknown> | null;
+  fileUrl: string | null;
+  fileType: string | null;
+  version: number;
+  parentId: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Deliverable Version
+export interface DeliverableVersion {
+  id: string;
+  deliverableId: string;
+  version: number;
+  content: Record<string, unknown> | null;
+  fileUrl: string | null;
+  changeDescription: string | null;
+  createdAt: string;
+}
+
+// Valuation (DB-Modell)
+export interface ValuationRecord {
+  id: string;
+  userId: string;
+  analysisId: string | null;
+  valueLow: number | null;
+  valueMid: number | null;
+  valueHigh: number | null;
+  confidenceScore: number | null;
+  confidenceFactors: Record<string, number> | null;
+  methodsUsed: ValuationMethodResult[] | null;
+  inputs: Record<string, unknown> | null;
+  improvementSuggestions: string[] | null;
+  createdAt: string;
+}
+
+// Chat Session
+export interface ChatSession {
+  id: string;
+  userId: string;
+  title: string | null;
+  context: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Chat Message
+export interface ChatMessage {
+  id: string;
+  userId: string;
+  sessionId: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}
+
+// ==================== CONFIDENCE SCORING ====================
+
+export interface ConfidenceFactors {
+  dataCompleteness: number;    // 0-25
+  dataQuality: number;         // 0-25
+  methodApplicability: number; // 0-25
+  marketData: number;          // 0-25
+}
+
+export interface ConfidenceResult {
+  score: number;
+  factors: ConfidenceFactors;
+  explanations: string[];
+}
+
+// ==================== QUICK ACTIONS ====================
+
+export interface QuickAction {
+  id: string;
+  label: string;
+  icon: string;
+  prompt: string;
+}
+
+export const QUICK_ACTIONS: QuickAction[] = [
+  { id: 'translate_en', label: 'Auf Englisch', icon: '🌐', prompt: 'Übersetze ins Englische.' },
+  { id: 'translate_de', label: 'Auf Deutsch', icon: '🇩🇪', prompt: 'Übersetze ins Deutsche.' },
+  { id: 'shorten', label: 'Kürzer', icon: '✂️', prompt: 'Kürze um 30%. Behalte Wichtiges.' },
+  { id: 'expand', label: 'Mehr Details', icon: '📝', prompt: 'Mehr Details und Beispiele.' },
+  { id: 'executive_summary', label: 'Exec Summary', icon: '📋', prompt: 'Max 1 Seite Summary.' },
+  { id: 'simplify', label: 'Vereinfachen', icon: '💡', prompt: 'Einfachere Sprache.' },
+  { id: 'formal', label: 'Formeller', icon: '👔', prompt: 'Professionellerer Ton.' },
+  { id: 'casual', label: 'Lockerer', icon: '😊', prompt: 'Persönlicherer Ton.' }
+];
+
+// ==================== JOURNEY PHASE CONFIG ====================
+
+export interface JourneyPhaseConfig {
+  id: JourneyPhase;
+  title: string;
+  description: string;
+  color: string;
+  icon: string;
+}
+
+export const JOURNEY_PHASES: JourneyPhaseConfig[] = [
+  { id: 'foundation', title: 'Grundlagen', description: 'Rechtsform, Businessplan, Finanzen', color: '#9333ea', icon: 'Foundation' },
+  { id: 'legal', title: 'Rechtliches', description: 'Notar, Handelsregister, Steuern', color: '#ec4899', icon: 'Scale' },
+  { id: 'branding', title: 'Marke', description: 'Name, Domain, Markenanmeldung', color: '#f59e0b', icon: 'Palette' },
+  { id: 'product', title: 'Produkt', description: 'MVP, Entwicklung, Launch', color: '#10b981', icon: 'Package' },
+  { id: 'launch', title: 'Launch', description: 'Beta-Tester, erste Kunden', color: '#3b82f6', icon: 'Rocket' },
+  { id: 'funding', title: 'Finanzierung', description: 'Investoren, Fördermittel', color: '#8b5cf6', icon: 'Banknote' },
+  { id: 'growth', title: 'Wachstum', description: 'Skalierung, Profitabilität', color: '#06b6d4', icon: 'TrendingUp' },
+];
