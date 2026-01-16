@@ -22,6 +22,7 @@ export interface PricingTier {
   currency: 'EUR';
   interval: 'month';
   priceId: string; // Stripe Price ID - set in Stripe Dashboard
+  priceIdYearly?: string; // Optional yearly Price ID
   features: string[];
   limits: {
     projects: number; // -1 = unlimited
@@ -40,6 +41,7 @@ export const PRICING_TIERS: Record<string, PricingTier> = {
     currency: 'EUR',
     interval: 'month',
     priceId: import.meta.env.VITE_STRIPE_PRICE_STARTER || 'price_starter',
+    priceIdYearly: import.meta.env.VITE_STRIPE_PRICE_STARTER_YEAR || 'price_starter_year',
     features: [
       '3 Projekte',
       'Alle Bewertungsmethoden',
@@ -60,6 +62,7 @@ export const PRICING_TIERS: Record<string, PricingTier> = {
     currency: 'EUR',
     interval: 'month',
     priceId: import.meta.env.VITE_STRIPE_PRICE_GROWTH || 'price_growth',
+    priceIdYearly: import.meta.env.VITE_STRIPE_PRICE_GROWTH_YEAR || 'price_growth_year',
     features: [
       'Unbegrenzte Projekte',
       'Alle Module',
@@ -82,6 +85,7 @@ export const PRICING_TIERS: Record<string, PricingTier> = {
     currency: 'EUR',
     interval: 'month',
     priceId: import.meta.env.VITE_STRIPE_PRICE_SCALE || 'price_scale',
+    priceIdYearly: import.meta.env.VITE_STRIPE_PRICE_SCALE_YEAR || 'price_scale_year',
     features: [
       'Alles aus Growth',
       'Team Features (bis 5 User)',

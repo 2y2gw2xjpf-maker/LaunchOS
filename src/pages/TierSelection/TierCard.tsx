@@ -24,9 +24,9 @@ export const TierCard = ({ tier, index, onSelect }: TierCardProps) => {
 
   const getConfidenceColor = () => {
     const [min] = tier.confidenceRange;
-    if (min >= 70) return 'text-brand-600 bg-brand-100';
-    if (min >= 50) return 'text-accent-600 bg-accent-100';
-    return 'text-charcoal/60 bg-brand-50';
+    if (min >= 70) return 'text-purple-600 bg-purple-100';
+    if (min >= 50) return 'text-pink-600 bg-pink-100';
+    return 'text-gray-600 bg-purple-50';
   };
 
   return (
@@ -34,7 +34,7 @@ export const TierCard = ({ tier, index, onSelect }: TierCardProps) => {
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="border-2 border-brand-100 rounded-2xl overflow-hidden hover:border-brand-300 hover:shadow-glow-brand transition-all bg-white"
+      className="border-2 border-purple-100 rounded-2xl overflow-hidden hover:border-purple-300 hover:shadow-lg hover:shadow-purple-500/10 transition-all bg-white"
     >
       <button
         onClick={() => setExpanded(!expanded)}
@@ -42,14 +42,14 @@ export const TierCard = ({ tier, index, onSelect }: TierCardProps) => {
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-100 to-accent-100 flex items-center justify-center">
-              <Icon className="w-6 h-6 text-brand-600" />
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+              <Icon className="w-6 h-6 text-purple-600" />
             </div>
             <div>
-              <h3 className="font-display font-semibold text-charcoal text-lg">
+              <h3 className="font-display font-semibold text-text-primary text-lg">
                 {tier.label}
               </h3>
-              <p className="text-charcoal/60 text-sm">{tier.description}</p>
+              <p className="text-text-secondary text-sm">{tier.description}</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -60,7 +60,7 @@ export const TierCard = ({ tier, index, onSelect }: TierCardProps) => {
               animate={{ rotate: expanded ? 180 : 0 }}
               transition={{ duration: 0.2 }}
             >
-              <ChevronDown className="w-5 h-5 text-brand-400" />
+              <ChevronDown className="w-5 h-5 text-purple-400" />
             </motion.div>
           </div>
         </div>
@@ -73,29 +73,29 @@ export const TierCard = ({ tier, index, onSelect }: TierCardProps) => {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="border-t border-brand-100 overflow-hidden"
+            className="border-t border-purple-100 overflow-hidden"
           >
-            <div className="p-6 bg-brand-50/50">
+            <div className="p-6 bg-purple-50/50">
               <div className="grid md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <h4 className="font-semibold text-charcoal mb-3 flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-brand-600" />
+                  <h4 className="font-semibold text-text-primary mb-3 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-purple-600" />
                     Was wir fragen
                   </h4>
                   <ul className="space-y-2">
                     {tier.whatWeAsk.map((item, i) => (
                       <li
                         key={i}
-                        className="text-sm text-charcoal/70 flex items-start gap-2"
+                        className="text-sm text-text-secondary flex items-start gap-2"
                       >
-                        <span className="text-brand-500 mt-1">•</span>
+                        <span className="text-purple-500 mt-1">•</span>
                         {item}
                       </li>
                     ))}
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-charcoal mb-3 flex items-center gap-2">
+                  <h4 className="font-semibold text-text-primary mb-3 flex items-center gap-2">
                     <XCircle className="w-4 h-4 text-red-400" />
                     Was wir NICHT fragen
                   </h4>
@@ -103,7 +103,7 @@ export const TierCard = ({ tier, index, onSelect }: TierCardProps) => {
                     {tier.whatWeNeverAsk.map((item, i) => (
                       <li
                         key={i}
-                        className="text-sm text-charcoal/70 flex items-start gap-2"
+                        className="text-sm text-text-secondary flex items-start gap-2"
                       >
                         <span className="text-red-400 mt-1">•</span>
                         {item}
@@ -113,13 +113,13 @@ export const TierCard = ({ tier, index, onSelect }: TierCardProps) => {
                 </div>
               </div>
 
-              <div className="p-4 bg-white rounded-xl mb-6 border border-brand-100">
+              <div className="p-4 bg-white rounded-xl mb-6 border border-purple-100">
                 <div className="flex items-center gap-3 mb-2">
-                  <Lightbulb className="w-5 h-5 text-accent-500" />
-                  <span className="font-semibold text-charcoal">Analyse-Tiefe</span>
+                  <Lightbulb className="w-5 h-5 text-pink-500" />
+                  <span className="font-semibold text-text-primary">Analyse-Tiefe</span>
                 </div>
-                <p className="text-charcoal/70">{tier.analysisDepth}</p>
-                <p className="text-sm text-charcoal/50 mt-2 italic">
+                <p className="text-text-secondary">{tier.analysisDepth}</p>
+                <p className="text-sm text-text-muted mt-2 italic">
                   "{tier.example}"
                 </p>
               </div>

@@ -5,6 +5,7 @@ import { FeaturesSection } from './FeaturesSection';
 import { TrustSection } from './TrustSection';
 import { WaitlistSection } from './WaitlistSection';
 import { CTASection } from './CTASection';
+import { PricingSection } from './PricingSection';
 
 export const LandingPage = () => {
   return (
@@ -13,6 +14,7 @@ export const LandingPage = () => {
       <main className="pt-20">
         <HeroSection />
         <FeaturesSection />
+        <PricingSection />
         <TrustSection />
         <WaitlistSection />
         <CTASection />

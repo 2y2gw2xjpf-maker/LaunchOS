@@ -8,14 +8,14 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: 'bg-gradient-to-r from-brand-600 to-brand-700 text-white hover:from-brand-500 hover:to-brand-600 focus:ring-brand-500/50 shadow-glow-brand',
+        primary: 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 focus:ring-purple-500/50 shadow-lg shadow-purple-500/30',
         secondary:
-          'bg-white text-charcoal border-2 border-brand-200 hover:border-brand-400 hover:bg-brand-50 focus:ring-brand-300',
-        gold: 'bg-gradient-to-r from-brand-500 to-accent-500 text-white hover:from-brand-400 hover:to-accent-400 shadow-glow-brand focus:ring-brand-500/50',
-        ghost: 'text-brand-700 hover:bg-brand-50 focus:ring-brand-200',
-        sage: 'bg-gradient-to-r from-accent-500 to-accent-600 text-white hover:from-accent-400 hover:to-accent-500 shadow-glow-accent focus:ring-accent-500/50',
+          'bg-white text-text-primary border-2 border-purple-200 hover:border-purple-400 hover:bg-purple-50 focus:ring-purple-300',
+        gold: 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-lg shadow-purple-500/30 focus:ring-purple-500/50',
+        ghost: 'text-purple-700 hover:bg-purple-50 focus:ring-purple-200',
+        sage: 'bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-400 hover:to-pink-500 shadow-lg shadow-pink-500/30 focus:ring-pink-500/50',
         destructive: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-500/50',
-        outline: 'border-2 border-brand-300 text-brand-700 hover:bg-brand-50 focus:ring-brand-200',
+        outline: 'border-2 border-purple-300 text-purple-700 hover:bg-purple-50 focus:ring-purple-200',
       },
       size: {
         sm: 'h-9 px-4 text-sm',

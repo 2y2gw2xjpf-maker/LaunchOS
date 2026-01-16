@@ -31,14 +31,18 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 p-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-cream-50 via-white to-purple-50/40 p-6">
+      <div className="max-w-5xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-3xl font-bold text-white mb-2">Einstellungen</h1>
-          <p className="text-slate-400 mb-8">Verwalte dein Konto und deine Präferenzen</p>
+          <h1 className="text-3xl font-display font-bold text-text-primary mb-2">
+            Einstellungen
+          </h1>
+          <p className="text-text-secondary mb-8">
+            Verwalte dein Konto und deine Präferenzen
+          </p>
 
           {/* Tabs */}
           <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
@@ -46,10 +50,10 @@ export default function SettingsPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700/50'
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-glow-brand'
+                    : 'bg-white/80 text-text-secondary border border-purple-100 hover:border-purple-200 hover:text-text-primary'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
@@ -59,7 +63,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Tab Content */}
-          <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-purple-100 shadow-card">
             {activeTab === 'profile' && <ProfileSection />}
             {activeTab === 'billing' && <BillingSection />}
             {activeTab === 'security' && <SecuritySection />}
@@ -124,22 +128,22 @@ function ProfileSection() {
           <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-2xl font-bold text-white">
             {fullName?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || '?'}
           </div>
-          <button className="absolute bottom-0 right-0 w-8 h-8 bg-slate-700 hover:bg-slate-600 rounded-full flex items-center justify-center text-white transition-colors">
+          <button className="absolute bottom-0 right-0 w-8 h-8 bg-white shadow-soft hover:shadow-medium rounded-full flex items-center justify-center text-purple-600 transition-all">
             <Camera className="w-4 h-4" />
           </button>
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-white">{fullName || 'Unbenannt'}</h3>
-          <p className="text-slate-400">{user?.email}</p>
+          <h3 className="text-lg font-semibold text-text-primary">{fullName || 'Unbenannt'}</h3>
+          <p className="text-text-muted">{user?.email}</p>
         </div>
       </div>
 
-      <hr className="border-slate-700" />
+      <hr className="border-purple-100" />
 
       {/* Form */}
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-text-secondary mb-2">
             <User className="w-4 h-4 inline mr-2" />
             Vollständiger Name
           </label>
@@ -148,12 +152,12 @@ function ProfileSection() {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Max Mustermann"
-            className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-4 py-3 bg-white border border-purple-200 rounded-lg text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-text-secondary mb-2">
             <Mail className="w-4 h-4 inline mr-2" />
             E-Mail-Adresse
           </label>
@@ -161,15 +165,15 @@ function ProfileSection() {
             type="email"
             value={user?.email || ''}
             disabled
-            className="w-full px-4 py-3 bg-slate-700/30 border border-slate-700 rounded-lg text-slate-400 cursor-not-allowed"
+            className="w-full px-4 py-3 bg-purple-50 border border-purple-100 rounded-lg text-text-muted cursor-not-allowed"
           />
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-text-muted mt-1">
             E-Mail-Adresse kann nicht geändert werden
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-text-secondary mb-2">
             <Building2 className="w-4 h-4 inline mr-2" />
             Firma / Startup
           </label>
@@ -178,12 +182,12 @@ function ProfileSection() {
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
             placeholder="Mein Startup GmbH"
-            className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-4 py-3 bg-white border border-purple-200 rounded-lg text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400"
           />
         </div>
 
         {error && (
-          <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
             {error}
           </div>
         )}
@@ -192,7 +196,7 @@ function ProfileSection() {
           <button
             onClick={handleSave}
             disabled={loading}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:from-slate-600 disabled:to-slate-600 text-white font-semibold rounded-lg transition-all"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:from-purple-200 disabled:to-pink-200 text-white font-semibold rounded-lg transition-all"
           >
             {loading ? (
               <>
@@ -214,17 +218,17 @@ function ProfileSection() {
         </div>
       </div>
 
-      <hr className="border-slate-700" />
+      <hr className="border-purple-100" />
 
       {/* Sign Out */}
       <div className="flex items-center justify-between">
         <div>
-          <h4 className="text-white font-medium">Abmelden</h4>
-          <p className="text-sm text-slate-400">Von deinem Konto abmelden</p>
+          <h4 className="text-text-primary font-medium">Abmelden</h4>
+          <p className="text-sm text-text-muted">Von deinem Konto abmelden</p>
         </div>
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg transition-colors"
         >
           <LogOut className="w-4 h-4" />
           Abmelden
@@ -282,13 +286,15 @@ function SecuritySection() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-white mb-1">Passwort ändern</h3>
-        <p className="text-slate-400 text-sm">Aktualisiere dein Passwort regelmäßig für mehr Sicherheit</p>
+        <h3 className="text-lg font-semibold text-text-primary mb-1">Passwort ändern</h3>
+        <p className="text-text-muted text-sm">
+          Aktualisiere dein Passwort regelmäßig für mehr Sicherheit
+        </p>
       </div>
 
       <form onSubmit={handleChangePassword} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-text-secondary mb-2">
             Neues Passwort
           </label>
           <input
@@ -298,12 +304,12 @@ function SecuritySection() {
             placeholder="••••••••"
             required
             minLength={8}
-            className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-4 py-3 bg-white border border-purple-200 rounded-lg text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-text-secondary mb-2">
             Passwort bestätigen
           </label>
           <input
@@ -312,18 +318,18 @@ function SecuritySection() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="••••••••"
             required
-            className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-4 py-3 bg-white border border-purple-200 rounded-lg text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400"
           />
         </div>
 
         {error && (
-          <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="p-3 bg-green-500/10 border border-green-500/50 rounded-lg text-green-400 text-sm flex items-center gap-2">
+          <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm flex items-center gap-2">
             <CheckCircle className="w-4 h-4" />
             Passwort erfolgreich geändert
           </div>
@@ -332,7 +338,7 @@ function SecuritySection() {
         <button
           type="submit"
           disabled={loading}
-          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:from-slate-600 disabled:to-slate-600 text-white font-semibold rounded-lg transition-all"
+          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:from-purple-200 disabled:to-pink-200 text-white font-semibold rounded-lg transition-all"
         >
           {loading ? (
             <>
@@ -348,17 +354,17 @@ function SecuritySection() {
         </button>
       </form>
 
-      <hr className="border-slate-700" />
+      <hr className="border-purple-100" />
 
       {/* Delete Account */}
-      <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
         <div className="flex items-start gap-4">
-          <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-            <Trash2 className="w-5 h-5 text-red-400" />
+          <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <Trash2 className="w-5 h-5 text-red-600" />
           </div>
           <div className="flex-grow">
-            <h4 className="text-white font-medium">Konto löschen</h4>
-            <p className="text-sm text-slate-400 mt-1">
+            <h4 className="text-text-primary font-medium">Konto löschen</h4>
+            <p className="text-sm text-text-muted mt-1">
               Diese Aktion kann nicht rückgängig gemacht werden. Alle deine Daten werden dauerhaft gelöscht.
             </p>
             <button className="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
@@ -387,8 +393,8 @@ function NotificationsSection() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-white mb-1">E-Mail-Benachrichtigungen</h3>
-        <p className="text-slate-400 text-sm">Wähle, welche E-Mails du erhalten möchtest</p>
+        <h3 className="text-lg font-semibold text-text-primary mb-1">E-Mail-Benachrichtigungen</h3>
+        <p className="text-text-muted text-sm">Wähle, welche E-Mails du erhalten möchtest</p>
       </div>
 
       <div className="space-y-4">
@@ -428,16 +434,16 @@ interface NotificationToggleProps {
 
 function NotificationToggle({ label, description, checked, onChange, disabled }: NotificationToggleProps) {
   return (
-    <div className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg">
+    <div className="flex items-center justify-between p-4 bg-white border border-purple-100 rounded-lg shadow-soft">
       <div>
-        <h4 className="text-white font-medium">{label}</h4>
-        <p className="text-sm text-slate-400">{description}</p>
+        <h4 className="text-text-primary font-medium">{label}</h4>
+        <p className="text-sm text-text-muted">{description}</p>
       </div>
       <button
         onClick={onChange}
         disabled={disabled}
         className={`relative w-12 h-6 rounded-full transition-colors ${
-          checked ? 'bg-purple-600' : 'bg-slate-600'
+          checked ? 'bg-gradient-to-r from-purple-600 to-pink-600' : 'bg-purple-200'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <span

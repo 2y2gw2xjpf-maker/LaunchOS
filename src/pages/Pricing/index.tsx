@@ -102,8 +102,8 @@ export function PricingPage() {
               Wähle deinen Plan
             </h1>
             <p className="text-lg text-charcoal/70 max-w-2xl mx-auto">
-              Starte kostenlos und upgrade wenn du wächst.
-              Keine versteckten Kosten, jederzeit kündbar.
+              Kostenlos registrieren, 1 Projekt gratis. Danach wählst du den Plan,
+              der zu deinem Wachstum passt.
             </p>
           </motion.div>
 
@@ -244,7 +244,14 @@ export function PricingPage() {
                   </ul>
 
                   <button
-                    onClick={() => handleSubscribe(tier.priceId, tier.id)}
+                    onClick={() =>
+                      handleSubscribe(
+                        billingInterval === 'year'
+                          ? tier.priceIdYearly || tier.priceId
+                          : tier.priceId,
+                        tier.id
+                      )
+                    }
                     disabled={isCurrentTier || loading === tier.id}
                     className={cn(
                       'mt-6 w-full py-3 font-medium rounded-xl transition-all flex items-center justify-center gap-2',
@@ -397,7 +404,7 @@ export function PricingPage() {
             Bereit durchzustarten?
           </h2>
           <p className="text-charcoal/70 mb-8">
-            Starte kostenlos und upgrade wenn du bereit bist.
+            Kostenlos registrieren, 1 Projekt gratis. Upgrade jederzeit möglich.
           </p>
           <Link
             to={user ? '/app' : '/login'}

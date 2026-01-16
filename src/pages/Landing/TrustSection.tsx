@@ -1,41 +1,48 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
-import { Lock, Eye, Server, Trash2 } from 'lucide-react';
+import { Lock, Eye, Server, Trash2, Shield, ShieldCheck } from 'lucide-react';
 import { SectionHeader } from '@/components/common';
 
 const trustPoints = [
   {
     icon: Server,
-    title: 'Keine Server',
-    description: 'Alle Berechnungen passieren direkt in deinem Browser. Wir haben keine Server, auf denen wir Daten speichern konnten.',
+    title: 'Analyse im Browser',
+    description: 'Die Berechnungen laufen lokal. Gespeichert werden nur Account- und Abrechnungsdaten.',
   },
   {
     icon: Lock,
-    title: 'Keine Accounts',
-    description: 'Du brauchst keinen Account. Keine E-Mail, kein Passwort, nichts. Einfach starten.',
+    title: 'Kostenlos registrieren',
+    description: 'Ein Account reicht, um Projekte und Einstellungen zu sichern. 1 Projekt ist gratis.',
   },
   {
     icon: Eye,
     title: 'Open Source',
-    description: 'Der gesamte Code ist einsehbar. Du kannst jederzeit prufen, was mit deinen Daten passiert.',
+    description: 'Der gesamte Code ist einsehbar. Du kannst jederzeit prüfen, was mit deinen Daten passiert.',
   },
   {
     icon: Trash2,
-    title: 'Session-basiert',
-    description: 'Schliesse den Tab und alles ist weg. Oder exportiere deine Ergebnisse lokal - du entscheidest.',
+    title: 'Export & Kontrolle',
+    description: 'Exportiere deine Ergebnisse lokal oder lösche deine Daten, wann immer du willst.',
   },
+];
+
+const confidenceTiers = [
+  { level: 1, name: 'Minimal', range: '30-50%', fillPercent: 40 },
+  { level: 2, name: 'Basic', range: '50-70%', fillPercent: 60 },
+  { level: 3, name: 'Detailed', range: '70-85%', fillPercent: 77 },
+  { level: 4, name: 'Full', range: '85-95%', fillPercent: 90 },
 ];
 
 export const TrustSection = () => {
   return (
-    <section className="section-padding">
+    <section className="section-padding bg-gradient-to-b from-white to-purple-50/50">
       <div className="container-wide">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <SectionHeader
-              badge="Privatsphare"
+              badge="Privatsphäre"
               title="Deine Idee bleibt deine Idee"
-              subtitle="Wir verstehen, dass du deine Idee schutzen willst. Deshalb haben wir LaunchOS so gebaut, dass wir gar nicht an deine Daten kommen."
+              subtitle="Wir verstehen, dass du deine Idee schützen willst. Deshalb bleibt die Analyse lokal und du behältst die Kontrolle."
             />
 
             <div className="space-y-6">
@@ -50,14 +57,14 @@ export const TrustSection = () => {
                     transition={{ delay: index * 0.1 }}
                     className="flex gap-4"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-5 h-5 text-brand-600" />
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-purple-600" />
                     </div>
                     <div>
-                      <h4 className="font-display font-semibold text-charcoal mb-1">
+                      <h4 className="font-display font-semibold text-text-primary mb-1">
                         {point.title}
                       </h4>
-                      <p className="text-charcoal/60 text-sm">{point.description}</p>
+                      <p className="text-text-secondary text-sm">{point.description}</p>
                     </div>
                   </motion.div>
                 );
@@ -71,55 +78,76 @@ export const TrustSection = () => {
             viewport={{ once: true }}
             className="relative"
           >
-            <div className="bg-gradient-to-br from-brand-600 to-brand-700 rounded-3xl p-8 text-white shadow-glow-brand">
-              <div className="absolute top-4 right-4 w-20 h-20 bg-accent-400/30 rounded-full blur-xl" />
+            {/* Glow Effect */}
+            <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-[2rem] blur-2xl" />
 
-              <h3 className="font-display text-2xl font-semibold mb-4 relative z-10">
-                Du entscheidest,
-                <br />
-                wie viel du teilst
-              </h3>
+            <div className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 rounded-3xl p-8 text-white shadow-xl overflow-hidden">
+              {/* Decorative Elements */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-pink-400/30 rounded-full blur-2xl" />
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-400/30 rounded-full blur-2xl" />
 
-              <div className="space-y-4 relative z-10">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                    <span className="text-sm font-semibold">1</span>
-                  </div>
-                  <div>
-                    <p className="font-medium">Minimal</p>
-                    <p className="text-white/60 text-sm">30-50% Confidence</p>
-                  </div>
+              {/* Shield Icon */}
+              <div className="relative z-10 flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <ShieldCheck className="w-6 h-6 text-white" />
                 </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                    <span className="text-sm font-semibold">2</span>
-                  </div>
-                  <div>
-                    <p className="font-medium">Basic</p>
-                    <p className="text-white/60 text-sm">50-70% Confidence</p>
-                  </div>
+                <div>
+                  <h3 className="font-display text-xl font-semibold">
+                    Du entscheidest
+                  </h3>
+                  <p className="text-white/70 text-sm">wie viel du teilst</p>
                 </div>
+              </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-white/30 flex items-center justify-center">
-                    <span className="text-sm font-semibold">3</span>
-                  </div>
-                  <div>
-                    <p className="font-medium">Detailed</p>
-                    <p className="text-white/60 text-sm">70-85% Confidence</p>
-                  </div>
-                </div>
+              {/* Visual Confidence Meter */}
+              <div className="relative z-10 space-y-4">
+                {confidenceTiers.map((tier, index) => (
+                  <motion.div
+                    key={tier.level}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 + index * 0.1 }}
+                    className="relative"
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">
+                          {tier.level}
+                        </span>
+                        <span className="font-medium text-sm">{tier.name}</span>
+                      </div>
+                      <span className="text-white/80 text-sm font-medium">{tier.range}</span>
+                    </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-accent-400 flex items-center justify-center text-white">
-                    <span className="text-sm font-semibold">4</span>
-                  </div>
-                  <div>
-                    <p className="font-medium">Full</p>
-                    <p className="text-white/60 text-sm">85-95% Confidence</p>
-                  </div>
-                </div>
+                    {/* Progress Bar */}
+                    <div className="h-3 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${tier.fillPercent}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, delay: 0.3 + index * 0.15, ease: 'easeOut' }}
+                        className={`h-full rounded-full ${
+                          tier.level === 4
+                            ? 'bg-gradient-to-r from-pink-400 to-pink-300'
+                            : tier.level === 3
+                            ? 'bg-gradient-to-r from-white/60 to-white/50'
+                            : tier.level === 2
+                            ? 'bg-gradient-to-r from-white/40 to-white/30'
+                            : 'bg-gradient-to-r from-white/25 to-white/20'
+                        }`}
+                      />
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Bottom Note */}
+              <div className="relative z-10 mt-6 pt-4 border-t border-white/20">
+                <p className="text-white/70 text-xs text-center flex items-center justify-center gap-2">
+                  <Shield className="w-3.5 h-3.5" />
+                  Mehr Daten = höhere Genauigkeit
+                </p>
               </div>
             </div>
           </motion.div>

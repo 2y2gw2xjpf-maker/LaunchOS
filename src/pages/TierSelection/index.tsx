@@ -19,15 +19,15 @@ export const TierSelectionPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-gradient-to-b from-white to-purple-50/30">
       <Header />
       <main className="pt-20">
         <div className="max-w-4xl mx-auto px-6 py-16">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <h1 className="font-display text-display-sm md:text-display-md text-charcoal mb-4">
+            <h1 className="font-display text-display-sm md:text-display-md text-text-primary mb-4">
               Wie viel mochtest du teilen?
             </h1>
-            <p className="text-charcoal/70 text-lg mb-8">
+            <p className="text-text-secondary text-lg mb-8">
               Je mehr du teilst, desto genauer unsere Analyse. Aber du entscheidest -
               und wir sind bei jeder Stufe ehrlich, was wir damit anfangen konnen.
             </p>
@@ -47,17 +47,17 @@ export const TierSelectionPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="p-6 bg-brand-50 rounded-2xl border border-brand-100"
+              className="p-6 bg-purple-50 rounded-2xl border border-purple-100"
             >
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center flex-shrink-0">
-                  <Lock className="w-5 h-5 text-brand-600" />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center flex-shrink-0">
+                  <Lock className="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
-                  <h3 className="font-display font-semibold text-charcoal mb-2">
+                  <h3 className="font-display font-semibold text-text-primary mb-2">
                     Deine Daten bleiben bei dir
                   </h3>
-                  <p className="text-charcoal/70">
+                  <p className="text-text-secondary">
                     LaunchOS speichert nichts auf Servern. Alle Berechnungen passieren
                     lokal in deinem Browser. Wenn du den Tab schliesst, ist alles weg -
                     ausser du exportierst es selbst.

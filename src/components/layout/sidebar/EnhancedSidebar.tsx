@@ -9,7 +9,6 @@ import {
   GitCompare,
   Compass,
   Calculator,
-  FileText,
   HelpCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
@@ -114,8 +113,7 @@ export const EnhancedSidebar = () => {
   const navItems = [
     { name: 'Was tun?', href: '/whats-next', icon: Compass },
     { name: 'Bewertung', href: '/valuation', icon: Calculator },
-    { name: 'Methodik', href: '/about/methodology', icon: FileText },
-    { name: 'Hilfe', href: '/about/help', icon: HelpCircle },
+    { name: 'Methodik', href: '/about', icon: HelpCircle },
   ];
 
   return (

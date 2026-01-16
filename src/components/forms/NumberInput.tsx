@@ -103,8 +103,13 @@ export const NumberInput = ({
             '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
           )}
         />
-        {suffix && (
+        {suffix && !showControls && (
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-charcoal/40 font-medium">
+            {suffix}
+          </span>
+        )}
+        {showControls && suffix && (
+          <span className="flex items-center px-3 border-y-2 border-brand-100 bg-brand-50/50 text-charcoal/60 font-medium text-sm whitespace-nowrap">
             {suffix}
           </span>
         )}

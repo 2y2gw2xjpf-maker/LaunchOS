@@ -9,11 +9,11 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   ({ className, variant = 'default', size = 'md', ...props }, ref) => {
     const variantClasses = {
-      default: 'bg-brand-100 text-brand-700',
-      brand: 'bg-brand-50 text-brand-600',
-      accent: 'bg-accent-50 text-accent-600',
-      primary: 'bg-gradient-to-r from-brand-600 to-brand-700 text-white',
-      outline: 'bg-transparent border border-brand-200 text-brand-600',
+      default: 'bg-purple-100 text-purple-700',
+      brand: 'bg-purple-50 text-purple-600',
+      accent: 'bg-pink-50 text-pink-600',
+      primary: 'bg-gradient-to-r from-purple-600 to-pink-600 text-white',
+      outline: 'bg-transparent border border-purple-200 text-purple-600',
     };
 
     const sizeClasses = {

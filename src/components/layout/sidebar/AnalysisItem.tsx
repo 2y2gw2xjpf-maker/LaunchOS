@@ -258,7 +258,7 @@ export const AnalysisItem = ({
                 className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50"
               >
                 <GitCompare className="w-4 h-4" />
-                {isInComparison ? 'Aus Vergleich entfernen' : 'Zum Vergleich hinzufugen'}
+                {isInComparison ? 'Aus Vergleich entfernen' : 'Zum Vergleich hinzufügen'}
               </button>
 
               {/* Move to folder submenu */}
@@ -313,7 +313,7 @@ export const AnalysisItem = ({
                 className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
               >
                 <Trash2 className="w-4 h-4" />
-                Loschen
+                Löschen
               </button>
             </motion.div>
           )}

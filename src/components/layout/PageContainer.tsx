@@ -34,8 +34,8 @@ export const PageContainer = ({
       exit={{ opacity: 0 }}
       className={cn(
         'min-h-screen bg-cream',
-        withHeader && 'pt-16 md:pt-20',
-        withSidebar && (sidebarOpen ? 'md:pl-[280px]' : 'md:pl-20'),
+        withHeader && 'pt-20',
+        withSidebar && (sidebarOpen ? 'md:pl-[300px]' : 'md:pl-[72px]'),
         'pb-20 md:pb-0',
         'transition-all duration-300'
       )}

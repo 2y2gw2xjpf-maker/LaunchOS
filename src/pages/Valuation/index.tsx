@@ -159,13 +159,15 @@ export const ValuationPage = () => {
                 <Card className="p-6">
                   <h3 className="font-display font-semibold text-navy mb-4">Ergebnisse</h3>
                   <div className="space-y-3">
-                    {validResults.map((result) => (
+                    {validResults.map((result) => {
+                      const methodLabel = methods.find((m) => m.id === result.method)?.label || result.method.replace('_', ' ');
+                      return (
                       <div
                         key={result.method}
                         className="flex items-center justify-between py-2 border-b border-navy/10 last:border-0"
                       >
-                        <span className="text-charcoal/70 capitalize">
-                          {result.method.replace('_', ' ')}
+                        <span className="text-charcoal/70">
+                          {methodLabel}
                         </span>
                         <CurrencyDisplay
                           value={result.value}
@@ -174,7 +176,8 @@ export const ValuationPage = () => {
                           className="text-navy"
                         />
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </Card>
               )}

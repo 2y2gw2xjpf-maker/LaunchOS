@@ -32,16 +32,16 @@ export const SectionHeader = ({
       )}
     >
       {badge && (
-        <span className="inline-block px-4 py-1.5 mb-4 text-sm font-semibold text-brand-700 bg-brand-100 rounded-full">
+        <span className="inline-block px-4 py-1.5 mb-4 text-sm font-semibold text-purple-700 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full">
           {badge}
         </span>
       )}
-      <h2 className="font-display text-display-sm md:text-display-md text-charcoal mb-4">
+      <h2 className="font-display text-display-sm md:text-display-md text-text-primary mb-4">
         {title}
       </h2>
       {subtitle && (
         <p className={cn(
-          'text-lg text-charcoal/60',
+          'text-lg text-text-secondary',
           align === 'center' && 'max-w-2xl mx-auto'
         )}>
           {subtitle}

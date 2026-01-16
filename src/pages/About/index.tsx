@@ -31,13 +31,13 @@ const valuationMethods = [
 const privacyPoints = [
   {
     icon: Server,
-    title: 'Keine Server',
-    description: 'Alle Berechnungen finden lokal in deinem Browser statt. Wir betreiben keine Server, die deine Daten speichern konnten.',
+    title: 'Analyse im Browser',
+    description: 'Alle Berechnungen finden lokal in deinem Browser statt. Gespeichert werden nur Account- und Abrechnungsdaten.',
   },
   {
     icon: Lock,
-    title: 'Keine Accounts',
-    description: 'Du musst keinen Account erstellen. Keine E-Mail, kein Passwort, keine personlichen Daten.',
+    title: 'Kostenlos registrieren',
+    description: 'Ein Account reicht, um Projekte und Einstellungen zu speichern. 1 Projekt ist gratis.',
   },
   {
     icon: Eye,
@@ -53,7 +53,7 @@ const privacyPoints = [
 
 export const AboutPage = () => {
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-gradient-to-b from-white to-purple-50/30">
       <Header />
       <main className="pt-20">
         <div className="max-w-4xl mx-auto px-6 py-16">
@@ -63,10 +63,10 @@ export const AboutPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-16"
           >
-            <h1 className="font-display text-display-sm md:text-display-md text-navy mb-4">
+            <h1 className="font-display text-display-sm md:text-display-md text-text-primary mb-4">
               Methodik
             </h1>
-            <p className="text-lg text-charcoal/70 mb-8">
+            <p className="text-lg text-text-secondary mb-8">
               LaunchOS verwendet etablierte Bewertungsmethoden aus der Startup-Finanzierung.
               Jede Methode hat ihre Starken und Schwachen - daher empfehlen wir, mehrere
               Methoden zu nutzen.
@@ -84,22 +84,22 @@ export const AboutPage = () => {
                   >
                     <Card className="p-6">
                       <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-navy/5 flex items-center justify-center flex-shrink-0">
-                          <Icon className="w-6 h-6 text-navy" />
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center flex-shrink-0">
+                          <Icon className="w-6 h-6 text-purple-600" />
                         </div>
                         <div>
-                          <h3 className="font-display font-semibold text-navy text-xl mb-2">
+                          <h3 className="font-display font-semibold text-text-primary text-xl mb-2">
                             {method.name}
                           </h3>
-                          <p className="text-charcoal/70 mb-4">{method.description}</p>
+                          <p className="text-text-secondary mb-4">{method.description}</p>
                           <div className="grid sm:grid-cols-2 gap-4 text-sm">
-                            <div className="p-3 bg-sage/10 rounded-xl">
-                              <p className="font-semibold text-sage mb-1">Am besten fur:</p>
-                              <p className="text-charcoal/70">{method.bestFor}</p>
+                            <div className="p-3 bg-purple-50 rounded-xl">
+                              <p className="font-semibold text-purple-600 mb-1">Am besten fur:</p>
+                              <p className="text-text-secondary">{method.bestFor}</p>
                             </div>
-                            <div className="p-3 bg-gold/10 rounded-xl">
-                              <p className="font-semibold text-gold-700 mb-1">Limitationen:</p>
-                              <p className="text-charcoal/70">{method.limitations}</p>
+                            <div className="p-3 bg-pink-50 rounded-xl">
+                              <p className="font-semibold text-pink-600 mb-1">Limitationen:</p>
+                              <p className="text-text-secondary">{method.limitations}</p>
                             </div>
                           </div>
                         </div>
@@ -118,31 +118,31 @@ export const AboutPage = () => {
             viewport={{ once: true }}
             className="mb-16"
           >
-            <h2 className="font-display text-display-sm text-navy mb-4">
+            <h2 className="font-display text-display-sm text-text-primary mb-4">
               Unser Confidence-System
             </h2>
-            <p className="text-lg text-charcoal/70 mb-8">
+            <p className="text-lg text-text-secondary mb-8">
               Wir sind transparent daruber, wie sicher unsere Analysen sind. Die Confidence
               hangt von mehreren Faktoren ab:
             </p>
 
             <Card className="p-6">
               <div className="space-y-4">
-                <div className="flex items-center justify-between py-3 border-b border-navy/10">
-                  <span className="font-medium text-navy">Tier-Level</span>
-                  <span className="text-charcoal/60">Je mehr du teilst, desto genauer</span>
+                <div className="flex items-center justify-between py-3 border-b border-purple-100">
+                  <span className="font-medium text-text-primary">Tier-Level</span>
+                  <span className="text-text-secondary">Je mehr du teilst, desto genauer</span>
                 </div>
-                <div className="flex items-center justify-between py-3 border-b border-navy/10">
-                  <span className="font-medium text-navy">Daten-Vollstandigkeit</span>
-                  <span className="text-charcoal/60">Ausgefullte Felder verbessern die Analyse</span>
+                <div className="flex items-center justify-between py-3 border-b border-purple-100">
+                  <span className="font-medium text-text-primary">Daten-Vollstandigkeit</span>
+                  <span className="text-text-secondary">Ausgefullte Felder verbessern die Analyse</span>
                 </div>
-                <div className="flex items-center justify-between py-3 border-b border-navy/10">
-                  <span className="font-medium text-navy">Methoden-Ubereinstimmung</span>
-                  <span className="text-charcoal/60">Ahnliche Ergebnisse = hohere Sicherheit</span>
+                <div className="flex items-center justify-between py-3 border-b border-purple-100">
+                  <span className="font-medium text-text-primary">Methoden-Ubereinstimmung</span>
+                  <span className="text-text-secondary">Ahnliche Ergebnisse = hohere Sicherheit</span>
                 </div>
                 <div className="flex items-center justify-between py-3">
-                  <span className="font-medium text-navy">Marktdaten</span>
-                  <span className="text-charcoal/60">Wettbewerber & TAM verbessern Einschatzung</span>
+                  <span className="font-medium text-text-primary">Marktdaten</span>
+                  <span className="text-text-secondary">Wettbewerber & TAM verbessern Einschatzung</span>
                 </div>
               </div>
             </Card>
@@ -154,10 +154,10 @@ export const AboutPage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="font-display text-display-sm text-navy mb-4">
+            <h2 className="font-display text-display-sm text-text-primary mb-4">
               Privatsphare & Datenschutz
             </h2>
-            <p className="text-lg text-charcoal/70 mb-8">
+            <p className="text-lg text-text-secondary mb-8">
               Wir haben LaunchOS so gebaut, dass wir gar nicht an deine Daten kommen konnen.
             </p>
 
@@ -173,13 +173,13 @@ export const AboutPage = () => {
                     transition={{ delay: index * 0.1 }}
                   >
                     <Card className="p-6 h-full">
-                      <div className="w-10 h-10 rounded-xl bg-navy/5 flex items-center justify-center mb-4">
-                        <Icon className="w-5 h-5 text-navy" />
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center mb-4">
+                        <Icon className="w-5 h-5 text-purple-600" />
                       </div>
-                      <h3 className="font-display font-semibold text-navy mb-2">
+                      <h3 className="font-display font-semibold text-text-primary mb-2">
                         {point.title}
                       </h3>
-                      <p className="text-charcoal/60 text-sm">{point.description}</p>
+                      <p className="text-text-secondary text-sm">{point.description}</p>
                     </Card>
                   </motion.div>
                 );
