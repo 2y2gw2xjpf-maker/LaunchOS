@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Download, RefreshCw, Sparkles, Target, Map } from 'lucide-react';
+import { ArrowLeft, Download, RefreshCw, Sparkles, Target, Map, Rocket } from 'lucide-react';
 import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 import { WizardProgress, WizardNavigation } from '@/components/wizard';
 import { Button, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui';
@@ -13,6 +13,7 @@ import { GoalsStep } from './steps/GoalsStep';
 import { MarketAnalysisStep } from './steps/MarketAnalysisStep';
 import { RouteRecommendation } from './results/RouteRecommendation';
 import { ActionPlanTimeline } from './results/ActionPlanTimeline';
+import { ProgramRunner } from '@/components/program/ProgramRunner';
 import type { RouteResult } from '@/types';
 
 const STEPS = [
@@ -40,6 +41,7 @@ export const WhatsNextPage = () => {
 
   const [activeResultTab, setActiveResultTab] = React.useState('recommendation');
   const [activeAnalysisSubTab, setActiveAnalysisSubTab] = React.useState<'timeline' | 'dashboard'>('timeline');
+  const [showProgramRunner, setShowProgramRunner] = React.useState(false);
 
   // Redirect if no tier selected
   React.useEffect(() => {
@@ -257,8 +259,22 @@ export const WhatsNextPage = () => {
               <Download className="w-4 h-4 mr-2" />
               PDF Export
             </Button>
+            <Button
+              variant="secondary"
+              onClick={() => setShowProgramRunner(true)}
+              className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 hover:border-purple-400"
+            >
+              <Rocket className="w-4 h-4 mr-2 text-purple-500" />
+              Programm starten
+            </Button>
           </div>
         )}
+
+        {/* Program Runner Modal */}
+        <ProgramRunner
+          isOpen={showProgramRunner}
+          onClose={() => setShowProgramRunner(false)}
+        />
       </PageContainer>
     </div>
   );

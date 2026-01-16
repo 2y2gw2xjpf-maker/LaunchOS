@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils/cn';
 import { Button } from '@/components/ui';
 import { Logo } from '@/components/Logo';
 import { useAuth } from '@/components/auth';
+import { VentureSwitcher } from '@/components/ventures/VentureSwitcher';
 
 interface HeaderProps {
   className?: string;
@@ -127,6 +128,9 @@ export const Header = ({ className }: HeaderProps) => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
+            {/* Venture Switcher - nur wenn eingeloggt und nicht auf Landing */}
+            {user && !isLandingPage && <VentureSwitcher />}
+
             {user ? (
               <div className="relative" ref={profileMenuRef}>
                 <button
