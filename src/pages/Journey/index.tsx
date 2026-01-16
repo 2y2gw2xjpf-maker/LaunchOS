@@ -351,25 +351,24 @@ export function JourneyPage() {
       <Header />
       <EnhancedSidebar />
       <PageContainer withSidebar maxWidth="wide">
-        <div className="max-w-5xl mx-auto">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
-          >
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-              Deine Founder Journey
-            </h1>
-            <p className="text-gray-600 text-lg">
-              {steps.length > 0
-                ? `${steps.length} Schritte von der Idee bis zum erfolgreichen Startup`
-                : 'Lade Journey Steps...'}
-            </p>
-          </motion.div>
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <h1 className="font-display text-display-sm text-charcoal mb-2">
+            Deine Founder Journey
+          </h1>
+          <p className="text-charcoal/60">
+            {steps.length > 0
+              ? `${steps.length} Schritte von der Idee bis zum erfolgreichen Startup`
+              : 'Lade Journey Steps...'}
+          </p>
+        </motion.div>
 
-          {/* Progress Overview */}
-          <Card className="p-6 mb-8 bg-white/80 backdrop-blur-sm border-purple-100">
+        {/* Progress Overview */}
+        <Card className="p-6 mb-8 bg-white/80 backdrop-blur-sm border-purple-100">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-sm text-gray-500">Gesamtfortschritt</p>
@@ -423,10 +422,10 @@ export function JourneyPage() {
                 );
               })}
             </div>
-          </Card>
+        </Card>
 
-          {/* Filter */}
-          <div className="flex gap-2 mb-6">
+        {/* Filter */}
+        <div className="flex gap-2 mb-6">
             {['all', 'not_started', 'in_progress', 'completed'].map((f) => (
               <button
                 key={f}
@@ -445,11 +444,11 @@ export function JourneyPage() {
                       ? 'In Arbeit'
                       : 'Erledigt'}
               </button>
-            ))}
-          </div>
+          ))}
+        </div>
 
-          {/* Journey Steps by Phase */}
-          <div className="space-y-4">
+        {/* Journey Steps by Phase */}
+        <div className="space-y-4">
             {Object.entries(stepsByPhase).map(([phase, phaseSteps]) => {
               const config = PHASE_CONFIG[phase];
               const Icon = config?.icon || Building;
@@ -516,22 +515,21 @@ export function JourneyPage() {
               );
             })}
 
-            {steps.length === 0 && !loading && (
-              <Card className="p-12 text-center bg-white/80">
-                <div className="w-16 h-16 mx-auto mb-4 bg-purple-100 rounded-2xl flex items-center justify-center">
-                  <Rocket className="w-8 h-8 text-purple-500" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Journey wird geladen</h3>
-                <p className="text-gray-500 mb-6">
-                  Die Journey Steps werden aus der Datenbank geladen. Stelle sicher, dass die
-                  Migrations ausgeführt wurden.
-                </p>
-                <Button variant="primary" onClick={loadJourneyData}>
-                  Erneut laden
-                </Button>
-              </Card>
-            )}
-          </div>
+          {steps.length === 0 && !loading && (
+            <Card className="p-12 text-center bg-white/80">
+              <div className="w-16 h-16 mx-auto mb-4 bg-purple-100 rounded-2xl flex items-center justify-center">
+                <Rocket className="w-8 h-8 text-purple-500" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Journey wird geladen</h3>
+              <p className="text-gray-500 mb-6">
+                Die Journey Steps werden aus der Datenbank geladen. Stelle sicher, dass die
+                Migrations ausgeführt wurden.
+              </p>
+              <Button variant="primary" onClick={loadJourneyData}>
+                Erneut laden
+              </Button>
+            </Card>
+          )}
         </div>
       </PageContainer>
     </div>

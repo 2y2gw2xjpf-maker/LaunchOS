@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, X, Plus, GitCompare } from 'lucide-react';
+import { X, Plus } from 'lucide-react';
 import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 import { Button, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui';
 import { useStore, generateComparisonMetrics } from '@/store';
@@ -49,28 +49,15 @@ export const ComparePage = () => {
       <EnhancedSidebar />
 
       <PageContainer withSidebar maxWidth="wide">
-        {/* Back Button */}
-        <Button
-          variant="ghost"
-          onClick={() => navigate(-1)}
-          className="mb-6"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Zuruck
-        </Button>
-
         {/* Page Title */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <div className="flex items-center gap-3 mb-2">
-            <GitCompare className="w-8 h-8 text-navy" />
-            <h1 className="font-display text-display-sm text-navy">
-              Szenario-Vergleich
-            </h1>
-          </div>
+          <h1 className="font-display text-display-sm text-charcoal mb-2">
+            Szenario-Vergleich
+          </h1>
           <p className="text-charcoal/60">
             Vergleiche verschiedene Analysen, um die beste Strategie zu finden.
           </p>

@@ -23,7 +23,7 @@ export const TierSelectionPage = () => {
     <div className="min-h-screen bg-cream">
       <Header />
       <EnhancedSidebar />
-      <PageContainer withSidebar maxWidth="default">
+      <PageContainer withSidebar maxWidth="wide">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           {/* Current Selection Banner */}
           {selectedTier && (
