@@ -129,7 +129,7 @@ export const EnhancedSidebar = () => {
         transition={{ duration: 0.2 }}
         className={cn(
           'hidden md:flex flex-col fixed left-0 top-20 bottom-0 z-30',
-          'bg-cream border-r border-brand-100'
+          'bg-cream border-r border-purple-100'
         )}
       >
         {/* Collapse Toggle Button at Top */}
@@ -163,7 +163,7 @@ export const EnhancedSidebar = () => {
         <div className="flex-1 overflow-y-auto scrollbar-hide">
           {isHistoryLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="w-6 h-6 border-2 border-brand-200 border-t-brand-600 rounded-full animate-spin" />
+              <div className="w-6 h-6 border-2 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
             </div>
           ) : (
             <div className="py-2">
@@ -310,7 +310,7 @@ export const EnhancedSidebar = () => {
         </div>
 
         {/* Navigation */}
-        <div className="border-t border-brand-100 py-2">
+        <div className="border-t border-purple-100 py-2">
           {navItems.map((item) => {
             const isActive = location.pathname.startsWith(item.href);
             const Icon = item.icon;
@@ -345,7 +345,7 @@ export const EnhancedSidebar = () => {
       </motion.aside>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-cream border-t border-brand-100 px-4 py-2">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-cream border-t border-purple-100 px-4 py-2">
         <div className="flex items-center justify-around">
           {navItems.slice(0, 4).map((item) => {
             const isActive = location.pathname.startsWith(item.href);

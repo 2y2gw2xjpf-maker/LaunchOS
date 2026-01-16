@@ -64,18 +64,18 @@ export const OptionGrid = ({
             disabled={option.disabled}
             className={cn(
               'relative p-4 rounded-2xl border-2 text-left transition-all',
-              'hover:border-brand-300 hover:shadow-glow-brand',
+              'hover:border-purple-300 hover:shadow-lg hover:shadow-purple-200/50',
               isSelected
-                ? 'border-brand-500 bg-brand-50 shadow-glow-brand'
-                : 'border-brand-100 bg-white',
-              option.disabled && 'opacity-50 cursor-not-allowed hover:border-brand-100'
+                ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-pink-50 shadow-lg shadow-purple-300/40 ring-2 ring-purple-400/30'
+                : 'border-gray-200 bg-white',
+              option.disabled && 'opacity-50 cursor-not-allowed hover:border-gray-200'
             )}
           >
             {isSelected && (
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="absolute top-3 right-3 w-6 h-6 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center"
+                className="absolute top-3 right-3 w-6 h-6 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/30"
               >
                 <Check className="w-4 h-4 text-white" />
               </motion.div>
@@ -83,7 +83,10 @@ export const OptionGrid = ({
 
             <div className="flex items-start gap-3">
               {option.icon && (
-                <div className="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center flex-shrink-0">
+                <div className={cn(
+                  "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0",
+                  isSelected ? "bg-gradient-to-br from-purple-100 to-pink-100" : "bg-gray-100"
+                )}>
                   {option.icon}
                 </div>
               )}
