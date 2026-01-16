@@ -15,6 +15,7 @@ const PricingPage = React.lazy(() => import('@/pages/Pricing'));
 const SettingsPage = React.lazy(() => import('@/pages/Settings'));
 const VerifyEmailPage = React.lazy(() => import('@/pages/Auth/VerifyEmail'));
 const ResetPasswordPage = React.lazy(() => import('@/pages/Auth/ResetPassword'));
+const ContactPage = React.lazy(() => import('@/pages/Contact'));
 
 // Loading fallback
 const PageLoader = () => (
@@ -39,6 +40,7 @@ export const Router = () => {
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/about/*" element={<AboutPage />} />
+              <Route path="/contact" element={<ContactPage />} />
 
               {/* Auth Routes */}
               <Route path="/auth/callback" element={<AuthCallback />} />

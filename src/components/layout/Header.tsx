@@ -18,13 +18,14 @@ export const Header = ({ className }: HeaderProps) => {
   const { user } = useAuth();
 
   // Different navigation for landing vs app
-  const isLandingPage = location.pathname === '/' || location.pathname === '/about' || location.pathname === '/pricing';
+  const isLandingPage = location.pathname === '/' || location.pathname === '/about' || location.pathname === '/pricing' || location.pathname === '/contact';
 
   // Landing page navigation (public)
   const landingNavigation = [
     { name: 'Features', href: '/#features' },
     { name: 'Preise', href: '/#pricing' },
     { name: 'Methodik', href: '/about' },
+    { name: 'Kontakt', href: '/contact' },
   ];
 
   // App navigation (after login)
