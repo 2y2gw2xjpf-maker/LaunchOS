@@ -140,11 +140,6 @@ export const PricingSection = () => {
                     {isFree ? 'Gratis starten' : 'Details ansehen'}
                     <ArrowRight className="w-4 h-4 flex-shrink-0" />
                   </Link>
-                  {isFree && (
-                    <p className="text-xs text-text-muted text-center mt-2">
-                      Einstellungen & Abrechnung erst nach Login.
-                    </p>
-                  )}
                 </div>
               </motion.div>
             );
