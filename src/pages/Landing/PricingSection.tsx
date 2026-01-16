@@ -131,14 +131,14 @@ export const PricingSection = () => {
                     to={isFree ? '/login' : '/pricing'}
                     onClick={() => window.scrollTo(0, 0)}
                     className={cn(
-                      'inline-flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-semibold transition-all',
+                      'inline-flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-semibold transition-all whitespace-nowrap',
                       isFree
                         ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40'
                         : 'bg-purple-50 text-purple-700 hover:bg-purple-100'
                     )}
                   >
-                    {isFree ? 'Kostenlos registrieren' : 'Details ansehen'}
-                    <ArrowRight className="w-4 h-4" />
+                    {isFree ? 'Gratis starten' : 'Details ansehen'}
+                    <ArrowRight className="w-4 h-4 flex-shrink-0" />
                   </Link>
                   {isFree && (
                     <p className="text-xs text-text-muted text-center mt-2">
