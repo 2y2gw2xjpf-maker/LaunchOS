@@ -29,10 +29,10 @@ export const VCMethodPage = () => {
       />
 
       {/* Info Card */}
-      <Card className="p-6 bg-brand/5 border-brand/10">
-        <h3 className="font-display font-semibold text-navy mb-2 flex items-center gap-2">
-          <Calculator className="w-5 h-5 text-brand" />
-          Uber die VC-Methode
+      <Card className="p-6 bg-purple-50/50 border-purple-100">
+        <h3 className="font-display font-semibold text-charcoal mb-2 flex items-center gap-2">
+          <Calculator className="w-5 h-5 text-purple-600" />
+          Über die VC-Methode
         </h3>
         <p className="text-charcoal/70 mb-3">
           Die VC-Methode rechnet vom erwarteten Exit-Wert zuruck. Sie zeigt, welche
@@ -49,7 +49,7 @@ export const VCMethodPage = () => {
       {/* Inputs */}
       <div className="space-y-6">
         <Card className="p-6">
-          <h4 className="font-display font-semibold text-navy mb-4 flex items-center gap-2">
+          <h4 className="font-display font-semibold text-charcoal mb-4 flex items-center gap-2">
             Exit-Annahmen
             <Tooltip content="Wie viel glaubst du wird das Unternehmen beim Exit wert sein?">
               <Info className="w-4 h-4 text-charcoal/40 cursor-help" />
@@ -76,7 +76,7 @@ export const VCMethodPage = () => {
         </Card>
 
         <Card className="p-6">
-          <h4 className="font-display font-semibold text-navy mb-4 flex items-center gap-2">
+          <h4 className="font-display font-semibold text-charcoal mb-4 flex items-center gap-2">
             Investor-Perspektive
             <Tooltip content="Welche Rendite erwartet ein typischer VC?">
               <Info className="w-4 h-4 text-charcoal/40 cursor-help" />
@@ -116,25 +116,25 @@ export const VCMethodPage = () => {
       {/* Breakdown */}
       {result.breakdown && (
         <Card className="p-6">
-          <h4 className="font-display font-semibold text-navy mb-4">Berechnung</h4>
+          <h4 className="font-display font-semibold text-charcoal mb-4">Berechnung</h4>
           <div className="space-y-3">
-            <div className="flex justify-between py-2 border-b border-navy/10">
+            <div className="flex justify-between py-2 border-b border-purple-100">
               <span className="text-charcoal/70">Erwarteter Exit-Wert</span>
               <CurrencyDisplay value={result.breakdown.expectedExitValue} animated={false} />
             </div>
-            <div className="flex justify-between py-2 border-b border-navy/10">
+            <div className="flex justify-between py-2 border-b border-purple-100">
               <span className="text-charcoal/70">Post-Money Bewertung (heute)</span>
               <CurrencyDisplay value={result.breakdown.postMoneyValuation} animated={false} />
             </div>
             {result.breakdown.dilutionAdjustment > 0 && (
-              <div className="flex justify-between py-2 border-b border-navy/10 text-gold-700">
-                <span>Verdunnungs-Abzug</span>
+              <div className="flex justify-between py-2 border-b border-purple-100 text-pink-600">
+                <span>Verdünnungs-Abzug</span>
                 <span>-<CurrencyDisplay value={result.breakdown.dilutionAdjustment} animated={false} /></span>
               </div>
             )}
             <div className="flex justify-between py-2 font-semibold">
-              <span className="text-navy">Pre-Money Bewertung</span>
-              <CurrencyDisplay value={result.breakdown.preMoneyValuation} animated={false} className="text-navy" />
+              <span className="text-purple-700">Pre-Money Bewertung</span>
+              <CurrencyDisplay value={result.breakdown.preMoneyValuation} animated={false} className="text-purple-700" />
             </div>
             <div className="flex justify-between py-2 text-sm text-charcoal/60">
               <span>Implizierter Anteil fur Investor</span>
@@ -145,7 +145,7 @@ export const VCMethodPage = () => {
       )}
 
       {/* Result */}
-      <Card className="p-6 bg-navy text-white">
+      <Card className="p-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-white/60 mb-1">VC-Methode Pre-Money</p>

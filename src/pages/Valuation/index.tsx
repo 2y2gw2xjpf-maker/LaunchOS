@@ -81,7 +81,7 @@ export const ValuationPage = () => {
               animate={{ opacity: 1, y: 0 }}
               className="mb-8"
             >
-              <h1 className="font-display text-display-sm text-navy mb-2">
+              <h1 className="font-display text-display-sm text-charcoal mb-2">
                 Startup-Bewertung
               </h1>
               <p className="text-charcoal/60">
@@ -101,7 +101,7 @@ export const ValuationPage = () => {
                         <Icon className="w-4 h-4" />
                         {method.label}
                         {hasResult && (
-                          <span className="w-2 h-2 rounded-full bg-sage" />
+                          <span className="w-2 h-2 rounded-full bg-purple-500" />
                         )}
                       </span>
                     </TabsTrigger>
@@ -122,7 +122,7 @@ export const ValuationPage = () => {
             <div className="sticky top-24 space-y-6">
               {/* Quick Summary */}
               <Card className="p-6">
-                <h3 className="font-display font-semibold text-navy mb-4">Ubersicht</h3>
+                <h3 className="font-display font-semibold text-charcoal mb-4">Übersicht</h3>
 
                 {validResults.length > 0 ? (
                   <>
@@ -135,7 +135,7 @@ export const ValuationPage = () => {
 
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-charcoal/60">Methoden berechnet</span>
-                      <span className="font-mono font-semibold text-navy">
+                      <span className="font-mono font-semibold text-purple-600">
                         {validResults.length} / {methods.length}
                       </span>
                     </div>
@@ -159,14 +159,14 @@ export const ValuationPage = () => {
               {/* Method Results */}
               {validResults.length > 0 && (
                 <Card className="p-6">
-                  <h3 className="font-display font-semibold text-navy mb-4">Ergebnisse</h3>
+                  <h3 className="font-display font-semibold text-charcoal mb-4">Ergebnisse</h3>
                   <div className="space-y-3">
                     {validResults.map((result) => {
                       const methodLabel = methods.find((m) => m.id === result.method)?.label || result.method.replace('_', ' ');
                       return (
                       <div
                         key={result.method}
-                        className="flex items-center justify-between py-2 border-b border-navy/10 last:border-0"
+                        className="flex items-center justify-between py-2 border-b border-purple-100 last:border-0"
                       >
                         <span className="text-charcoal/70">
                           {methodLabel}
@@ -175,7 +175,7 @@ export const ValuationPage = () => {
                           value={result.value}
                           animated={false}
                           compact
-                          className="text-navy"
+                          className="text-purple-600"
                         />
                       </div>
                       );
@@ -187,7 +187,7 @@ export const ValuationPage = () => {
               {/* Chart */}
               {validResults.length >= 2 && (
                 <Card className="p-6">
-                  <h3 className="font-display font-semibold text-navy mb-4">Vergleich</h3>
+                  <h3 className="font-display font-semibold text-charcoal mb-4">Vergleich</h3>
                   <ValuationChart results={validResults} className="h-[200px]" />
                 </Card>
               )}
@@ -229,7 +229,7 @@ export const ValuationPage = () => {
               {/* Actions */}
               <div className="space-y-3">
                 <Button
-                  variant="gold"
+                  variant="primary"
                   className="w-full"
                   disabled={validResults.length === 0}
                 >

@@ -38,8 +38,8 @@ export const BerkusMethodPage = () => {
       />
 
       {/* Info Card */}
-      <Card className="p-6 bg-brand/5 border-brand/10">
-        <h3 className="font-display font-semibold text-navy mb-2">Uber die Berkus-Methode</h3>
+      <Card className="p-6 bg-purple-50/50 border-purple-100">
+        <h3 className="font-display font-semibold text-charcoal mb-2">Über die Berkus-Methode</h3>
         <p className="text-charcoal/70">
           Die Berkus-Methode bewertet Pre-Revenue Startups anhand von 5 Risiko-Faktoren.
           Jeder Faktor kann bis zu 500.000 € zum Wert beitragen, fur eine maximale
@@ -64,7 +64,7 @@ export const BerkusMethodPage = () => {
               <Card className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h4 className="font-display font-semibold text-navy flex items-center gap-2">
+                    <h4 className="font-display font-semibold text-charcoal flex items-center gap-2">
                       {definition.name}
                       <Tooltip content={definition.description}>
                         <Info className="w-4 h-4 text-charcoal/40 cursor-help" />
@@ -75,7 +75,7 @@ export const BerkusMethodPage = () => {
                   <div className="text-right">
                     <CurrencyDisplay
                       value={contribution}
-                      className="text-xl text-sage"
+                      className="text-xl text-purple-600"
                     />
                     <p className="text-xs text-charcoal/50">von max. 500K €</p>
                   </div>
@@ -96,8 +96,8 @@ export const BerkusMethodPage = () => {
                       key={score}
                       className={`p-2 rounded text-center ${
                         Math.abs(value - parseInt(score)) < 15
-                          ? 'bg-navy/10 text-navy font-medium'
-                          : 'bg-navy/5 text-charcoal/50'
+                          ? 'bg-purple-100 text-purple-700 font-medium'
+                          : 'bg-gray-100 text-charcoal/50'
                       }`}
                     >
                       {score}%
@@ -111,7 +111,7 @@ export const BerkusMethodPage = () => {
       </div>
 
       {/* Result */}
-      <Card className="p-6 bg-navy text-white">
+      <Card className="p-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-white/60 mb-1">Berkus-Bewertung</p>

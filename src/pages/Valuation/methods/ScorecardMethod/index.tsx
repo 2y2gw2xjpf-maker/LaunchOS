@@ -50,8 +50,8 @@ export const ScorecardMethodPage = () => {
       />
 
       {/* Info Card */}
-      <Card className="p-6 bg-brand/5 border-brand/10">
-        <h3 className="font-display font-semibold text-navy mb-2">Uber die Scorecard-Methode</h3>
+      <Card className="p-6 bg-purple-50/50 border-purple-100">
+        <h3 className="font-display font-semibold text-charcoal mb-2">Über die Scorecard-Methode</h3>
         <p className="text-charcoal/70">
           Die Scorecard-Methode vergleicht dein Startup mit einem durchschnittlichen Pre-Seed
           Unternehmen. Faktoren werden gewichtet und bewertet - uber 100% bedeutet besser als
@@ -62,7 +62,7 @@ export const ScorecardMethodPage = () => {
             type="checkbox"
             checked={showBenchmarks}
             onChange={(e) => setShowBenchmarks(e.target.checked)}
-            className="w-4 h-4 rounded border-charcoal/20 text-brand focus:ring-brand"
+            className="w-4 h-4 rounded border-charcoal/20 text-purple-600 focus:ring-purple-500"
           />
           <span className="text-sm text-charcoal/70">Benchmarks anzeigen</span>
         </label>
@@ -72,7 +72,7 @@ export const ScorecardMethodPage = () => {
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h4 className="font-display font-semibold text-navy">Basis-Bewertung</h4>
+            <h4 className="font-display font-semibold text-charcoal">Basis-Bewertung</h4>
             <p className="text-sm text-charcoal/60">
               Durchschnittliche Pre-Seed Bewertung in deiner Region
             </p>
@@ -87,8 +87,8 @@ export const ScorecardMethodPage = () => {
 
       {/* Weight Warning */}
       {totalWeight !== 100 && (
-        <Card className="p-4 bg-gold/10 border-gold/30">
-          <p className="text-sm text-gold-700">
+        <Card className="p-4 bg-pink-50 border-pink-200">
+          <p className="text-sm text-pink-700">
             Gewichtungen summieren sich zu {totalWeight}% (sollte 100% sein)
           </p>
         </Card>
@@ -110,7 +110,7 @@ export const ScorecardMethodPage = () => {
               <Card className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h4 className="font-display font-semibold text-navy flex items-center gap-2">
+                    <h4 className="font-display font-semibold text-charcoal flex items-center gap-2">
                       {definition.name}
                       <Tooltip content={definition.description}>
                         <Info className="w-4 h-4 text-charcoal/40 cursor-help" />
@@ -159,7 +159,7 @@ export const ScorecardMethodPage = () => {
       </div>
 
       {/* Result */}
-      <Card className="p-6 bg-navy text-white">
+      <Card className="p-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-white/60 mb-1">Scorecard-Bewertung</p>

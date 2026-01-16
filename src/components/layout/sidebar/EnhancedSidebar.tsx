@@ -18,10 +18,12 @@ import { Button } from '@/components/ui';
 import { SidebarHeader } from './SidebarHeader';
 import { ProjectFolder } from './ProjectFolder';
 import { AnalysisItem } from './AnalysisItem';
+import { SaveAnalysisDialog } from './SaveAnalysisDialog';
 
 export const EnhancedSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [showSaveDialog, setShowSaveDialog] = React.useState(false);
 
   const {
     sidebarOpen,
@@ -32,10 +34,13 @@ export const EnhancedSidebar = () => {
     activeAnalysisId,
     searchQuery,
     isHistoryLoading,
+    hasUnsavedChanges,
     initializeHistory,
     setSearchQuery,
     saveCurrentAsAnalysis,
     setActiveAnalysis,
+    startNewAnalysis,
+    setHasUnsavedChanges,
     updateAnalysis,
     deleteAnalysis,
     duplicateAnalysis,
@@ -59,6 +64,9 @@ export const EnhancedSidebar = () => {
     routeResult,
     methodResults,
     completedTasks,
+    // Reset functions
+    resetWizard,
+    resetValuation,
   } = useStore();
 
   // Initialize history on mount
@@ -77,14 +85,34 @@ export const EnhancedSidebar = () => {
 
   if (!showSidebar) return null;
 
-  const handleNewAnalysis = async () => {
-    const name = `Analyse ${new Date().toLocaleDateString('de-DE', {
-      day: '2-digit',
-      month: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    })}`;
+  // Check if there's any data to save
+  const hasData =
+    wizardData?.completedSteps?.length > 0 ||
+    methodResults?.length > 0 ||
+    routeResult !== null ||
+    completedTasks?.length > 0;
 
+  const handleNewAnalysisClick = () => {
+    // If there's unsaved data, show the save dialog
+    if (hasData && !activeAnalysisId) {
+      setShowSaveDialog(true);
+    } else {
+      // Just start fresh
+      doStartNewAnalysis();
+    }
+  };
+
+  const doStartNewAnalysis = () => {
+    // Reset all state
+    startNewAnalysis();
+    resetWizard?.();
+    resetValuation?.();
+    setHasUnsavedChanges(false);
+    // Navigate to the start
+    navigate('/tier-selection');
+  };
+
+  const handleSaveAndNew = async (name: string) => {
     await saveCurrentAsAnalysis(name, null, () => ({
       tier: selectedTier || 'minimal',
       wizardData,
@@ -92,6 +120,13 @@ export const EnhancedSidebar = () => {
       methodResults,
       completedTasks,
     }));
+    setShowSaveDialog(false);
+    doStartNewAnalysis();
+  };
+
+  const handleDiscardAndNew = () => {
+    setShowSaveDialog(false);
+    doStartNewAnalysis();
   };
 
   const handleSelectAnalysis = (id: string) => {
@@ -124,6 +159,14 @@ export const EnhancedSidebar = () => {
 
   return (
     <>
+      {/* Save Dialog */}
+      <SaveAnalysisDialog
+        open={showSaveDialog}
+        onClose={() => setShowSaveDialog(false)}
+        onSave={handleSaveAndNew}
+        onDiscard={handleDiscardAndNew}
+      />
+
       {/* Desktop Sidebar */}
       <motion.aside
         initial={false}
@@ -157,7 +200,7 @@ export const EnhancedSidebar = () => {
         <SidebarHeader
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          onNewAnalysis={handleNewAnalysis}
+          onNewAnalysis={handleNewAnalysisClick}
           isCollapsed={!sidebarOpen}
         />
 
@@ -188,7 +231,7 @@ export const EnhancedSidebar = () => {
               {favoriteAnalyses.length > 0 && (
                 <div className="mb-4">
                   <div className="px-3 py-2 flex items-center gap-2">
-                    <Star className="w-4 h-4 text-accent-500" />
+                    <Star className="w-4 h-4 text-pink-500" />
                     {sidebarOpen && (
                       <span className="text-xs font-medium text-charcoal/60 uppercase tracking-wider">
                         Favoriten
@@ -261,7 +304,7 @@ export const EnhancedSidebar = () => {
                   {sidebarOpen && (
                     <div className="px-3 py-2">
                       <span className="text-xs font-medium text-charcoal/60 uppercase tracking-wider">
-                        Ohne Ordner
+                        Recents
                       </span>
                     </div>
                   )}
@@ -300,7 +343,7 @@ export const EnhancedSidebar = () => {
                 <div className="px-3 mt-4">
                   <button
                     onClick={handleCreateProject}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal/60 rounded-lg hover:bg-brand-50 transition-colors"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal/60 rounded-lg hover:bg-purple-50 transition-colors"
                   >
                     <FolderPlus className="w-4 h-4" />
                     Neuer Ordner
@@ -323,7 +366,7 @@ export const EnhancedSidebar = () => {
                 onClick={() => navigate(item.href)}
                 className={cn(
                   'w-full flex items-center gap-3 px-4 py-2 transition-colors',
-                  isActive ? 'text-brand-600 bg-brand-50' : 'text-charcoal/60 hover:bg-brand-50'
+                  isActive ? 'text-purple-600 bg-purple-50' : 'text-charcoal/60 hover:bg-purple-50'
                 )}
               >
                 <Icon className="w-5 h-5" />
@@ -359,7 +402,7 @@ export const EnhancedSidebar = () => {
                 onClick={() => navigate(item.href)}
                 className={cn(
                   'flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors',
-                  isActive ? 'text-brand-600' : 'text-charcoal/60'
+                  isActive ? 'text-purple-600' : 'text-charcoal/60'
                 )}
               >
                 <Icon className="w-5 h-5" />

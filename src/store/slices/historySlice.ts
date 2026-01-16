@@ -10,12 +10,15 @@ export interface HistorySlice {
   isHistoryLoading: boolean;
   searchQuery: string;
   filterTags: string[];
+  hasUnsavedChanges: boolean;
 
   // Actions - Initialization
   initializeHistory: () => Promise<void>;
 
   // Actions - Analyses
   loadAnalyses: () => Promise<void>;
+  startNewAnalysis: () => void;
+  setHasUnsavedChanges: (value: boolean) => void;
   saveCurrentAsAnalysis: (
     name: string,
     projectId?: string | null,
@@ -72,6 +75,7 @@ export const createHistorySlice: StateCreator<HistorySlice, [], [], HistorySlice
   isHistoryLoading: false,
   searchQuery: '',
   filterTags: [],
+  hasUnsavedChanges: false,
 
   // Initialize - load from IndexedDB and run migration
   initializeHistory: async () => {
@@ -113,6 +117,19 @@ export const createHistorySlice: StateCreator<HistorySlice, [], [], HistorySlice
     } catch (error) {
       console.error('[LaunchOS] Failed to load analyses:', error);
     }
+  },
+
+  // Start a new fresh analysis (clears activeAnalysisId)
+  startNewAnalysis: () => {
+    set({
+      activeAnalysisId: null,
+      hasUnsavedChanges: false,
+    });
+  },
+
+  // Track unsaved changes
+  setHasUnsavedChanges: (value) => {
+    set({ hasUnsavedChanges: value });
   },
 
   // Save current state as a new analysis

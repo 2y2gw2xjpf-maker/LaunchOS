@@ -187,16 +187,16 @@ export function MethodologyExplainer({
           {improvements.length > 0 && (
             <div>
               <h5 className="font-display font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <Lightbulb className="w-4 h-4 text-amber-500" />
+                <Lightbulb className="w-4 h-4 text-pink-500" />
                 Was deine Bewertung erhöhen würde
               </h5>
               <ul className="space-y-2">
                 {improvements.map((imp, i) => (
                   <li
                     key={i}
-                    className="flex items-start gap-2 text-sm text-gray-700 p-2 bg-amber-50/50 rounded-lg"
+                    className="flex items-start gap-2 text-sm text-gray-700 p-2 bg-purple-50/50 rounded-lg"
                   >
-                    <span className="text-green-500 font-bold mt-0.5">↑</span>
+                    <span className="text-pink-500 font-bold mt-0.5">↑</span>
                     {imp}
                   </li>
                 ))}

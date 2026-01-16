@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Download, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Download, RefreshCw, Sparkles, Target, Map } from 'lucide-react';
 import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 import { WizardProgress, WizardNavigation } from '@/components/wizard';
 import { Button, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui';
@@ -39,6 +39,7 @@ export const WhatsNextPage = () => {
   } = useStore();
 
   const [activeResultTab, setActiveResultTab] = React.useState('recommendation');
+  const [activeAnalysisSubTab, setActiveAnalysisSubTab] = React.useState<'timeline' | 'dashboard'>('timeline');
 
   // Redirect if no tier selected
   React.useEffect(() => {
@@ -95,10 +96,23 @@ export const WhatsNextPage = () => {
       case 4:
         return showResults ? (
           <div className="space-y-8">
+            {/* Main Tabs - Results Overview */}
             <Tabs value={activeResultTab} onChange={setActiveResultTab}>
-              <TabsList className="mb-6">
-                <TabsTrigger value="recommendation">Empfehlung</TabsTrigger>
-                <TabsTrigger value="actionplan">Action Plan</TabsTrigger>
+              <TabsList className="mb-8 bg-white/80 backdrop-blur-sm p-1.5 rounded-2xl shadow-lg shadow-purple-500/5 border border-purple-100">
+                <TabsTrigger
+                  value="recommendation"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white rounded-xl px-6 py-3 font-medium transition-all"
+                >
+                  <Target className="w-4 h-4 mr-2" />
+                  Empfehlung
+                </TabsTrigger>
+                <TabsTrigger
+                  value="actionplan"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white rounded-xl px-6 py-3 font-medium transition-all"
+                >
+                  <Map className="w-4 h-4 mr-2" />
+                  Action Plan
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="recommendation">
@@ -106,18 +120,51 @@ export const WhatsNextPage = () => {
               </TabsContent>
 
               <TabsContent value="actionplan">
-                <ActionPlanTimeline plan={routeResult.actionPlan} />
+                {/* Sub-Tabs for Action Plan */}
+                <div className="mb-6">
+                  <div className="flex items-center gap-2 p-1 bg-purple-50 rounded-xl w-fit">
+                    <button
+                      onClick={() => setActiveAnalysisSubTab('timeline')}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                        activeAnalysisSubTab === 'timeline'
+                          ? 'bg-white text-purple-700 shadow-sm'
+                          : 'text-purple-600/70 hover:text-purple-600'
+                      }`}
+                    >
+                      Timeline
+                    </button>
+                    <button
+                      onClick={() => setActiveAnalysisSubTab('dashboard')}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                        activeAnalysisSubTab === 'dashboard'
+                          ? 'bg-white text-purple-700 shadow-sm'
+                          : 'text-purple-600/70 hover:text-purple-600'
+                      }`}
+                    >
+                      Dashboard
+                    </button>
+                  </div>
+                </div>
+                <ActionPlanTimeline plan={routeResult.actionPlan} activeView={activeAnalysisSubTab} />
               </TabsContent>
             </Tabs>
           </div>
         ) : (
           <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-brand-100 flex items-center justify-center mx-auto mb-4 animate-pulse">
-                <RefreshCw className="w-8 h-8 text-brand-600 animate-spin" />
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+            >
+              <div className="relative mx-auto mb-6">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center animate-pulse">
+                  <Sparkles className="w-10 h-10 text-purple-600" />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur-xl opacity-30 animate-pulse" />
               </div>
-              <p className="text-charcoal/60">Analysiere deine Eingaben...</p>
-            </div>
+              <p className="text-lg text-purple-600 font-medium">Analysiere deine Eingaben...</p>
+              <p className="text-sm text-charcoal/50 mt-2">Dein personalisierter Action Plan wird erstellt</p>
+            </motion.div>
           </div>
         );
       default:
@@ -198,7 +245,7 @@ export const WhatsNextPage = () => {
 
         {/* Results Actions */}
         {showResults && (
-          <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-8 border-t border-brand-100">
+          <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-8 border-t border-purple-100">
             <Button variant="secondary" onClick={handleRecalculate}>
               <RefreshCw className="w-4 h-4 mr-2" />
               Neu berechnen
