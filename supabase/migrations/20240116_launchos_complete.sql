@@ -1,11 +1,11 @@
 -- ===========================================
--- LaunchOS Journey System Migration
+-- LaunchOS Complete Database Schema
 -- ===========================================
--- Erweitert das bestehende Schema um Journey Steps,
--- Deliverables, Valuations und Chat
+-- Vollständige Migration mit allen Tabellen
+-- Kann standalone ausgeführt werden
 
 -- ═══════════════════════════════════════════════════════════════
--- ENUMS
+-- ENUMS (Erstelle nur wenn nicht existiert)
 -- ═══════════════════════════════════════════════════════════════
 
 DO $$ BEGIN
@@ -73,6 +73,81 @@ EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 -- ═══════════════════════════════════════════════════════════════
+-- PROFILES TABLE (Basis für alle User-Daten)
+-- ═══════════════════════════════════════════════════════════════
+
+CREATE TABLE IF NOT EXISTS profiles (
+  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+  email TEXT NOT NULL,
+  full_name TEXT,
+  company_name TEXT,
+  avatar_url TEXT,
+
+  -- Subscription
+  subscription_tier TEXT DEFAULT 'free' CHECK (subscription_tier IN ('free', 'starter', 'growth', 'scale')),
+  subscription_status TEXT DEFAULT 'active' CHECK (subscription_status IN ('active', 'canceled', 'past_due', 'trialing')),
+  stripe_customer_id TEXT,
+
+  -- Gründer-spezifische Felder
+  industry TEXT,
+  description TEXT,
+  company_type company_type DEFAULT 'not_yet_founded',
+  funding_path funding_path DEFAULT 'undecided',
+  stage startup_stage DEFAULT 'idea',
+  monthly_revenue INTEGER,
+  growth_rate DECIMAL,
+  team_size INTEGER,
+  onboarding_completed BOOLEAN DEFAULT false,
+
+  -- Timestamps
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ═══════════════════════════════════════════════════════════════
+-- PROJECTS TABLE (Ordner für Analysen)
+-- ═══════════════════════════════════════════════════════════════
+
+CREATE TABLE IF NOT EXISTS projects (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+
+  name TEXT NOT NULL,
+  description TEXT,
+  color TEXT DEFAULT '#8B5CF6',
+  icon TEXT DEFAULT 'folder',
+  position INTEGER DEFAULT 0,
+  is_expanded BOOLEAN DEFAULT TRUE,
+
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ═══════════════════════════════════════════════════════════════
+-- ANALYSES TABLE (Gespeicherte Analysen)
+-- ═══════════════════════════════════════════════════════════════
+
+CREATE TABLE IF NOT EXISTS analyses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  project_id UUID REFERENCES projects(id) ON DELETE SET NULL,
+
+  name TEXT NOT NULL,
+  type TEXT NOT NULL CHECK (type IN ('valuation', 'whatsnext', 'actionplan', 'full')),
+
+  -- Flexible JSON storage for analysis data
+  data JSONB NOT NULL DEFAULT '{}',
+
+  -- Metadata
+  is_favorite BOOLEAN DEFAULT FALSE,
+  position INTEGER DEFAULT 0,
+  tags TEXT[] DEFAULT '{}',
+
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ═══════════════════════════════════════════════════════════════
 -- JOURNEY STEPS (System-Tabelle - readonly für User)
 -- ═══════════════════════════════════════════════════════════════
 
@@ -118,22 +193,6 @@ CREATE TABLE IF NOT EXISTS user_journey_progress (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, step_id)
 );
-
--- ═══════════════════════════════════════════════════════════════
--- USER PROFILES ERWEITERUNG
--- ═══════════════════════════════════════════════════════════════
-
--- Erweitere profiles Tabelle um Gründer-spezifische Felder
-ALTER TABLE profiles
-  ADD COLUMN IF NOT EXISTS industry TEXT,
-  ADD COLUMN IF NOT EXISTS description TEXT,
-  ADD COLUMN IF NOT EXISTS company_type company_type DEFAULT 'not_yet_founded',
-  ADD COLUMN IF NOT EXISTS funding_path funding_path DEFAULT 'undecided',
-  ADD COLUMN IF NOT EXISTS stage startup_stage DEFAULT 'idea',
-  ADD COLUMN IF NOT EXISTS monthly_revenue INTEGER,
-  ADD COLUMN IF NOT EXISTS growth_rate DECIMAL,
-  ADD COLUMN IF NOT EXISTS team_size INTEGER,
-  ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN DEFAULT false;
 
 -- ═══════════════════════════════════════════════════════════════
 -- DELIVERABLES
@@ -184,7 +243,7 @@ CREATE TABLE IF NOT EXISTS valuations (
 );
 
 -- ═══════════════════════════════════════════════════════════════
--- CHAT MESSAGES
+-- CHAT
 -- ═══════════════════════════════════════════════════════════════
 
 CREATE TABLE IF NOT EXISTS chat_sessions (
@@ -210,6 +269,13 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 -- INDEXES
 -- ═══════════════════════════════════════════════════════════════
 
+CREATE INDEX IF NOT EXISTS idx_projects_user_id ON projects(user_id);
+CREATE INDEX IF NOT EXISTS idx_projects_position ON projects(user_id, position);
+CREATE INDEX IF NOT EXISTS idx_analyses_user_id ON analyses(user_id);
+CREATE INDEX IF NOT EXISTS idx_analyses_project_id ON analyses(project_id);
+CREATE INDEX IF NOT EXISTS idx_analyses_type ON analyses(user_id, type);
+CREATE INDEX IF NOT EXISTS idx_analyses_favorite ON analyses(user_id, is_favorite);
+CREATE INDEX IF NOT EXISTS idx_analyses_created ON analyses(user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_journey_resources_step ON journey_resources(step_id);
 CREATE INDEX IF NOT EXISTS idx_journey_progress_user ON user_journey_progress(user_id);
 CREATE INDEX IF NOT EXISTS idx_journey_progress_status ON user_journey_progress(user_id, status);
@@ -225,6 +291,11 @@ CREATE INDEX IF NOT EXISTS idx_chat_messages_created ON chat_messages(session_id
 -- ROW LEVEL SECURITY
 -- ═══════════════════════════════════════════════════════════════
 
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE analyses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE journey_steps ENABLE ROW LEVEL SECURITY;
+ALTER TABLE journey_resources ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_journey_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE deliverables ENABLE ROW LEVEL SECURITY;
 ALTER TABLE deliverable_versions ENABLE ROW LEVEL SECURITY;
@@ -232,61 +303,107 @@ ALTER TABLE valuations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chat_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
 
--- Journey Steps sind public readable (System-Daten)
-ALTER TABLE journey_steps ENABLE ROW LEVEL SECURITY;
-ALTER TABLE journey_resources ENABLE ROW LEVEL SECURITY;
+-- Profiles
+DROP POLICY IF EXISTS "Users can view own profile" ON profiles;
+CREATE POLICY "Users can view own profile" ON profiles FOR SELECT USING (auth.uid() = id);
+DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
+CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
 
+-- Projects
+DROP POLICY IF EXISTS "Users can manage own projects" ON projects;
+CREATE POLICY "Users can manage own projects" ON projects FOR ALL USING (auth.uid() = user_id);
+
+-- Analyses
+DROP POLICY IF EXISTS "Users can manage own analyses" ON analyses;
+CREATE POLICY "Users can manage own analyses" ON analyses FOR ALL USING (auth.uid() = user_id);
+
+-- Journey Steps (public readable)
+DROP POLICY IF EXISTS "Journey steps are public" ON journey_steps;
 CREATE POLICY "Journey steps are public" ON journey_steps FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Journey resources are public" ON journey_resources;
 CREATE POLICY "Journey resources are public" ON journey_resources FOR SELECT USING (true);
 
 -- User Journey Progress
-CREATE POLICY "Users own their journey progress" ON user_journey_progress
-  FOR ALL USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users own their journey progress" ON user_journey_progress;
+CREATE POLICY "Users own their journey progress" ON user_journey_progress FOR ALL USING (user_id = auth.uid());
 
 -- Deliverables
-CREATE POLICY "Users own their deliverables" ON deliverables
-  FOR ALL USING (user_id = auth.uid());
-
-CREATE POLICY "Users own their versions" ON deliverable_versions
-  FOR ALL USING (
-    deliverable_id IN (SELECT id FROM deliverables WHERE user_id = auth.uid())
-  );
+DROP POLICY IF EXISTS "Users own their deliverables" ON deliverables;
+CREATE POLICY "Users own their deliverables" ON deliverables FOR ALL USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users own their versions" ON deliverable_versions;
+CREATE POLICY "Users own their versions" ON deliverable_versions FOR ALL USING (
+  deliverable_id IN (SELECT id FROM deliverables WHERE user_id = auth.uid())
+);
 
 -- Valuations
-CREATE POLICY "Users own their valuations" ON valuations
-  FOR ALL USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users own their valuations" ON valuations;
+CREATE POLICY "Users own their valuations" ON valuations FOR ALL USING (user_id = auth.uid());
 
 -- Chat
-CREATE POLICY "Users own their chat sessions" ON chat_sessions
-  FOR ALL USING (user_id = auth.uid());
-
-CREATE POLICY "Users own their messages" ON chat_messages
-  FOR ALL USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users own their chat sessions" ON chat_sessions;
+CREATE POLICY "Users own their chat sessions" ON chat_sessions FOR ALL USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users own their messages" ON chat_messages;
+CREATE POLICY "Users own their messages" ON chat_messages FOR ALL USING (user_id = auth.uid());
 
 -- ═══════════════════════════════════════════════════════════════
--- TRIGGERS
+-- FUNCTIONS & TRIGGERS
 -- ═══════════════════════════════════════════════════════════════
 
+-- Auto-create profile on user signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email, full_name)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'full_name', '')
+  )
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- Auto-update updated_at timestamp
+CREATE OR REPLACE FUNCTION public.update_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
+CREATE TRIGGER update_profiles_updated_at
+  BEFORE UPDATE ON profiles
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+DROP TRIGGER IF EXISTS update_projects_updated_at ON projects;
+CREATE TRIGGER update_projects_updated_at
+  BEFORE UPDATE ON projects
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+DROP TRIGGER IF EXISTS update_analyses_updated_at ON analyses;
+CREATE TRIGGER update_analyses_updated_at
+  BEFORE UPDATE ON analyses
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+DROP TRIGGER IF EXISTS update_journey_progress_updated_at ON user_journey_progress;
 CREATE TRIGGER update_journey_progress_updated_at
   BEFORE UPDATE ON user_journey_progress
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS update_deliverables_updated_at ON deliverables;
 CREATE TRIGGER update_deliverables_updated_at
   BEFORE UPDATE ON deliverables
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS update_chat_sessions_updated_at ON chat_sessions;
 CREATE TRIGGER update_chat_sessions_updated_at
   BEFORE UPDATE ON chat_sessions
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-
--- ═══════════════════════════════════════════════════════════════
--- COMMENTS
--- ═══════════════════════════════════════════════════════════════
-
-COMMENT ON TABLE journey_steps IS 'System-definierte Gründer-Journey Steps (35 Steps)';
-COMMENT ON TABLE journey_resources IS 'Offizielle Quellen und Links pro Step';
-COMMENT ON TABLE user_journey_progress IS 'User-spezifischer Fortschritt pro Step';
-COMMENT ON TABLE deliverables IS 'Generierte Dokumente (Pitch Deck, Businessplan, etc.)';
-COMMENT ON TABLE valuations IS 'Gespeicherte Bewertungen mit Methodik';
-COMMENT ON TABLE chat_sessions IS 'Chat-Sitzungen pro User';
-COMMENT ON TABLE chat_messages IS 'Nachrichten innerhalb einer Chat-Sitzung';

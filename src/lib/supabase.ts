@@ -24,6 +24,13 @@ export interface UserProfile {
   subscription_tier: 'free' | 'starter' | 'growth' | 'scale';
   subscription_status: 'active' | 'canceled' | 'past_due' | 'trialing';
   stripe_customer_id: string | null;
+  // Journey-Felder (aus profiles-Tabelle)
+  industry: string | null;
+  stage: 'idea' | 'building' | 'mvp' | 'launched' | 'scaling' | null;
+  funding_path: 'bootstrap' | 'investor' | 'grant' | 'undecided' | null;
+  company_type: 'gmbh' | 'ug' | 'einzelunternehmen' | 'gbr' | 'ag' | 'not_yet_founded' | null;
+  monthly_revenue: number | null;
+  team_size: number | null;
   created_at: string;
   updated_at: string;
 }
