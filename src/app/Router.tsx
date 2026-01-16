@@ -59,6 +59,7 @@ export const Router = () => {
               <Route path="/compare" element={<ComparePage />} />
               <Route path="/journey" element={<JourneyPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/settings/*" element={<SettingsPage />} />
               <Route path="/deliverables" element={<DeliverableLibraryPage />} />
 
               {/* App prefixed routes (also public for demo) */}
@@ -68,6 +69,7 @@ export const Router = () => {
               <Route path="/app/whats-next" element={<WhatsNextPage />} />
               <Route path="/app/compare" element={<ComparePage />} />
               <Route path="/app/settings" element={<SettingsPage />} />
+              <Route path="/app/settings/*" element={<SettingsPage />} />
               <Route path="/app/deliverables" element={<DeliverableLibraryPage />} />
 
               {/* 404 Not Found */}

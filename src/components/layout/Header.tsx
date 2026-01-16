@@ -34,11 +34,10 @@ export const Header = ({ className }: HeaderProps) => {
   // Different navigation for landing vs app
   const isLandingPage = location.pathname === '/' || location.pathname === '/about' || location.pathname === '/pricing' || location.pathname === '/contact';
 
-  // Landing page navigation (public)
+  // Landing page navigation (public) - nur Features, Preise, Kontakt
   const landingNavigation = [
     { name: 'Features', href: '/#features' },
     { name: 'Preise', href: '/#pricing' },
-    { name: 'Methodik', href: '/about' },
     { name: 'Kontakt', href: '/contact' },
   ];
 
@@ -248,11 +247,67 @@ export const Header = ({ className }: HeaderProps) => {
               {item.name}
             </button>
           ))}
-          <div className="pt-4 border-t border-purple-100">
-            <button onClick={handleCTAClick} className="btn-primary w-full">
-              <span>{user ? 'Zur App' : 'Kostenlos starten'}</span>
-            </button>
-          </div>
+
+          {/* Mobile: User Menu wenn eingeloggt */}
+          {user ? (
+            <div className="pt-4 border-t border-purple-100 space-y-2">
+              {/* User Info */}
+              <div className="flex items-center gap-3 px-4 py-3 bg-purple-50 rounded-xl">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white font-semibold">
+                  {profile?.full_name?.charAt(0) || user.email?.charAt(0)?.toUpperCase() || 'U'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-charcoal truncate">
+                    {profile?.full_name || 'User'}
+                  </p>
+                  <p className="text-xs text-charcoal/60 truncate">{user.email}</p>
+                </div>
+              </div>
+
+              {/* Settings Links */}
+              <Link
+                to="/settings"
+                onClick={() => { setMobileMenuOpen(false); window.scrollTo(0, 0); }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-charcoal hover:bg-purple-50 transition-colors"
+              >
+                <Settings className="w-5 h-5 text-purple-500" />
+                <span className="font-medium">Einstellungen</span>
+              </Link>
+              <Link
+                to="/settings/billing"
+                onClick={() => { setMobileMenuOpen(false); window.scrollTo(0, 0); }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-charcoal hover:bg-purple-50 transition-colors"
+              >
+                <CreditCard className="w-5 h-5 text-purple-500" />
+                <span className="font-medium">Abrechnung</span>
+              </Link>
+
+              {/* Logout */}
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  signOut();
+                }}
+                className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-colors"
+              >
+                <LogOut className="w-5 h-5" />
+                <span className="font-medium">Abmelden</span>
+              </button>
+            </div>
+          ) : (
+            <div className="pt-4 border-t border-purple-100 space-y-2">
+              <Link
+                to="/login"
+                onClick={() => { setMobileMenuOpen(false); window.scrollTo(0, 0); }}
+                className="block w-full text-center px-4 py-3 rounded-xl font-medium text-purple-600 hover:bg-purple-50 transition-colors"
+              >
+                Anmelden
+              </Link>
+              <button onClick={handleCTAClick} className="btn-primary w-full">
+                <span>Kostenlos starten</span>
+              </button>
+            </div>
+          )}
         </div>
       </motion.div>
     </header>

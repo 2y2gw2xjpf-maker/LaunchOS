@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   User,
@@ -16,13 +17,35 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/lib/supabase';
-import { Header, Footer } from '@/components/layout';
+import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 import BillingSection from './BillingSection';
 
 type SettingsTab = 'profile' | 'billing' | 'security' | 'notifications';
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = React.useState<SettingsTab>('profile');
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Tab aus URL-Pfad lesen (z.B. /settings/billing)
+  const getTabFromPath = (): SettingsTab => {
+    const path = location.pathname;
+    if (path.includes('/billing')) return 'billing';
+    if (path.includes('/security')) return 'security';
+    if (path.includes('/notifications')) return 'notifications';
+    return 'profile';
+  };
+
+  const [activeTab, setActiveTab] = React.useState<SettingsTab>(getTabFromPath());
+
+  // Tab-Wechsel mit URL-Update
+  const handleTabChange = (tab: SettingsTab) => {
+    setActiveTab(tab);
+    if (tab === 'profile') {
+      navigate('/settings');
+    } else {
+      navigate(`/settings/${tab}`);
+    }
+  };
 
   const tabs = [
     { id: 'profile' as const, label: 'Profil', icon: User },
@@ -32,50 +55,50 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-purple-50/30">
+    <div className="min-h-screen bg-cream">
       <Header />
-      <main className="pt-20">
-        <div className="max-w-4xl mx-auto px-6 py-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h1 className="font-display text-display-sm md:text-display-md text-text-primary mb-4">
-              Einstellungen
-            </h1>
-            <p className="text-lg text-text-secondary mb-8">
-              Verwalte dein Konto und deine Präferenzen
-            </p>
+      <EnhancedSidebar />
+      <PageContainer withSidebar maxWidth="wide">
+        {/* Page Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <h1 className="font-display text-display-sm text-charcoal mb-2">
+            Einstellungen
+          </h1>
+          <p className="text-charcoal/60">
+            Verwalte dein Konto und deine Präferenzen
+          </p>
+        </motion.div>
 
-          {/* Tabs */}
-          <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-glow-brand'
-                    : 'bg-white/80 text-text-secondary border border-purple-100 hover:border-purple-200 hover:text-text-primary'
-                }`}
-              >
-                <tab.icon className="w-4 h-4" />
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Tab Content */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-purple-100 shadow-card">
-            {activeTab === 'profile' && <ProfileSection />}
-            {activeTab === 'billing' && <BillingSection />}
-            {activeTab === 'security' && <SecuritySection />}
-            {activeTab === 'notifications' && <NotificationsSection />}
-          </div>
-          </motion.div>
+        {/* Tabs */}
+        <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => handleTabChange(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all whitespace-nowrap ${
+                activeTab === tab.id
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-glow-brand'
+                  : 'bg-white/80 text-charcoal/60 border border-purple-100 hover:border-purple-200 hover:text-charcoal'
+              }`}
+            >
+              <tab.icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          ))}
         </div>
-      </main>
-      <Footer />
+
+        {/* Tab Content */}
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-purple-100 shadow-card">
+          {activeTab === 'profile' && <ProfileSection />}
+          {activeTab === 'billing' && <BillingSection />}
+          {activeTab === 'security' && <SecuritySection />}
+          {activeTab === 'notifications' && <NotificationsSection />}
+        </div>
+      </PageContainer>
     </div>
   );
 }
