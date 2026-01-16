@@ -429,20 +429,48 @@ serve(async (req) => {
   }
 
   try {
+    // ═══════════════════════════════════════════════════════════════
+    // AUTHENTICATION - Verify user JWT token
+    // ═══════════════════════════════════════════════════════════════
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'No authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Create Supabase client with user's JWT for RLS
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+      global: {
+        headers: { Authorization: authHeader },
+      },
+    });
+
+    // Verify the user is authenticated
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const {
       messages,
       userContext,
       sessionId,
-      userId,
       attachments,
       journeyContext,
     } = await req.json();
 
+    // Use authenticated user ID instead of trusting client-provided userId
+    const userId = user.id;
+
     if (!messages || !Array.isArray(messages)) {
       throw new Error('Messages array is required');
     }
-
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Process attachments
     let documentContext = '';

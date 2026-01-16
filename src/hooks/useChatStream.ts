@@ -218,29 +218,33 @@ export function useChatStream(options: UseChatStreamOptions = {}): UseChatStream
 
       // Get Supabase URL
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-      if (!supabaseUrl || !supabaseAnonKey) {
+      if (!supabaseUrl) {
         throw new Error('Supabase nicht konfiguriert');
+      }
+
+      // Get current session for auth token - require authentication
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error('Nicht eingeloggt - bitte zuerst anmelden');
       }
 
       // Create abort controller
       abortControllerRef.current = new AbortController();
 
-      // Call Edge Function with streaming
+      // Call Edge Function with streaming - use user's JWT token for authentication
       const response = await fetch(
         `${supabaseUrl}/functions/v1/chat`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${supabaseAnonKey}`,
+            'Authorization': `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
             messages: apiMessages,
             userContext: getUserContext(),
             sessionId: options.sessionId,
-            userId: user?.id,
             attachments: apiAttachments,
             journeyContext: options.journeyContext,
           }),

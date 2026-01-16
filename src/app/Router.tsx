@@ -52,25 +52,25 @@ export const Router = () => {
               <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
               <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
 
-              {/* App Routes (public for demo mode) */}
-              <Route path="/tier-selection" element={<TierSelectionPage />} />
-              <Route path="/whats-next" element={<WhatsNextPage />} />
-              <Route path="/valuation" element={<ValuationPage />} />
-              <Route path="/compare" element={<ComparePage />} />
-              <Route path="/journey" element={<JourneyPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/settings/*" element={<SettingsPage />} />
-              <Route path="/deliverables" element={<DeliverableLibraryPage />} />
+              {/* Protected App Routes - require authentication */}
+              <Route path="/tier-selection" element={<ProtectedRoute><TierSelectionPage /></ProtectedRoute>} />
+              <Route path="/whats-next" element={<ProtectedRoute><WhatsNextPage /></ProtectedRoute>} />
+              <Route path="/valuation" element={<ProtectedRoute><ValuationPage /></ProtectedRoute>} />
+              <Route path="/compare" element={<ProtectedRoute><ComparePage /></ProtectedRoute>} />
+              <Route path="/journey" element={<ProtectedRoute><JourneyPage /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+              <Route path="/settings/*" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+              <Route path="/deliverables" element={<ProtectedRoute><DeliverableLibraryPage /></ProtectedRoute>} />
 
-              {/* App prefixed routes (also public for demo) */}
-              <Route path="/app" element={<Navigate to="/tier-selection" replace />} />
-              <Route path="/app/journey" element={<JourneyPage />} />
-              <Route path="/app/valuation" element={<ValuationPage />} />
-              <Route path="/app/whats-next" element={<WhatsNextPage />} />
-              <Route path="/app/compare" element={<ComparePage />} />
-              <Route path="/app/settings" element={<SettingsPage />} />
-              <Route path="/app/settings/*" element={<SettingsPage />} />
-              <Route path="/app/deliverables" element={<DeliverableLibraryPage />} />
+              {/* App prefixed routes - also protected */}
+              <Route path="/app" element={<ProtectedRoute><Navigate to="/tier-selection" replace /></ProtectedRoute>} />
+              <Route path="/app/journey" element={<ProtectedRoute><JourneyPage /></ProtectedRoute>} />
+              <Route path="/app/valuation" element={<ProtectedRoute><ValuationPage /></ProtectedRoute>} />
+              <Route path="/app/whats-next" element={<ProtectedRoute><WhatsNextPage /></ProtectedRoute>} />
+              <Route path="/app/compare" element={<ProtectedRoute><ComparePage /></ProtectedRoute>} />
+              <Route path="/app/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+              <Route path="/app/settings/*" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+              <Route path="/app/deliverables" element={<ProtectedRoute><DeliverableLibraryPage /></ProtectedRoute>} />
 
               {/* 404 Not Found */}
               <Route path="*" element={<ErrorPage />} />
