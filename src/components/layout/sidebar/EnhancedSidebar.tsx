@@ -11,6 +11,8 @@ import {
   Calculator,
   Map,
   FileText,
+  Layers,
+  Settings,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useStore } from '@/store';
@@ -76,6 +78,7 @@ export const EnhancedSidebar = () => {
 
   // Only show on certain pages
   const showSidebar =
+    location.pathname.startsWith('/tier-selection') ||
     location.pathname.startsWith('/whats-next') ||
     location.pathname.startsWith('/valuation') ||
     location.pathname.startsWith('/compare') ||
@@ -84,6 +87,15 @@ export const EnhancedSidebar = () => {
     location.pathname.startsWith('/settings');
 
   if (!showSidebar) return null;
+
+  // Get tier display info
+  const tierLabels: Record<string, { name: string; confidence: string }> = {
+    minimal: { name: 'Minimal', confidence: '50-60%' },
+    basic: { name: 'Basic', confidence: '60-75%' },
+    detailed: { name: 'Detailed', confidence: '75-90%' },
+    full: { name: 'Full', confidence: '90-95%' },
+  };
+  const currentTierInfo = selectedTier ? tierLabels[selectedTier] : null;
 
   // Check if there's any data to save
   const hasData =
@@ -150,6 +162,7 @@ export const EnhancedSidebar = () => {
   const favoriteAnalyses = filteredAnalyses.filter((a) => a.isFavorite);
 
   const navItems = [
+    { name: 'Daten-Level', href: '/tier-selection', icon: Layers },
     { name: 'Founders Journey', href: '/journey', icon: Map },
     { name: 'Was tun?', href: '/whats-next', icon: Compass },
     { name: 'Vergleich', href: '/compare', icon: GitCompare },
@@ -353,6 +366,34 @@ export const EnhancedSidebar = () => {
             </div>
           )}
         </div>
+
+        {/* Tier Status Display */}
+        {currentTierInfo && (
+          <div className="border-t border-purple-100 px-3 py-3">
+            <button
+              onClick={() => navigate('/tier-selection')}
+              className={cn(
+                'w-full flex items-center gap-3 p-2 rounded-xl transition-all',
+                'bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100',
+                'hover:border-purple-200 hover:shadow-sm'
+              )}
+            >
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                <Layers className="w-4 h-4 text-white" />
+              </div>
+              {sidebarOpen && (
+                <div className="flex-1 text-left">
+                  <p className="text-xs text-purple-600 font-medium">Daten-Level</p>
+                  <p className="text-sm font-semibold text-charcoal">{currentTierInfo.name}</p>
+                  <p className="text-[10px] text-charcoal/50">Confidence: {currentTierInfo.confidence}</p>
+                </div>
+              )}
+              {sidebarOpen && (
+                <Settings className="w-4 h-4 text-purple-400" />
+              )}
+            </button>
+          </div>
+        )}
 
         {/* Navigation */}
         <div className="border-t border-purple-100 py-2">

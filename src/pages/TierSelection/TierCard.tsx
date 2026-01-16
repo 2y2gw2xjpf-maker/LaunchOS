@@ -8,6 +8,7 @@ import type { TierConfig, DataSharingTier } from '@/types';
 interface TierCardProps {
   tier: TierConfig;
   index: number;
+  isSelected?: boolean;
   onSelect: () => void;
 }
 
@@ -18,7 +19,7 @@ const tierIcons: Record<DataSharingTier, typeof Shield> = {
   full: FileText,
 };
 
-export const TierCard = ({ tier, index, onSelect }: TierCardProps) => {
+export const TierCard = ({ tier, index, isSelected, onSelect }: TierCardProps) => {
   const [expanded, setExpanded] = React.useState(false);
   const Icon = tierIcons[tier.tier];
 
@@ -34,7 +35,12 @@ export const TierCard = ({ tier, index, onSelect }: TierCardProps) => {
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="border-2 border-purple-100 rounded-2xl overflow-hidden hover:border-purple-300 hover:shadow-lg hover:shadow-purple-500/10 transition-all bg-white"
+      className={cn(
+        "border-2 rounded-2xl overflow-hidden hover:border-purple-300 hover:shadow-lg hover:shadow-purple-500/10 transition-all bg-white",
+        isSelected
+          ? "border-purple-500 ring-2 ring-purple-200 shadow-lg shadow-purple-500/20"
+          : "border-purple-100"
+      )}
     >
       <button
         onClick={() => setExpanded(!expanded)}
@@ -46,9 +52,16 @@ export const TierCard = ({ tier, index, onSelect }: TierCardProps) => {
               <Icon className="w-6 h-6 text-purple-600" />
             </div>
             <div>
-              <h3 className="font-display font-semibold text-text-primary text-lg">
-                {tier.label}
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-display font-semibold text-text-primary text-lg">
+                  {tier.label}
+                </h3>
+                {isSelected && (
+                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-purple-600 text-white">
+                    Aktuell
+                  </span>
+                )}
+              </div>
               <p className="text-text-secondary text-sm">{tier.description}</p>
             </div>
           </div>
@@ -125,7 +138,7 @@ export const TierCard = ({ tier, index, onSelect }: TierCardProps) => {
               </div>
 
               <Button onClick={onSelect} variant="primary" className="w-full">
-                Mit diesem Level starten
+                {isSelected ? 'Auswahl bestatigen' : 'Mit diesem Level starten'}
               </Button>
             </div>
           </motion.div>
