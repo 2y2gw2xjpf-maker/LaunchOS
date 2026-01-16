@@ -25,5 +25,8 @@ export type { ProcessedFile, UseFileUploadReturn } from './useFileUpload';
 export { useVoiceRecording } from './useVoiceRecording';
 export type { VoiceRecording, UseVoiceRecordingReturn } from './useVoiceRecording';
 
+export { useChatSessions } from './useChatSessions';
+export type { ChatSession, UseChatSessionsReturn } from './useChatSessions';
+
 export { useAnalyses, useProjects, useLaunchOSData, useSubscriptionLimits } from './useSupabaseData';
 export { useOnlineStatus } from './useOnlineStatus';

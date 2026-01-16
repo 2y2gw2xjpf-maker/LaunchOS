@@ -48,6 +48,13 @@ export interface UserContext {
   industry?: string;
   stage?: string;
   fundingPath?: string;
+  fundingGoal?: string;
+  companyType?: string;
+  monthlyRevenue?: number;
+  teamSize?: number;
+  pendingTasks?: string[];
+  lastValuation?: string;
+  deliverables?: { type: string; name: string; createdAt: string }[];
 }
 
 export interface JourneyContext {
@@ -86,16 +93,40 @@ export function useChatStream(options: UseChatStreamOptions = {}): UseChatStream
   const [toolResults, setToolResults] = React.useState<ToolResult[]>([]);
   const abortControllerRef = React.useRef<AbortController | null>(null);
 
-  // Build user context from profile
+  // Build user context from profile and additional data
   const getUserContext = React.useCallback((): UserContext => {
-    return {
+    const context: UserContext = {
       userName: profile?.full_name || options.userContext?.userName,
       companyName: profile?.company_name || options.userContext?.companyName,
       industry: profile?.industry || options.userContext?.industry,
       stage: profile?.stage || options.userContext?.stage,
       fundingPath: profile?.funding_path || options.userContext?.fundingPath,
+      fundingGoal: options.userContext?.fundingGoal,
+      companyType: options.userContext?.companyType,
+      monthlyRevenue: options.userContext?.monthlyRevenue,
+      teamSize: options.userContext?.teamSize,
     };
-  }, [profile, options.userContext]);
+
+    // Add journey context as pending tasks if available
+    if (options.journeyContext?.pendingTasks && options.journeyContext.pendingTasks.length > 0) {
+      context.pendingTasks = options.journeyContext.pendingTasks;
+    }
+
+    // Merge any additional context passed in
+    if (options.userContext?.pendingTasks) {
+      context.pendingTasks = [...(context.pendingTasks || []), ...options.userContext.pendingTasks];
+    }
+
+    if (options.userContext?.deliverables) {
+      context.deliverables = options.userContext.deliverables;
+    }
+
+    if (options.userContext?.lastValuation) {
+      context.lastValuation = options.userContext.lastValuation;
+    }
+
+    return context;
+  }, [profile, options.userContext, options.journeyContext]);
 
   // Load existing session
   const loadSession = React.useCallback(async (sessionId: string) => {

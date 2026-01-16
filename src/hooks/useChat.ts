@@ -145,18 +145,13 @@ export function useChat(options: UseChatOptions = {}): UseChatReturn {
       companyType: profile?.company_type ?? undefined,
       monthlyRevenue: profile?.monthly_revenue ?? undefined,
       teamSize: profile?.team_size ?? undefined,
+      // Include current step as pending task if available
+      pendingTasks: context.currentStep
+        ? [`${context.currentStep.title}: ${context.currentStep.description}`]
+        : undefined,
     };
 
-    return buildSystemPrompt(
-      userContext,
-      context.currentStep
-        ? {
-            id: context.currentStep.id,
-            title: context.currentStep.title,
-            description: context.currentStep.description,
-          }
-        : undefined
-    );
+    return buildSystemPrompt(userContext);
   }, [profile, context.currentStep]);
 
   // Session laden

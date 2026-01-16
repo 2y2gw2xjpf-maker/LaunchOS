@@ -9,3 +9,5 @@ export { DeliverableChat } from './DeliverableChat';
 export { ChatWidget } from './ChatWidget';
 export { FullChat } from './FullChat';
 export { ChatModal } from './ChatModal';
+export { ChatSidebar } from './ChatSidebar';
+export { FullChatWithSidebar } from './FullChatWithSidebar';
