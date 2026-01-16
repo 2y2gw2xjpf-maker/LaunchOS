@@ -16,7 +16,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, fullName?: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
-  signInWithGitHub: () => Promise<void>;
+  signInWithApple: () => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
 
@@ -123,9 +123,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (error) throw error;
   };
 
-  const signInWithGitHub = async () => {
+  const signInWithApple = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
+      provider: 'apple',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
@@ -182,7 +182,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     signIn,
     signUp,
     signInWithGoogle,
-    signInWithGitHub,
+    signInWithApple,
     signOut,
     resetPassword,
     refreshProfile,
