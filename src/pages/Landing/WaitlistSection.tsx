@@ -41,15 +41,15 @@ export const WaitlistSection = () => {
           {/* Header */}
           <div className="text-center mb-12">
             <span className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 text-sm font-medium rounded-full mb-4">
-              <Bell className="w-4 h-4 mr-2 text-purple-600" />
-              Early Access
+              <Mail className="w-4 h-4 mr-2 text-purple-600" />
+              Newsletter
             </span>
             <h2 className="font-display text-display-sm md:text-display-md text-text-primary mb-4">
-              Sei unter den Ersten
+              Bleib auf dem Laufenden
             </h2>
             <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-              Sichere dir exklusiven Zugang zur Premium-Version von LaunchOS.
-              Early Adopters erhalten <strong className="text-purple-600">50% Rabatt</strong> auf alle Pläne.
+              Erhalte Tipps für Gründer und Updates zu neuen Features.
+              Kein Spam, nur <strong className="text-purple-600">wertvolle Inhalte</strong>.
             </p>
           </div>
 
@@ -65,9 +65,9 @@ export const WaitlistSection = () => {
               <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center mb-4">
                 <Sparkles className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="font-semibold text-text-primary mb-2">50% Rabatt</h3>
+              <h3 className="font-semibold text-text-primary mb-2">Gründer-Tipps</h3>
               <p className="text-sm text-text-secondary">
-                Exklusiver Founder-Rabatt für alle Pläne - für immer.
+                Praxis-Tipps zu Bewertung, Finanzierung und Wachstum.
               </p>
             </motion.div>
 
@@ -79,11 +79,11 @@ export const WaitlistSection = () => {
               className="bg-white rounded-2xl p-6 shadow-soft border border-pink-100"
             >
               <div className="w-12 h-12 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl flex items-center justify-center mb-4">
-                <Users className="w-6 h-6 text-pink-600" />
+                <Bell className="w-6 h-6 text-pink-600" />
               </div>
-              <h3 className="font-semibold text-text-primary mb-2">Direkte Linie</h3>
+              <h3 className="font-semibold text-text-primary mb-2">Feature-Updates</h3>
               <p className="text-sm text-text-secondary">
-                Direkter Kontakt zum Gründer-Team für Feedback & Support.
+                Erfahre als Erster von neuen Funktionen und Tools.
               </p>
             </motion.div>
 
@@ -95,11 +95,11 @@ export const WaitlistSection = () => {
               className="bg-white rounded-2xl p-6 shadow-soft border border-purple-100"
             >
               <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center mb-4">
-                <Bell className="w-6 h-6 text-purple-600" />
+                <Users className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="font-semibold text-text-primary mb-2">Früher Zugang</h3>
+              <h3 className="font-semibold text-text-primary mb-2">Community</h3>
               <p className="text-sm text-text-secondary">
-                Erhalte neue Features vor allen anderen.
+                Vernetze dich mit anderen Gründern und lerne voneinander.
               </p>
             </motion.div>
           </div>
@@ -122,10 +122,10 @@ export const WaitlistSection = () => {
                   <CheckCircle className="w-8 h-8 text-green-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-text-primary mb-2">
-                  Du bist auf der Liste!
+                  Willkommen im Newsletter!
                 </h3>
                 <p className="text-text-secondary">
-                  Wir melden uns, sobald LaunchOS Premium verfügbar ist.
+                  Du erhältst bald die ersten Tipps und Updates.
                 </p>
               </motion.div>
             ) : (
@@ -153,7 +153,7 @@ export const WaitlistSection = () => {
                   )}
                 >
                   <span>
-                    {loading ? 'Wird eingetragen...' : 'Auf die Warteliste'}
+                    {loading ? 'Wird eingetragen...' : 'Anmelden'}
                   </span>
                   {!loading && <ArrowRight className="w-5 h-5" />}
                 </button>
@@ -180,7 +180,7 @@ export const WaitlistSection = () => {
             className="mt-8 text-center"
           >
             <p className="text-sm text-text-muted">
-              Bereits <strong className="text-purple-600">127+ Gründer</strong> auf der Warteliste
+              Bereits <strong className="text-purple-600">127+ Gründer</strong> im Newsletter
             </p>
           </motion.div>
         </motion.div>
