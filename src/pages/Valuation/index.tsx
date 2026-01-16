@@ -7,6 +7,8 @@ import { Card, Button, Tabs, TabsList, TabsTrigger, TabsContent } from '@/compon
 import { CurrencyDisplay } from '@/components/common';
 import { ConfidenceIndicator, ValueRange } from '@/components/results';
 import { ValuationChart, MethodComparisonChart } from '@/components/charts';
+import { ValuationDisclaimer } from '@/components/disclaimers';
+import { MethodologyExplainer } from '@/components/valuation';
 import { useStore } from '@/store';
 import { BerkusMethodPage } from './methods/BerkusMethod';
 import { ScorecardMethodPage } from './methods/ScorecardMethod';
@@ -188,6 +190,40 @@ export const ValuationPage = () => {
                   <h3 className="font-display font-semibold text-navy mb-4">Vergleich</h3>
                   <ValuationChart results={validResults} className="h-[200px]" />
                 </Card>
+              )}
+
+              {/* Methodology Explainer */}
+              {validResults.length > 0 && (
+                <MethodologyExplainer
+                  methods={validResults.map((r) => ({
+                    id: r.method,
+                    name: methods.find((m) => m.id === r.method)?.label || r.method,
+                    description: r.notes?.[0] || '',
+                    inputs: Object.entries(r.breakdown || {}).map(([k, v]) => ({
+                      label: k,
+                      value: typeof v === 'number' ? `€${(v / 1000).toFixed(0)}k` : String(v),
+                    })),
+                    result: {
+                      low: Math.round(r.value * 0.7),
+                      mid: r.value,
+                      high: Math.round(r.value * 1.3),
+                    },
+                  }))}
+                  finalValuation={aggregatedValue}
+                  improvements={[
+                    'Erste zahlende Kunden erhöhen die Bewertung (+30-50%)',
+                    'Höheres Wachstum (>20% MoM) steigert Revenue-Multiples',
+                    'Erfahrenes Team mit Track Record erhöht Vertrauen',
+                  ]}
+                />
+              )}
+
+              {/* Disclaimer - IMMER anzeigen wenn Ergebnisse vorhanden */}
+              {validResults.length > 0 && (
+                <ValuationDisclaimer
+                  confidenceScore={averageConfidence}
+                  methods={validResults.map((r) => methods.find((m) => m.id === r.method)?.label || r.method)}
+                />
               )}
 
               {/* Actions */}
