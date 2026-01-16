@@ -29,11 +29,11 @@ export const OptionButton = ({
       disabled={disabled}
       className={cn(
         'relative w-full p-4 rounded-2xl border-2 text-left transition-all',
-        'hover:border-brand-300 hover:shadow-glow-brand',
+        'hover:border-purple-300 hover:shadow-lg hover:shadow-purple-200/50',
         selected
-          ? 'border-brand-500 bg-brand-50 shadow-glow-brand'
-          : 'border-brand-100 bg-white',
-        disabled && 'opacity-50 cursor-not-allowed hover:border-brand-100',
+          ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-pink-50 shadow-lg shadow-purple-200/50 ring-2 ring-purple-400/30'
+          : 'border-gray-200 bg-white',
+        disabled && 'opacity-50 cursor-not-allowed hover:border-gray-200',
         className
       )}
     >
@@ -41,7 +41,7 @@ export const OptionButton = ({
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="absolute top-3 right-3 w-6 h-6 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center"
+          className="absolute top-3 right-3 w-6 h-6 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/30"
         >
           <Check className="w-4 h-4 text-white" />
         </motion.div>
@@ -49,7 +49,10 @@ export const OptionButton = ({
 
       <div className="flex items-center gap-3">
         {icon && (
-          <div className="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center flex-shrink-0">
+          <div className={cn(
+            "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0",
+            selected ? "bg-gradient-to-br from-purple-100 to-pink-100" : "bg-gray-100"
+          )}>
             {icon}
           </div>
         )}

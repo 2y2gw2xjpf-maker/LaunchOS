@@ -203,18 +203,18 @@ export const PricingSection = () => {
                   hoveredTier === tier.id && !isPopular && 'scale-[1.02]'
                 )}
               >
-                {/* Popular Badge */}
+                {/* Popular Badge - Corner Ribbon */}
                 {isPopular && (
-                  <motion.div
-                    initial={{ y: -20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    className="absolute -top-4 left-1/2 -translate-x-1/2"
-                  >
-                    <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-bold rounded-full shadow-lg shadow-purple-500/40 whitespace-nowrap">
-                      <Sparkles className="w-3.5 h-3.5" />
+                  <div className="absolute -top-px -right-px overflow-hidden w-24 h-24">
+                    <motion.div
+                      initial={{ rotate: 45, x: 100 }}
+                      animate={{ rotate: 45, x: 0 }}
+                      className="absolute top-4 -right-8 w-32 text-center bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-bold py-1.5 shadow-lg"
+                    >
+                      <Sparkles className="w-3 h-3 inline mr-1" />
                       Beliebt
-                    </span>
-                  </motion.div>
+                    </motion.div>
+                  </div>
                 )}
 
                 {/* Tier Header */}

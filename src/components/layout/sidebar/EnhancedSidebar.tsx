@@ -9,7 +9,8 @@ import {
   GitCompare,
   Compass,
   Calculator,
-  HelpCircle,
+  Map,
+  FileText,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useStore } from '@/store';
@@ -69,7 +70,8 @@ export const EnhancedSidebar = () => {
   const showSidebar =
     location.pathname.startsWith('/whats-next') ||
     location.pathname.startsWith('/valuation') ||
-    location.pathname.startsWith('/compare');
+    location.pathname.startsWith('/compare') ||
+    location.pathname.startsWith('/journey');
 
   if (!showSidebar) return null;
 
@@ -111,9 +113,11 @@ export const EnhancedSidebar = () => {
   const favoriteAnalyses = filteredAnalyses.filter((a) => a.isFavorite);
 
   const navItems = [
+    { name: 'Founders Journey', href: '/journey', icon: Map },
     { name: 'Was tun?', href: '/whats-next', icon: Compass },
+    { name: 'Vergleich', href: '/compare', icon: GitCompare },
     { name: 'Bewertung', href: '/valuation', icon: Calculator },
-    { name: 'Methodik', href: '/about', icon: HelpCircle },
+    { name: 'Methodik', href: '/about/methodology', icon: FileText },
   ];
 
   return (
@@ -128,6 +132,25 @@ export const EnhancedSidebar = () => {
           'bg-cream border-r border-brand-100'
         )}
       >
+        {/* Collapse Toggle Button at Top */}
+        <div className="px-3 pt-4 pb-2 flex justify-end">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className={cn(
+              'w-8 h-8 rounded-full flex items-center justify-center',
+              'bg-gradient-to-r from-purple-600 to-pink-600',
+              'hover:shadow-lg hover:shadow-purple-500/30 transition-all',
+              'active:scale-95'
+            )}
+          >
+            {sidebarOpen ? (
+              <ChevronLeft className="w-4 h-4 text-white" />
+            ) : (
+              <ChevronRight className="w-4 h-4 text-white" />
+            )}
+          </button>
+        </div>
+
         {/* Header */}
         <SidebarHeader
           searchQuery={searchQuery}
@@ -319,20 +342,6 @@ export const EnhancedSidebar = () => {
           })}
         </div>
 
-        {/* Collapse Toggle */}
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="flex items-center justify-center gap-2 py-3 border-t border-brand-100 text-charcoal/60 hover:bg-brand-50 transition-colors"
-        >
-          {sidebarOpen ? (
-            <>
-              <ChevronLeft className="w-4 h-4" />
-              <span className="text-sm">Einklappen</span>
-            </>
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
       </motion.aside>
 
       {/* Mobile Bottom Nav */}
