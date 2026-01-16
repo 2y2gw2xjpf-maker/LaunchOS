@@ -16,6 +16,7 @@ const SettingsPage = React.lazy(() => import('@/pages/Settings'));
 const VerifyEmailPage = React.lazy(() => import('@/pages/Auth/VerifyEmail'));
 const ResetPasswordPage = React.lazy(() => import('@/pages/Auth/ResetPassword'));
 const ContactPage = React.lazy(() => import('@/pages/Contact'));
+const JourneyPage = React.lazy(() => import('@/pages/Journey'));
 
 // Loading fallback
 const PageLoader = () => (
@@ -56,6 +57,7 @@ export const Router = () => {
               {/* Protected App Routes (require auth when Supabase is configured) */}
               <Route element={<ProtectedRoute />}>
                 <Route path="/app" element={<Navigate to="/tier-selection" replace />} />
+                <Route path="/app/journey" element={<JourneyPage />} />
                 <Route path="/app/valuation" element={<ValuationPage />} />
                 <Route path="/app/whats-next" element={<WhatsNextPage />} />
                 <Route path="/app/compare" element={<ComparePage />} />

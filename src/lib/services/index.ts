@@ -43,3 +43,19 @@ export type {
   ValuationInput,
   ValuationServiceResult,
 } from './valuation-service';
+
+// Document Generator Service
+export {
+  generatePitchDeck,
+  generateBusinessPlan,
+  generateInvestorList,
+  generateFinancialModel,
+  generateValuationReport,
+} from './document-generator';
+export type {
+  PitchDeckData,
+  BusinessPlanData,
+  InvestorData,
+  FinancialModelData,
+  ValuationReportData,
+} from './document-generator';
