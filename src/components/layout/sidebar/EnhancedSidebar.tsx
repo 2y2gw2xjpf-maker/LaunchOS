@@ -13,6 +13,7 @@ import {
   FileText,
   Layers,
   Settings,
+  FolderOpen,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useStore } from '@/store';
@@ -84,7 +85,8 @@ export const EnhancedSidebar = () => {
     location.pathname.startsWith('/compare') ||
     location.pathname.startsWith('/journey') ||
     location.pathname.startsWith('/about') ||
-    location.pathname.startsWith('/settings');
+    location.pathname.startsWith('/settings') ||
+    location.pathname.startsWith('/deliverables');
 
   if (!showSidebar) return null;
 
@@ -167,6 +169,7 @@ export const EnhancedSidebar = () => {
     { name: 'Was tun?', href: '/whats-next', icon: Compass },
     { name: 'Vergleich', href: '/compare', icon: GitCompare },
     { name: 'Bewertung', href: '/valuation', icon: Calculator },
+    { name: 'Dokumente', href: '/deliverables', icon: FolderOpen },
     { name: 'Methodik', href: '/about/methodology', icon: FileText },
   ];
 

@@ -30,3 +30,21 @@ export type { ChatSession, UseChatSessionsReturn } from './useChatSessions';
 
 export { useAnalyses, useProjects, useLaunchOSData, useSubscriptionLimits } from './useSupabaseData';
 export { useOnlineStatus } from './useOnlineStatus';
+
+// Ventures
+export { useVentures } from './useVentures';
+export type { Venture, UseVenturesReturn } from './useVentures';
+
+// Deliverables
+export { useDeliverables, DELIVERABLE_LABELS, DELIVERABLE_ICONS } from './useDeliverables';
+export type { Deliverable, DeliverableType, UseDeliverablesReturn } from './useDeliverables';
+
+// Programs
+export { useProgram } from './useProgram';
+export type {
+  ProgramStep,
+  ProgramTemplate,
+  StepResult,
+  ProgramExecution,
+  UseProgramReturn
+} from './useProgram';

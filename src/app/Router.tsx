@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, ProtectedRoute, AuthCallback } from '@/components/auth';
 import { ErrorBoundary, ErrorPage } from '@/components/common/ErrorBoundary';
 import { ChatWidget } from '@/components/chat/ChatWidget';
+import { VentureProvider } from '@/contexts/VentureContext';
 
 // Lazy load pages for better performance
 const LandingPage = React.lazy(() => import('@/pages/Landing'));
@@ -18,6 +19,7 @@ const VerifyEmailPage = React.lazy(() => import('@/pages/Auth/VerifyEmail'));
 const ResetPasswordPage = React.lazy(() => import('@/pages/Auth/ResetPassword'));
 const ContactPage = React.lazy(() => import('@/pages/Contact'));
 const JourneyPage = React.lazy(() => import('@/pages/Journey'));
+const DeliverableLibraryPage = React.lazy(() => import('@/pages/DeliverableLibrary'));
 
 // Loading fallback
 const PageLoader = () => (
@@ -34,8 +36,9 @@ export const Router = () => {
     <ErrorBoundary>
       <BrowserRouter>
         <AuthProvider>
-          <React.Suspense fallback={<PageLoader />}>
-            <Routes>
+          <VentureProvider>
+            <React.Suspense fallback={<PageLoader />}>
+              <Routes>
               {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
@@ -56,6 +59,7 @@ export const Router = () => {
               <Route path="/compare" element={<ComparePage />} />
               <Route path="/journey" element={<JourneyPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/deliverables" element={<DeliverableLibraryPage />} />
 
               {/* App prefixed routes (also public for demo) */}
               <Route path="/app" element={<Navigate to="/tier-selection" replace />} />
@@ -64,12 +68,14 @@ export const Router = () => {
               <Route path="/app/whats-next" element={<WhatsNextPage />} />
               <Route path="/app/compare" element={<ComparePage />} />
               <Route path="/app/settings" element={<SettingsPage />} />
+              <Route path="/app/deliverables" element={<DeliverableLibraryPage />} />
 
               {/* 404 Not Found */}
               <Route path="*" element={<ErrorPage />} />
-            </Routes>
-            <ChatWidget />
-          </React.Suspense>
+              </Routes>
+              <ChatWidget />
+            </React.Suspense>
+          </VentureProvider>
         </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>
