@@ -1,11 +1,12 @@
 /**
  * LaunchOS Chat Hook with Claude API Streaming
- * Echte KI-Integration mit Streaming-Support
+ * Vollständige KI-Integration mit Streaming, Attachments, Tool Calling
  */
 
 import * as React from 'react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/components/auth/AuthProvider';
+import type { ProcessedFile } from './useFileUpload';
 
 // ==================== TYPES ====================
 
@@ -14,6 +15,31 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  attachments?: ProcessedFile[];
+}
+
+export interface ToolResult {
+  tool: string;
+  result: {
+    success: boolean;
+    message?: string;
+    file_id?: string;
+    file_name?: string;
+    download_ready?: boolean;
+    investors?: Array<{
+      name: string;
+      type: string;
+      focus: string;
+      ticket: string;
+      website: string;
+    }>;
+    valuation?: {
+      min: number;
+      max: number;
+      method: string;
+    };
+    [key: string]: unknown;
+  };
 }
 
 export interface UserContext {
@@ -24,10 +50,17 @@ export interface UserContext {
   fundingPath?: string;
 }
 
+export interface JourneyContext {
+  currentStep?: string;
+  pendingTasks?: string[];
+}
+
 export interface UseChatStreamOptions {
   sessionId?: string;
   userContext?: UserContext;
+  journeyContext?: JourneyContext;
   onError?: (error: Error) => void;
+  onToolResult?: (result: ToolResult) => void;
 }
 
 export interface UseChatStreamReturn {
@@ -35,7 +68,8 @@ export interface UseChatStreamReturn {
   isLoading: boolean;
   isStreaming: boolean;
   error: Error | null;
-  sendMessage: (content: string) => Promise<void>;
+  toolResults: ToolResult[];
+  sendMessage: (content: string, attachments?: ProcessedFile[]) => Promise<void>;
   stopStreaming: () => void;
   clearMessages: () => void;
   loadSession: (sessionId: string) => Promise<void>;
@@ -49,6 +83,7 @@ export function useChatStream(options: UseChatStreamOptions = {}): UseChatStream
   const [isLoading, setIsLoading] = React.useState(false);
   const [isStreaming, setIsStreaming] = React.useState(false);
   const [error, setError] = React.useState<Error | null>(null);
+  const [toolResults, setToolResults] = React.useState<ToolResult[]>([]);
   const abortControllerRef = React.useRef<AbortController | null>(null);
 
   // Build user context from profile
@@ -86,13 +121,17 @@ export function useChatStream(options: UseChatStreamOptions = {}): UseChatStream
     }
   }, []);
 
-  // Send message with streaming
-  const sendMessage = React.useCallback(async (content: string) => {
-    if (!content.trim() || isLoading) return;
+  // Send message with streaming and attachments
+  const sendMessage = React.useCallback(async (
+    content: string,
+    attachments: ProcessedFile[] = []
+  ) => {
+    if ((!content.trim() && attachments.length === 0) || isLoading) return;
 
     setError(null);
     setIsLoading(true);
     setIsStreaming(true);
+    setToolResults([]);
 
     // Add user message immediately
     const userMessage: ChatMessage = {
@@ -100,6 +139,7 @@ export function useChatStream(options: UseChatStreamOptions = {}): UseChatStream
       role: 'user',
       content: content.trim(),
       timestamp: new Date(),
+      attachments,
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -136,6 +176,15 @@ export function useChatStream(options: UseChatStreamOptions = {}): UseChatStream
         content: m.content,
       }));
 
+      // Prepare attachments for API
+      const apiAttachments = attachments.map(a => ({
+        type: a.type,
+        mimeType: a.mimeType,
+        name: a.name,
+        base64: a.base64,
+        extractedText: a.extractedText,
+      }));
+
       // Get Supabase URL
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -161,6 +210,8 @@ export function useChatStream(options: UseChatStreamOptions = {}): UseChatStream
             userContext: getUserContext(),
             sessionId: options.sessionId,
             userId: user?.id,
+            attachments: apiAttachments,
+            journeyContext: options.journeyContext,
           }),
           signal: abortControllerRef.current.signal,
         }
@@ -200,14 +251,37 @@ export function useChatStream(options: UseChatStreamOptions = {}): UseChatStream
             try {
               const parsed = JSON.parse(data);
 
-              if (parsed.error) {
+              if (parsed.type === 'error') {
                 throw new Error(parsed.error);
               }
 
-              if (parsed.text) {
+              if (parsed.type === 'text' && parsed.text) {
                 fullContent += parsed.text;
 
                 // Update assistant message with streamed content
+                setMessages(prev =>
+                  prev.map(m =>
+                    m.id === assistantMessageId
+                      ? { ...m, content: fullContent }
+                      : m
+                  )
+                );
+              } else if (parsed.type === 'tool_start') {
+                // Tool wird ausgeführt
+                console.log('Tools starting:', parsed.tools);
+              } else if (parsed.type === 'tool_result') {
+                // Tool-Ergebnis erhalten
+                const toolResult: ToolResult = {
+                  tool: parsed.tool,
+                  result: parsed.result,
+                };
+                setToolResults(prev => [...prev, toolResult]);
+                options.onToolResult?.(toolResult);
+              }
+
+              // Legacy format support
+              if (parsed.text && !parsed.type) {
+                fullContent += parsed.text;
                 setMessages(prev =>
                   prev.map(m =>
                     m.id === assistantMessageId
@@ -264,6 +338,7 @@ export function useChatStream(options: UseChatStreamOptions = {}): UseChatStream
   // Clear messages
   const clearMessages = React.useCallback(() => {
     setMessages([]);
+    setToolResults([]);
     setError(null);
   }, []);
 
@@ -272,6 +347,7 @@ export function useChatStream(options: UseChatStreamOptions = {}): UseChatStream
     isLoading,
     isStreaming,
     error,
+    toolResults,
     sendMessage,
     stopStreaming,
     clearMessages,

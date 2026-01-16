@@ -16,6 +16,7 @@ import {
 import { cn } from '@/lib/utils/cn';
 import { Card, Button, Progress } from '@/components/ui';
 import { ProgressDashboard } from '@/components/results';
+import { ChatModal } from '@/components/chat';
 import { useStore } from '@/store';
 import type { ActionPlan, ActionPhase, ActionTask } from '@/types';
 
@@ -26,6 +27,8 @@ interface ActionPlanTimelineProps {
 
 export const ActionPlanTimeline = ({ plan, activeView = 'timeline' }: ActionPlanTimelineProps) => {
   const [expandedPhase, setExpandedPhase] = React.useState<number | null>(0);
+  const [isChatOpen, setIsChatOpen] = React.useState(false);
+  const [chatContext, setChatContext] = React.useState<{ currentStep?: string; pendingTasks?: string[] } | undefined>();
   const { completedTasks, toggleTaskComplete, getPhaseCompletionRate } = useStore();
 
   // Calculate overall progress for header
@@ -118,11 +121,34 @@ export const ActionPlanTimeline = ({ plan, activeView = 'timeline' }: ActionPlan
             Brauchst du Hilfe bei einem Meilenstein? Der KI-Assistent kann dich bei der Umsetzung unterstutzen.
           </p>
         </div>
-        <Button variant="secondary" size="sm" className="flex-shrink-0">
+        <Button
+          variant="secondary"
+          size="sm"
+          className="flex-shrink-0"
+          onClick={() => {
+            const pendingTasks = plan.phases
+              .flatMap(p => p.tasks)
+              .filter(t => !completedTasks.includes(t.id))
+              .slice(0, 5)
+              .map(t => t.title);
+            setChatContext({
+              currentStep: currentPhaseIndex >= 0 ? plan.phases[currentPhaseIndex]?.title : undefined,
+              pendingTasks,
+            });
+            setIsChatOpen(true);
+          }}
+        >
           <MessageCircle className="w-4 h-4 mr-2" />
           Chat starten
         </Button>
       </motion.div>
+
+      {/* Chat Modal */}
+      <ChatModal
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        journeyContext={chatContext}
+      />
 
       {/* Dashboard View */}
       {activeView === 'dashboard' && (
@@ -318,6 +344,13 @@ export const ActionPlanTimeline = ({ plan, activeView = 'timeline' }: ActionPlan
                                 milestones={phase.milestones}
                                 phaseComplete={isComplete}
                                 phaseIndex={index}
+                                onMilestoneClick={(milestone) => {
+                                  setChatContext({
+                                    currentStep: `${phase.title}: ${milestone}`,
+                                    pendingTasks: [milestone],
+                                  });
+                                  setIsChatOpen(true);
+                                }}
                               />
                             )}
 
@@ -392,10 +425,12 @@ const MilestoneVisualizer = ({
   milestones,
   phaseComplete,
   phaseIndex,
+  onMilestoneClick,
 }: {
   milestones: string[];
   phaseComplete: boolean;
   phaseIndex: number;
+  onMilestoneClick?: (milestone: string) => void;
 }) => {
   return (
     <div className="relative">
@@ -462,6 +497,10 @@ const MilestoneVisualizer = ({
                   variant="ghost"
                   size="sm"
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onMilestoneClick?.(milestone);
+                  }}
                 >
                   <Play className="w-4 h-4 mr-1" />
                   Starten
