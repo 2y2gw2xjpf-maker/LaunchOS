@@ -10,6 +10,8 @@ import {
   HelpCircle,
   Settings,
   FileText,
+  GitCompare,
+  Map,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useStore } from '@/store';
@@ -24,10 +26,22 @@ export const Sidebar = ({ className }: SidebarProps) => {
 
   const mainNavigation = [
     {
+      name: 'Founders Journey',
+      href: '/journey',
+      icon: Map,
+      description: 'Dein Fortschritt',
+    },
+    {
       name: 'Was tun?',
       href: '/whats-next',
       icon: Compass,
       description: 'Route & Action Plan',
+    },
+    {
+      name: 'Vergleich',
+      href: '/compare',
+      icon: GitCompare,
+      description: 'Szenarien vergleichen',
     },
     {
       name: 'Bewertung',
@@ -35,15 +49,20 @@ export const Sidebar = ({ className }: SidebarProps) => {
       icon: Calculator,
       description: '5 Methoden',
     },
-  ];
-
-  const secondaryNavigation = [
-    { name: 'Methodik', href: '/about/methodology', icon: FileText },
-    { name: 'Hilfe', href: '/about/help', icon: HelpCircle },
+    {
+      name: 'Methodik',
+      href: '/about/methodology',
+      icon: FileText,
+      description: 'So funktioniert es',
+    },
   ];
 
   const isInApp = location.pathname.startsWith('/whats-next') ||
-                  location.pathname.startsWith('/valuation');
+                  location.pathname.startsWith('/valuation') ||
+                  location.pathname.startsWith('/compare') ||
+                  location.pathname.startsWith('/journey') ||
+                  location.pathname.startsWith('/settings') ||
+                  location.pathname.startsWith('/app/');
 
   if (!isInApp) return null;
 
@@ -58,7 +77,26 @@ export const Sidebar = ({ className }: SidebarProps) => {
           className
         )}
       >
-        <div className="flex-1 py-6 px-3 overflow-y-auto">
+        {/* Collapse Toggle Button at Top */}
+        <div className="px-3 pt-4 pb-2 flex justify-end">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className={cn(
+              'w-8 h-8 rounded-full flex items-center justify-center',
+              'bg-gradient-to-r from-purple-600 to-pink-600',
+              'hover:shadow-lg hover:shadow-purple-500/30 transition-all',
+              'active:scale-95'
+            )}
+          >
+            {sidebarOpen ? (
+              <ChevronLeft className="w-4 h-4 text-white" />
+            ) : (
+              <ChevronRight className="w-4 h-4 text-white" />
+            )}
+          </button>
+        </div>
+
+        <div className="flex-1 py-2 px-3 overflow-y-auto">
           <nav className="space-y-2">
             {mainNavigation.map((item) => {
               const isActive = location.pathname.startsWith(item.href);
@@ -100,87 +138,37 @@ export const Sidebar = ({ className }: SidebarProps) => {
               );
             })}
           </nav>
-
-          <div className="my-6 h-px bg-navy/10" />
-
-          <nav className="space-y-2">
-            {secondaryNavigation.map((item) => {
-              const isActive = location.pathname === item.href;
-              return (
-                <NavLink
-                  key={item.name}
-                  to={item.href}
-                  className={cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all',
-                    isActive
-                      ? 'bg-navy/5 text-navy'
-                      : 'text-charcoal/50 hover:bg-navy/5 hover:text-navy'
-                  )}
-                >
-                  <item.icon className="w-5 h-5 flex-shrink-0" />
-                  <AnimatePresence>
-                    {sidebarOpen && (
-                      <motion.span
-                        initial={{ opacity: 0, width: 0 }}
-                        animate={{ opacity: 1, width: 'auto' }}
-                        exit={{ opacity: 0, width: 0 }}
-                        className="text-sm font-medium whitespace-nowrap overflow-hidden"
-                      >
-                        {item.name}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </NavLink>
-              );
-            })}
-          </nav>
-        </div>
-
-        <div className="p-3 border-t border-navy/5">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-charcoal/50 hover:bg-navy/5 hover:text-navy transition-colors"
-          >
-            {sidebarOpen ? (
-              <>
-                <ChevronLeft className="w-5 h-5" />
-                <span className="text-sm font-medium">Einklappen</span>
-              </>
-            ) : (
-              <ChevronRight className="w-5 h-5" />
-            )}
-          </button>
         </div>
       </motion.aside>
 
       {/* Mobile Bottom Nav */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-navy/10 z-30">
         <div className="flex items-center justify-around py-2">
-          {mainNavigation.map((item) => {
+          {mainNavigation.slice(0, 4).map((item) => {
             const isActive = location.pathname.startsWith(item.href);
             return (
               <NavLink
                 key={item.name}
                 to={item.href}
                 className={cn(
-                  'flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-colors',
+                  'flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-colors',
                   isActive ? 'text-navy' : 'text-charcoal/40'
                 )}
               >
-                <item.icon className="w-6 h-6" />
-                <span className="text-xs font-medium">{item.name}</span>
+                <item.icon className="w-5 h-5" />
+                <span className="text-[10px] font-medium">{item.name.split(' ')[0]}</span>
               </NavLink>
             );
           })}
           <NavLink
-            to="/about"
+            to="/about/methodology"
             className={cn(
-              'flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-colors',
+              'flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-colors',
               location.pathname.startsWith('/about') ? 'text-navy' : 'text-charcoal/40'
             )}
           >
-            <Settings className="w-6 h-6" />
-            <span className="text-xs font-medium">Mehr</span>
+            <FileText className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Methodik</span>
           </NavLink>
         </div>
       </nav>

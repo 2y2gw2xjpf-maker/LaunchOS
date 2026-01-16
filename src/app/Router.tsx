@@ -2,6 +2,7 @@ import * as React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, ProtectedRoute, AuthCallback } from '@/components/auth';
 import { ErrorBoundary, ErrorPage } from '@/components/common/ErrorBoundary';
+import { ChatWidget } from '@/components/chat/ChatWidget';
 
 // Lazy load pages for better performance
 const LandingPage = React.lazy(() => import('@/pages/Landing'));
@@ -48,25 +49,26 @@ export const Router = () => {
               <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
               <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
 
-              {/* App Routes (with optional auth) */}
+              {/* App Routes (public for demo mode) */}
               <Route path="/tier-selection" element={<TierSelectionPage />} />
               <Route path="/whats-next" element={<WhatsNextPage />} />
               <Route path="/valuation" element={<ValuationPage />} />
               <Route path="/compare" element={<ComparePage />} />
+              <Route path="/journey" element={<JourneyPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
 
-              {/* Protected App Routes (require auth when Supabase is configured) */}
-              <Route element={<ProtectedRoute />}>
-                <Route path="/app" element={<Navigate to="/tier-selection" replace />} />
-                <Route path="/app/journey" element={<JourneyPage />} />
-                <Route path="/app/valuation" element={<ValuationPage />} />
-                <Route path="/app/whats-next" element={<WhatsNextPage />} />
-                <Route path="/app/compare" element={<ComparePage />} />
-                <Route path="/app/settings" element={<SettingsPage />} />
-              </Route>
+              {/* App prefixed routes (also public for demo) */}
+              <Route path="/app" element={<Navigate to="/tier-selection" replace />} />
+              <Route path="/app/journey" element={<JourneyPage />} />
+              <Route path="/app/valuation" element={<ValuationPage />} />
+              <Route path="/app/whats-next" element={<WhatsNextPage />} />
+              <Route path="/app/compare" element={<ComparePage />} />
+              <Route path="/app/settings" element={<SettingsPage />} />
 
               {/* 404 Not Found */}
               <Route path="*" element={<ErrorPage />} />
             </Routes>
+            <ChatWidget />
           </React.Suspense>
         </AuthProvider>
       </BrowserRouter>
