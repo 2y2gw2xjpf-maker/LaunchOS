@@ -15,8 +15,11 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading, isConfigured } = useAuth();
   const location = useLocation();
 
-  // If Supabase is not configured, allow access (development mode)
-  if (!isConfigured) {
+  // Skip auth in development mode if VITE_SKIP_AUTH is set
+  const skipAuth = import.meta.env.VITE_SKIP_AUTH === 'true';
+
+  // If Supabase is not configured or auth is skipped, allow access (development mode)
+  if (!isConfigured || skipAuth) {
     return children ? <>{children}</> : <Outlet />;
   }
 

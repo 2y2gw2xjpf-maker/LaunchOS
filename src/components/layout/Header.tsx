@@ -18,7 +18,11 @@ export const Header = ({ className }: HeaderProps) => {
   const profileMenuRef = React.useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, profile, signOut } = useAuth();
+  const { user: authUser, profile, signOut } = useAuth();
+
+  // In dev mode with SKIP_AUTH, treat as logged in for UI purposes
+  const skipAuth = import.meta.env.VITE_SKIP_AUTH === 'true';
+  const user = authUser || (skipAuth ? { email: 'dev@launchos.de' } : null);
 
   // Close profile menu when clicking outside
   React.useEffect(() => {

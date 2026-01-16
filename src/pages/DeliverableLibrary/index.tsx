@@ -5,6 +5,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   useDeliverables,
   DELIVERABLE_LABELS,
@@ -12,7 +13,7 @@ import {
 } from '@/hooks/useDeliverables';
 import type { DeliverableType } from '@/hooks/useDeliverables';
 import { useOptionalVentureContext } from '@/contexts/VentureContext';
-import { EnhancedSidebar } from '@/components/layout/sidebar/EnhancedSidebar';
+import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 import {
   Download, Trash2, Eye, Plus,
   Calendar, HardDrive, History, Search,
@@ -65,66 +66,72 @@ export default function DeliverableLibrary() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
+    <div className="min-h-screen bg-cream">
+      <Header />
       <EnhancedSidebar />
 
-      {/* Main Content */}
-      <div className="md:ml-[300px] transition-all duration-200">
-        {/* Header */}
-        <div className="bg-white/80 backdrop-blur-sm border-b border-purple-100 px-8 py-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                  <FolderOpen className="w-7 h-7 text-purple-500" />
-                  Deliverable Library
-                </h1>
-                <p className="text-gray-500 mt-1">
-                  {activeVenture ? `Dokumente fuer ${activeVenture.name}` : 'Alle generierten Dokumente'}
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-                  className="p-2 hover:bg-purple-50 rounded-lg"
-                  title={viewMode === 'grid' ? 'Listenansicht' : 'Rasteransicht'}
-                >
-                  {viewMode === 'grid' ? <List className="w-5 h-5" /> : <Grid className="w-5 h-5" />}
-                </button>
-              </div>
-            </div>
+      <PageContainer withSidebar maxWidth="wide">
+        {/* Page Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <h1 className="font-display text-display-sm text-charcoal mb-2">
+            Deliverable Library
+          </h1>
+          <p className="text-charcoal/60">
+            {activeVenture ? `Dokumente für ${activeVenture.name}` : 'Alle generierten Dokumente'}
+          </p>
+        </motion.div>
 
-            {/* Search & Filter */}
-            <div className="flex flex-wrap gap-4">
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Dokumente suchen..."
-                  className="w-full pl-10 pr-4 py-2.5 border border-purple-200 rounded-xl focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Filter className="w-5 h-5 text-gray-400" />
-                <select
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value as FilterType)}
-                  className="px-4 py-2.5 border border-purple-200 rounded-xl focus:border-purple-400 outline-none"
-                >
-                  <option value="all">Alle Typen</option>
-                  {Object.entries(DELIVERABLE_LABELS).map(([key, label]) => (
-                    <option key={key} value={key}>{label}</option>
-                  ))}
-                </select>
-              </div>
+        {/* Search & Filter Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white/90 backdrop-blur-sm rounded-2xl border border-purple-100 shadow-card p-4 mb-6"
+        >
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/40" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Dokumente suchen..."
+                className="w-full pl-10 pr-4 py-2.5 border border-purple-200 rounded-xl focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none bg-white"
+              />
             </div>
+            <div className="flex items-center gap-2">
+              <Filter className="w-5 h-5 text-charcoal/40" />
+              <select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value as FilterType)}
+                className="px-4 py-2.5 border border-purple-200 rounded-xl focus:border-purple-400 outline-none bg-white"
+              >
+                <option value="all">Alle Typen</option>
+                {Object.entries(DELIVERABLE_LABELS).map(([key, label]) => (
+                  <option key={key} value={key}>{label}</option>
+                ))}
+              </select>
+            </div>
+            <button
+              onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+              className="p-2.5 hover:bg-purple-50 rounded-xl border border-purple-200 transition-colors"
+              title={viewMode === 'grid' ? 'Listenansicht' : 'Rasteransicht'}
+            >
+              {viewMode === 'grid' ? <List className="w-5 h-5 text-charcoal/60" /> : <Grid className="w-5 h-5 text-charcoal/60" />}
+            </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Content */}
-        <div className="max-w-7xl mx-auto px-8 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
           {isLoading ? (
             <div className="animate-pulse space-y-4">
               <div className="h-8 w-48 bg-purple-200 rounded-lg" />
@@ -303,8 +310,8 @@ export default function DeliverableLibrary() {
               </table>
             </div>
           )}
-        </div>
-      </div>
+        </motion.div>
+      </PageContainer>
     </div>
   );
 }
