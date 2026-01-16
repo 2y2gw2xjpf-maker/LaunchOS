@@ -75,12 +75,14 @@ export const NumberInput = ({
             onClick={decrement}
             disabled={disabled || (value !== undefined && value <= min)}
             className={cn(
-              'p-3 rounded-l-xl border-2 border-r-0 border-brand-100 bg-white',
-              'hover:bg-brand-50 transition-colors',
-              'disabled:opacity-50 disabled:cursor-not-allowed'
+              'flex items-center justify-center w-14 h-14 rounded-l-2xl',
+              'bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-r-0 border-purple-200',
+              'hover:from-purple-100 hover:to-pink-100 hover:border-purple-300',
+              'active:scale-95 transition-all duration-200',
+              'disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:from-purple-50 disabled:hover:to-pink-50'
             )}
           >
-            <Minus className="w-5 h-5 text-brand-600" />
+            <Minus className="w-5 h-5 text-purple-600" />
           </button>
         )}
         <input
@@ -95,21 +97,24 @@ export const NumberInput = ({
           max={max}
           step={step}
           className={cn(
-            'input-field text-center',
-            showControls && 'rounded-none',
-            suffix && 'pr-12',
-            error && 'border-red-400 focus:border-red-500',
-            disabled && 'opacity-50 cursor-not-allowed',
+            'flex-1 h-14 px-4 text-center text-lg font-semibold text-gray-900',
+            'bg-white border-2 border-purple-200',
+            'focus:border-purple-500 focus:ring-4 focus:ring-purple-100 outline-none',
+            'transition-all duration-200',
+            showControls ? 'rounded-none border-x-0' : 'rounded-2xl',
+            !showControls && suffix && 'pr-16',
+            error && 'border-red-400 focus:border-red-500 focus:ring-red-100',
+            disabled && 'opacity-50 cursor-not-allowed bg-gray-50',
             '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
           )}
         />
         {suffix && !showControls && (
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-charcoal/40 font-medium">
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">
             {suffix}
           </span>
         )}
         {showControls && suffix && (
-          <span className="flex items-center px-3 border-y-2 border-brand-100 bg-brand-50/50 text-charcoal/60 font-medium text-sm whitespace-nowrap">
+          <span className="flex items-center justify-center h-14 px-4 bg-gradient-to-br from-purple-50 to-pink-50 border-y-2 border-purple-200 text-purple-600 font-semibold text-sm whitespace-nowrap">
             {suffix}
           </span>
         )}
@@ -119,17 +124,19 @@ export const NumberInput = ({
             onClick={increment}
             disabled={disabled || (max !== undefined && value !== undefined && value >= max)}
             className={cn(
-              'p-3 rounded-r-xl border-2 border-l-0 border-brand-100 bg-white',
-              'hover:bg-brand-50 transition-colors',
-              'disabled:opacity-50 disabled:cursor-not-allowed'
+              'flex items-center justify-center w-14 h-14 rounded-r-2xl',
+              'bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-l-0 border-purple-200',
+              'hover:from-purple-100 hover:to-pink-100 hover:border-purple-300',
+              'active:scale-95 transition-all duration-200',
+              'disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:from-purple-50 disabled:hover:to-pink-50'
             )}
           >
-            <Plus className="w-5 h-5 text-brand-600" />
+            <Plus className="w-5 h-5 text-purple-600" />
           </button>
         )}
       </div>
-      {hint && !error && <p className="mt-1.5 text-sm text-charcoal/50">{hint}</p>}
-      {error && <p className="mt-1.5 text-sm text-red-500">{error}</p>}
+      {hint && !error && <p className="mt-2 text-sm text-gray-500">{hint}</p>}
+      {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
     </div>
   );
 };
