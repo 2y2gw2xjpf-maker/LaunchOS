@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, User, Settings, CreditCard, LogOut, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { Button } from '@/components/ui';
 import { Logo } from '@/components/Logo';
@@ -13,9 +13,22 @@ interface HeaderProps {
 
 export const Header = ({ className }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = React.useState(false);
+  const profileMenuRef = React.useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile, signOut } = useAuth();
+
+  // Close profile menu when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Different navigation for landing vs app
   const isLandingPage = location.pathname === '/' || location.pathname === '/about' || location.pathname === '/pricing' || location.pathname === '/contact';
@@ -32,7 +45,8 @@ export const Header = ({ className }: HeaderProps) => {
   const appNavigation = [
     { name: 'Was tun?', href: '/whats-next' },
     { name: 'Bewertung', href: '/valuation' },
-    { name: 'Methodik', href: '/about' },
+    { name: 'Methodik', href: '/about/methodology' },
+    { name: 'Kontakt', href: '/contact' },
   ];
 
   const navigation = (isLandingPage && !user) ? landingNavigation : appNavigation;
@@ -114,18 +128,74 @@ export const Header = ({ className }: HeaderProps) => {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
             {user ? (
-              <>
-                <Link
-                  to="/app/settings"
-                  onClick={() => window.scrollTo(0, 0)}
-                  className="text-sm font-medium text-text-secondary hover:text-purple-600 transition-colors"
+              <div className="relative" ref={profileMenuRef}>
+                <button
+                  onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-2 rounded-xl transition-all",
+                    "hover:bg-purple-50",
+                    profileMenuOpen && "bg-purple-50"
+                  )}
                 >
-                  Einstellungen
-                </Link>
-                <button onClick={handleCTAClick} className="btn-primary text-base px-6 py-3">
-                  <span>Zur App</span>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white font-semibold text-sm">
+                    {profile?.full_name?.charAt(0) || user.email?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                  <span className="text-sm font-medium text-charcoal max-w-[120px] truncate">
+                    {profile?.full_name || user.email?.split('@')[0]}
+                  </span>
                 </button>
-              </>
+
+                <AnimatePresence>
+                  {profileMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-purple-100 py-2 z-50"
+                    >
+                      <div className="px-4 py-3 border-b border-purple-50">
+                        <p className="text-sm font-semibold text-charcoal truncate">
+                          {profile?.full_name || 'User'}
+                        </p>
+                        <p className="text-xs text-charcoal/60 truncate">{user.email}</p>
+                      </div>
+
+                      <div className="py-1">
+                        <Link
+                          to="/settings"
+                          onClick={() => { setProfileMenuOpen(false); window.scrollTo(0, 0); }}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-charcoal hover:bg-purple-50 transition-colors"
+                        >
+                          <Settings className="w-4 h-4 text-purple-500" />
+                          Einstellungen
+                        </Link>
+                        <Link
+                          to="/settings/billing"
+                          onClick={() => { setProfileMenuOpen(false); window.scrollTo(0, 0); }}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-charcoal hover:bg-purple-50 transition-colors"
+                        >
+                          <CreditCard className="w-4 h-4 text-purple-500" />
+                          Abrechnung
+                        </Link>
+                      </div>
+
+                      <div className="border-t border-purple-50 py-1">
+                        <button
+                          onClick={() => {
+                            setProfileMenuOpen(false);
+                            signOut();
+                          }}
+                          className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Abmelden
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             ) : (
               <>
                 <Link

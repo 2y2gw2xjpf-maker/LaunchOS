@@ -71,7 +71,9 @@ export const EnhancedSidebar = () => {
     location.pathname.startsWith('/whats-next') ||
     location.pathname.startsWith('/valuation') ||
     location.pathname.startsWith('/compare') ||
-    location.pathname.startsWith('/journey');
+    location.pathname.startsWith('/journey') ||
+    location.pathname.startsWith('/about') ||
+    location.pathname.startsWith('/settings');
 
   if (!showSidebar) return null;
 
