@@ -28,6 +28,7 @@ export function LoginPage() {
   const [fullName, setFullName] = React.useState('');
   const [isSignUp, setIsSignUp] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
+  const [rememberMe, setRememberMe] = React.useState(true);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
@@ -55,7 +56,7 @@ export function LoginPage() {
         await signUp(email, password, fullName);
         setSuccess('Registrierung erfolgreich! Bitte überprüfe deine E-Mail für die Bestätigung.');
       } else {
-        await signIn(email, password);
+        await signIn(email, password, rememberMe);
         navigate(from, { replace: true });
       }
     } catch (err: unknown) {
@@ -346,6 +347,32 @@ export function LoginPage() {
                   </button>
                 </div>
               </div>
+
+              {/* Remember Me Checkbox (only for login) */}
+              {!isSignUp && (
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setRememberMe(!rememberMe)}
+                    className={cn(
+                      'w-5 h-5 rounded border-2 flex items-center justify-center transition-all',
+                      rememberMe
+                        ? 'bg-purple-600 border-purple-600'
+                        : 'bg-white border-gray-300 hover:border-purple-400'
+                    )}
+                  >
+                    {rememberMe && (
+                      <CheckCircle className="w-3.5 h-3.5 text-white" />
+                    )}
+                  </button>
+                  <label
+                    onClick={() => setRememberMe(!rememberMe)}
+                    className="text-sm text-gray-600 cursor-pointer select-none"
+                  >
+                    Angemeldet bleiben
+                  </label>
+                </div>
+              )}
 
               {/* Submit Button */}
               <button

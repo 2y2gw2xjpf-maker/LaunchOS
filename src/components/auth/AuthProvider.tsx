@@ -13,7 +13,7 @@ interface AuthContextType {
   isConfigured: boolean;
 
   // Auth Actions
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   signUp: (email: string, password: string, fullName?: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signInWithApple: () => Promise<void>;
@@ -54,10 +54,36 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
+  // Handle temporary session cleanup on browser close
+  React.useEffect(() => {
+    const handleBeforeUnload = () => {
+      // Check if this was a temporary session (rememberMe was false)
+      const isTemporarySession = sessionStorage.getItem('launchos-session-temporary');
+      if (isTemporarySession === 'true') {
+        // Sign out on browser close - this uses synchronous localStorage removal
+        // The actual signOut will happen on next visit if the session is still valid
+        localStorage.setItem('launchos-pending-signout', 'true');
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
   // Initialize auth state
   React.useEffect(() => {
     if (!isConfigured) {
       setLoading(false);
+      return;
+    }
+
+    // Check for pending signout from previous session
+    const pendingSignout = localStorage.getItem('launchos-pending-signout');
+    if (pendingSignout === 'true') {
+      localStorage.removeItem('launchos-pending-signout');
+      supabase.auth.signOut().then(() => {
+        setLoading(false);
+      });
       return;
     }
 
@@ -128,7 +154,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // ==================== AUTH ACTIONS ====================
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, rememberMe: boolean = true) => {
+    // Set session persistence based on rememberMe
+    // When rememberMe is false, we'll clear the session on browser close
+    if (!rememberMe) {
+      // Store flag to clear session on page unload
+      sessionStorage.setItem('launchos-session-temporary', 'true');
+    } else {
+      sessionStorage.removeItem('launchos-session-temporary');
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
