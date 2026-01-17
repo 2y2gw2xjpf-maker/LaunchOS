@@ -1,14 +1,14 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Wrench, BookOpen, CheckSquare, MessageSquare,
-  Puzzle, AlertTriangle, Search, ArrowRight,
+  Puzzle, AlertTriangle, ArrowRight,
   Clock, TrendingUp
 } from 'lucide-react';
 import { useToolkit } from '@/hooks/useToolkit';
 import { EnhancedSidebar } from '@/components/layout/sidebar/EnhancedSidebar';
 import { Header } from '@/components/layout/Header';
+import { ToolkitSearch } from './components/ToolkitSearch';
 
 const QUICK_LINKS = [
   {
@@ -51,8 +51,6 @@ export default function ToolkitPage() {
     getCriticalPitfalls,
     isLoading
   } = useToolkit();
-
-  const [searchQuery, setSearchQuery] = useState('');
 
   const featuredGuides = getFeaturedGuides();
   const criticalPitfalls = getCriticalPitfalls();
@@ -104,17 +102,11 @@ export default function ToolkitPage() {
                   Prompts aus 50+ Tagen praktischer Erfahrung mit AI-Coding-Tools.
                 </p>
 
-                {/* Search */}
-                <div className="relative max-w-xl">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-300" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                {/* Search with Live Results */}
+                <div className="max-w-xl">
+                  <ToolkitSearch
                     placeholder="Suche nach Guides, Prompts, Tools..."
-                    className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl
-                             text-white placeholder-purple-200 focus:bg-white/20 focus:border-white/40
-                             focus:outline-none transition-all"
+                    className="[&_input]:bg-white/10 [&_input]:border-white/20 [&_input]:text-white [&_input]:placeholder-purple-200 [&_input:focus]:bg-white/20 [&_input:focus]:border-white/40"
                   />
                 </div>
               </motion.div>

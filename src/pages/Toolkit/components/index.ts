@@ -5,3 +5,4 @@ export { ToolRatings, ToolRatingsRadar } from './ToolRatings';
 export { PitfallCard } from './PitfallCard';
 export { BookmarkButton } from './BookmarkButton';
 export { ToolCompareTable } from './ToolCompareTable';
+export { ToolkitSearch } from './ToolkitSearch';
