@@ -28,25 +28,8 @@ import { UpgradePrompt } from '@/components/subscription';
 type ViewMode = 'kanban' | 'table';
 
 export default function InvestorCRMPage() {
+  // All hooks must be called before any early returns (React rules of hooks)
   const { canUseFeature, isLoading: subscriptionLoading } = useSubscription();
-
-  // Show upgrade prompt if user doesn't have CRM access
-  if (!subscriptionLoading && !canUseFeature('investor_crm')) {
-    return (
-      <div className="min-h-screen bg-cream">
-        <Header />
-        <EnhancedSidebar />
-        <PageContainer withSidebar maxWidth="full">
-          <UpgradePrompt
-            feature="investor_crm"
-            title="Investor CRM"
-            description="Tracke Investoren mit Kanban-Board, Pipeline-Management und Follow-up-Erinnerungen. Verfügbar im Founder-Plan."
-            icon={<Users className="w-8 h-8 text-brand-600" />}
-          />
-        </PageContainer>
-      </div>
-    );
-  }
   const {
     contacts,
     tags,
@@ -73,17 +56,32 @@ export default function InvestorCRMPage() {
   const [selectedTypes, setSelectedTypes] = React.useState<InvestorType[]>([]);
   const [selectedPriorities, setSelectedPriorities] = React.useState<('high' | 'medium' | 'low')[]>([]);
   const [selectedTagIds, setSelectedTagIds] = React.useState<string[]>([]);
-
   const [showContactModal, setShowContactModal] = React.useState(false);
   const [editingContact, setEditingContact] = React.useState<InvestorContact | undefined>();
   const [initialStage, setInitialStage] = React.useState<PipelineStage | undefined>();
-
   const [showDetailPanel, setShowDetailPanel] = React.useState(false);
   const [selectedContact, setSelectedContact] = React.useState<InvestorContact | undefined>();
   const [contactActivities, setContactActivities] = React.useState<Awaited<ReturnType<typeof getActivities>>>([]);
   const [isLoadingActivities, setIsLoadingActivities] = React.useState(false);
-
   const [showStats, setShowStats] = React.useState(false);
+
+  // Show upgrade prompt if user doesn't have CRM access
+  if (!subscriptionLoading && !canUseFeature('investor_crm')) {
+    return (
+      <div className="min-h-screen bg-cream">
+        <Header />
+        <EnhancedSidebar />
+        <PageContainer withSidebar maxWidth="full">
+          <UpgradePrompt
+            feature="investor_crm"
+            title="Investor CRM"
+            description="Tracke Investoren mit Kanban-Board, Pipeline-Management und Follow-up-Erinnerungen. Verfügbar im Founder-Plan."
+            icon={<Users className="w-8 h-8 text-brand-600" />}
+          />
+        </PageContainer>
+      </div>
+    );
+  }
 
   // Filter contacts
   const filteredContacts = React.useMemo(() => {

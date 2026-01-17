@@ -307,88 +307,103 @@ CREATE TABLE IF NOT EXISTS toolkit_bookmarks (
 
 -- Kategorien: Alle können lesen
 ALTER TABLE toolkit_categories ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can view categories" ON toolkit_categories;
 CREATE POLICY "Anyone can view categories" ON toolkit_categories FOR SELECT USING (is_active = true);
 
 -- Guides: Alle können published lesen
 ALTER TABLE toolkit_guides ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can view published guides" ON toolkit_guides;
 CREATE POLICY "Anyone can view published guides" ON toolkit_guides FOR SELECT USING (is_published = true);
 
 -- Checklists: Alle können published lesen
 ALTER TABLE toolkit_checklists ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can view published checklists" ON toolkit_checklists;
 CREATE POLICY "Anyone can view published checklists" ON toolkit_checklists FOR SELECT USING (is_published = true);
 
 ALTER TABLE toolkit_checklist_items ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can view checklist items" ON toolkit_checklist_items;
 CREATE POLICY "Anyone can view checklist items" ON toolkit_checklist_items FOR SELECT USING (true);
 
 -- Progress: User können nur eigene sehen/bearbeiten
 ALTER TABLE toolkit_checklist_progress ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can manage own progress" ON toolkit_checklist_progress;
 CREATE POLICY "Users can manage own progress" ON toolkit_checklist_progress FOR ALL USING (auth.uid() = user_id);
 
 -- Prompts: Alle können published lesen
 ALTER TABLE toolkit_prompts ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can view published prompts" ON toolkit_prompts;
 CREATE POLICY "Anyone can view published prompts" ON toolkit_prompts FOR SELECT USING (is_published = true);
 
 -- Tools: Alle können lesen
 ALTER TABLE toolkit_tools ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can view tools" ON toolkit_tools;
 CREATE POLICY "Anyone can view tools" ON toolkit_tools FOR SELECT USING (true);
 
 -- Pitfalls: Alle können published lesen
 ALTER TABLE toolkit_pitfalls ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can view published pitfalls" ON toolkit_pitfalls;
 CREATE POLICY "Anyone can view published pitfalls" ON toolkit_pitfalls FOR SELECT USING (is_published = true);
 
 -- Bookmarks: User können nur eigene sehen/bearbeiten
 ALTER TABLE toolkit_bookmarks ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can manage own bookmarks" ON toolkit_bookmarks;
 CREATE POLICY "Users can manage own bookmarks" ON toolkit_bookmarks FOR ALL USING (auth.uid() = user_id);
 
 -- ──────────────────────────────────────────────────────────────
 -- INDEXES
 -- ──────────────────────────────────────────────────────────────
 
-CREATE INDEX idx_toolkit_guides_category ON toolkit_guides(category_id);
-CREATE INDEX idx_toolkit_guides_slug ON toolkit_guides(slug);
-CREATE INDEX idx_toolkit_guides_featured ON toolkit_guides(is_featured) WHERE is_featured = true;
-CREATE INDEX idx_toolkit_guides_tools ON toolkit_guides USING GIN(tools);
-CREATE INDEX idx_toolkit_guides_tags ON toolkit_guides USING GIN(tags);
+CREATE INDEX IF NOT EXISTS idx_toolkit_guides_category ON toolkit_guides(category_id);
+CREATE INDEX IF NOT EXISTS idx_toolkit_guides_slug ON toolkit_guides(slug);
+CREATE INDEX IF NOT EXISTS idx_toolkit_guides_featured ON toolkit_guides(is_featured) WHERE is_featured = true;
+CREATE INDEX IF NOT EXISTS idx_toolkit_guides_tools ON toolkit_guides USING GIN(tools);
+CREATE INDEX IF NOT EXISTS idx_toolkit_guides_tags ON toolkit_guides USING GIN(tags);
 
-CREATE INDEX idx_toolkit_checklists_category ON toolkit_checklists(category_id);
-CREATE INDEX idx_toolkit_checklist_items_checklist ON toolkit_checklist_items(checklist_id);
-CREATE INDEX idx_toolkit_checklist_progress_user ON toolkit_checklist_progress(user_id);
-CREATE INDEX idx_toolkit_checklist_progress_checklist ON toolkit_checklist_progress(checklist_id);
+CREATE INDEX IF NOT EXISTS idx_toolkit_checklists_category ON toolkit_checklists(category_id);
+CREATE INDEX IF NOT EXISTS idx_toolkit_checklist_items_checklist ON toolkit_checklist_items(checklist_id);
+CREATE INDEX IF NOT EXISTS idx_toolkit_checklist_progress_user ON toolkit_checklist_progress(user_id);
+CREATE INDEX IF NOT EXISTS idx_toolkit_checklist_progress_checklist ON toolkit_checklist_progress(checklist_id);
 
-CREATE INDEX idx_toolkit_prompts_category ON toolkit_prompts(category_id);
-CREATE INDEX idx_toolkit_prompts_tool ON toolkit_prompts(target_tool);
-CREATE INDEX idx_toolkit_prompts_tags ON toolkit_prompts USING GIN(tags);
+CREATE INDEX IF NOT EXISTS idx_toolkit_prompts_category ON toolkit_prompts(category_id);
+CREATE INDEX IF NOT EXISTS idx_toolkit_prompts_tool ON toolkit_prompts(target_tool);
+CREATE INDEX IF NOT EXISTS idx_toolkit_prompts_tags ON toolkit_prompts USING GIN(tags);
 
-CREATE INDEX idx_toolkit_tools_slug ON toolkit_tools(slug);
-CREATE INDEX idx_toolkit_pitfalls_category ON toolkit_pitfalls(category);
+CREATE INDEX IF NOT EXISTS idx_toolkit_tools_slug ON toolkit_tools(slug);
+CREATE INDEX IF NOT EXISTS idx_toolkit_pitfalls_category ON toolkit_pitfalls(category);
 
-CREATE INDEX idx_toolkit_bookmarks_user ON toolkit_bookmarks(user_id);
-CREATE INDEX idx_toolkit_bookmarks_content ON toolkit_bookmarks(content_type, content_id);
+CREATE INDEX IF NOT EXISTS idx_toolkit_bookmarks_user ON toolkit_bookmarks(user_id);
+CREATE INDEX IF NOT EXISTS idx_toolkit_bookmarks_content ON toolkit_bookmarks(content_type, content_id);
 
 -- ──────────────────────────────────────────────────────────────
 -- TRIGGERS
 -- ──────────────────────────────────────────────────────────────
 
+DROP TRIGGER IF EXISTS toolkit_categories_updated_at ON toolkit_categories;
 CREATE TRIGGER toolkit_categories_updated_at
   BEFORE UPDATE ON toolkit_categories
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS toolkit_guides_updated_at ON toolkit_guides;
 CREATE TRIGGER toolkit_guides_updated_at
   BEFORE UPDATE ON toolkit_guides
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS toolkit_checklists_updated_at ON toolkit_checklists;
 CREATE TRIGGER toolkit_checklists_updated_at
   BEFORE UPDATE ON toolkit_checklists
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS toolkit_checklist_progress_updated_at ON toolkit_checklist_progress;
 CREATE TRIGGER toolkit_checklist_progress_updated_at
   BEFORE UPDATE ON toolkit_checklist_progress
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS toolkit_prompts_updated_at ON toolkit_prompts;
 CREATE TRIGGER toolkit_prompts_updated_at
   BEFORE UPDATE ON toolkit_prompts
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS toolkit_tools_updated_at ON toolkit_tools;
 CREATE TRIGGER toolkit_tools_updated_at
   BEFORE UPDATE ON toolkit_tools
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
