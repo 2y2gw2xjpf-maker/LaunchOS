@@ -24,8 +24,20 @@ import {
 } from 'lucide-react';
 import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 import { Card, Button } from '@/components/ui';
+import { ChatModal } from '@/components/chat/ChatModal';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { supabase } from '@/lib/supabase';
+
+// Mapping von Phase zu typischen Stages (für Filter wenn DB keine stage-Daten hat)
+const PHASE_TO_STAGES: Record<string, StageFilter[]> = {
+  foundation: ['idea', 'building'],
+  legal: ['idea', 'building'],
+  branding: ['building', 'launched'],
+  product: ['building', 'launched'],
+  launch: ['building', 'launched'],
+  funding: ['building', 'launched', 'scaling'],
+  growth: ['launched', 'scaling'],
+};
 
 // ==================== TYPES ====================
 
@@ -95,10 +107,12 @@ function StepCard({
   step,
   status,
   onStatusChange,
+  onAIHelp,
 }: {
   step: JourneyStep;
   status: StepStatus;
   onStatusChange: (status: StepStatus) => void;
+  onAIHelp: (step: JourneyStep) => void;
 }) {
   const [expanded, setExpanded] = React.useState(false);
 
@@ -138,6 +152,7 @@ function StepCard({
               <Button
                 variant="primary"
                 size="sm"
+                onClick={() => onAIHelp(step)}
                 className="flex-shrink-0 bg-gradient-to-r from-purple-500 to-pink-500 border-0 w-[90px] text-xs inline-flex items-center justify-center gap-1"
               >
                 <Sparkles className="w-3 h-3 flex-shrink-0" />
@@ -220,6 +235,16 @@ export function JourneyPage() {
   const [filter, setFilter] = React.useState<string>('all');
   const [stageFilter, setStageFilter] = React.useState<StageFilter>('all');
   const [loading, setLoading] = React.useState(true);
+
+  // Chat Modal State
+  const [chatModalOpen, setChatModalOpen] = React.useState(false);
+  const [selectedStep, setSelectedStep] = React.useState<JourneyStep | null>(null);
+
+  // Handler für KI-Hilfe Button
+  const handleAIHelp = (step: JourneyStep) => {
+    setSelectedStep(step);
+    setChatModalOpen(true);
+  };
 
   // Load journey data
   React.useEffect(() => {
@@ -331,10 +356,20 @@ export function JourneyPage() {
 
     return stepsToFilter.filter((step) => {
       const conditions = step.applicable_when || {};
-      // Wenn der Step keine stage-Bedingung hat, zeige ihn immer
-      if (!conditions.stage || conditions.stage.length === 0) return true;
-      // Prüfe ob der aktuelle Stage-Filter in den erlaubten Stages ist
-      return conditions.stage.includes(stageFilter);
+
+      // Prüfe zuerst ob DB-Daten vorhanden sind
+      if (conditions.stage && conditions.stage.length > 0) {
+        return conditions.stage.includes(stageFilter);
+      }
+
+      // Fallback: Nutze Phase-basierte Zuordnung wenn keine stage-Daten
+      const phaseStages = PHASE_TO_STAGES[step.phase];
+      if (phaseStages) {
+        return phaseStages.includes(stageFilter);
+      }
+
+      // Default: zeige den Step wenn keine Zuordnung möglich
+      return true;
     });
   };
 
@@ -585,6 +620,7 @@ export function JourneyPage() {
                             step={step}
                             status={progress[step.id] || 'not_started'}
                             onStatusChange={(status) => updateStepStatus(step.id, status)}
+                            onAIHelp={handleAIHelp}
                           />
                         ))
                       ) : (
@@ -614,6 +650,28 @@ export function JourneyPage() {
             </Card>
           )}
         </div>
+
+        {/* Chat Modal für KI-Hilfe */}
+        <ChatModal
+          isOpen={chatModalOpen}
+          onClose={() => {
+            setChatModalOpen(false);
+            setSelectedStep(null);
+          }}
+          journeyContext={
+            selectedStep
+              ? {
+                  currentStep: selectedStep.title,
+                  pendingTasks: [selectedStep.help_action || selectedStep.description],
+                }
+              : undefined
+          }
+          initialMessage={
+            selectedStep
+              ? `Hilf mir beim Thema "${selectedStep.title}": ${selectedStep.help_action || selectedStep.description}`
+              : undefined
+          }
+        />
       </PageContainer>
     </div>
   );
