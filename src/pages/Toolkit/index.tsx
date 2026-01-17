@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Wrench, BookOpen, CheckSquare, MessageSquare,
+  BookOpen, CheckSquare, MessageSquare,
   Puzzle, AlertTriangle, ArrowRight,
   Clock, TrendingUp
 } from 'lucide-react';
@@ -79,17 +79,10 @@ export default function ToolkitPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-500 to-pink-500 flex items-center justify-center">
-              <Wrench className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="font-display text-display-sm text-charcoal">Builder's Toolkit</h1>
-              <p className="text-charcoal/60">
-                Guides, Checklisten und Prompts für deinen Build
-              </p>
-            </div>
-          </div>
+          <h1 className="font-display text-display-sm text-charcoal mb-2">Builder's Toolkit</h1>
+          <p className="text-charcoal/60 mb-6">
+            Guides, Checklisten und Prompts für deinen Build
+          </p>
 
           {/* Search */}
           <div className="max-w-xl">
@@ -105,17 +98,18 @@ export default function ToolkitPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
+              className="h-full"
             >
               <Link
                 to={link.href}
-                className="block bg-white rounded-2xl hover:shadow-lg transition-all duration-300 overflow-hidden group border border-purple-100 hover:border-purple-300"
+                className="flex flex-col h-full bg-white rounded-2xl hover:shadow-lg transition-all duration-300 overflow-hidden group border border-purple-100 hover:border-purple-300"
               >
-                <div className="p-6">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="p-6 flex flex-col h-full">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform flex-shrink-0">
                     <link.icon className="w-6 h-6 text-purple-600" />
                   </div>
-                  <h3 className="font-display font-semibold text-lg text-text-primary mb-2">{link.title}</h3>
-                  <p className="text-text-secondary">{link.description}</p>
+                  <h3 className="font-display font-semibold text-lg text-gray-900 mb-2">{link.title}</h3>
+                  <p className="text-gray-500 text-sm flex-grow">{link.description}</p>
                 </div>
               </Link>
             </motion.div>
