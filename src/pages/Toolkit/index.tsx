@@ -15,28 +15,24 @@ const QUICK_LINKS = [
     description: 'Ist dein Produkt wirklich fertig?',
     href: '/toolkit/checklists/mvp-readiness',
     icon: CheckSquare,
-    color: 'from-green-500 to-emerald-600',
   },
   {
     title: 'Tool-Vergleich',
     description: 'Lovable vs Bolt vs Cursor',
     href: '/toolkit/tools',
     icon: Puzzle,
-    color: 'from-blue-500 to-indigo-600',
   },
   {
     title: 'Prompt-Bibliothek',
     description: 'Copy-Paste Prompts für jeden Use Case',
     href: '/toolkit/prompts',
     icon: MessageSquare,
-    color: 'from-purple-500 to-pink-600',
   },
   {
     title: 'Häufige Fehler',
     description: 'Vermeide diese Anfänger-Fallen',
     href: '/toolkit/pitfalls',
     icon: AlertTriangle,
-    color: 'from-amber-500 to-orange-600',
   },
 ];
 
@@ -112,15 +108,14 @@ export default function ToolkitPage() {
             >
               <Link
                 to={link.href}
-                className="block bg-white rounded-2xl shadow-card hover:shadow-lg transition-all duration-300 overflow-hidden group border border-sand-200"
+                className="block bg-white rounded-2xl hover:shadow-lg transition-all duration-300 overflow-hidden group border border-purple-100 hover:border-purple-300"
               >
-                <div className={`h-1.5 bg-gradient-to-r ${link.color}`} />
-                <div className="p-5">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${link.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                    <link.icon className="w-6 h-6 text-white" />
+                <div className="p-6">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <link.icon className="w-6 h-6 text-purple-600" />
                   </div>
-                  <h3 className="font-semibold text-charcoal mb-1">{link.title}</h3>
-                  <p className="text-sm text-charcoal/60">{link.description}</p>
+                  <h3 className="font-display font-semibold text-lg text-text-primary mb-2">{link.title}</h3>
+                  <p className="text-text-secondary">{link.description}</p>
                 </div>
               </Link>
             </motion.div>
@@ -135,14 +130,14 @@ export default function ToolkitPage() {
             { label: 'Prompts', value: prompts.length, icon: MessageSquare },
             { label: 'Tools', value: tools.length, icon: Puzzle },
           ].map((stat) => (
-            <div key={stat.label} className="bg-white rounded-xl p-4 border border-sand-200 shadow-card">
+            <div key={stat.label} className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-purple-100">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-brand-50 rounded-lg">
-                  <stat.icon className="w-5 h-5 text-brand-600" />
+                <div className="p-2 bg-purple-50 rounded-lg">
+                  <stat.icon className="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-charcoal">{stat.value}</p>
-                  <p className="text-sm text-charcoal/60">{stat.label}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-sm text-gray-500">{stat.label}</p>
                 </div>
               </div>
             </div>
@@ -153,12 +148,12 @@ export default function ToolkitPage() {
         <section className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-bold text-charcoal">Empfohlene Guides</h2>
-              <p className="text-charcoal/60">Starte hier, wenn du neu bist</p>
+              <h2 className="text-xl font-bold text-gray-900">Empfohlene Guides</h2>
+              <p className="text-gray-500">Starte hier, wenn du neu bist</p>
             </div>
             <Link
               to="/toolkit/guides"
-              className="flex items-center gap-2 text-brand-600 hover:text-brand-700 font-medium"
+              className="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium"
             >
               Alle ansehen
               <ArrowRight className="w-4 h-4" />
@@ -170,10 +165,10 @@ export default function ToolkitPage() {
               <Link
                 key={guide.id}
                 to={`/toolkit/guides/${guide.slug}`}
-                className="group bg-white rounded-2xl border border-sand-200 hover:border-brand-300 hover:shadow-lg transition-all overflow-hidden shadow-card"
+                className="group bg-white/80 backdrop-blur-sm rounded-2xl border border-purple-100 hover:border-purple-300 hover:shadow-lg hover:shadow-purple-500/10 transition-all overflow-hidden"
               >
                 {guide.coverImage && (
-                  <div className="aspect-video bg-gradient-to-br from-brand-100 to-pink-100 overflow-hidden">
+                  <div className="aspect-video bg-gradient-to-br from-purple-100 to-pink-100 overflow-hidden">
                     <img
                       src={guide.coverImage}
                       alt={guide.title}
@@ -185,32 +180,32 @@ export default function ToolkitPage() {
                   <div className="flex items-center gap-2 mb-3">
                     {guide.difficulty && (
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                        guide.difficulty === 'beginner' ? 'bg-green-100 text-green-700' :
-                        guide.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-red-100 text-red-700'
+                        guide.difficulty === 'beginner' ? 'bg-purple-100 text-purple-700' :
+                        guide.difficulty === 'intermediate' ? 'bg-pink-100 text-pink-700' :
+                        'bg-purple-200 text-purple-800'
                       }`}>
                         {guide.difficulty === 'beginner' ? 'Anfänger' :
                          guide.difficulty === 'intermediate' ? 'Mittel' : 'Fortgeschritten'}
                       </span>
                     )}
                     {guide.estimatedTime && (
-                      <span className="flex items-center gap-1 text-xs text-charcoal/60">
+                      <span className="flex items-center gap-1 text-xs text-gray-500">
                         <Clock className="w-3 h-3" />
                         {guide.estimatedTime}
                       </span>
                     )}
                   </div>
-                  <h3 className="font-semibold text-charcoal mb-2 group-hover:text-brand-600 transition-colors">
+                  <h3 className="font-display font-semibold text-lg text-text-primary mb-2 group-hover:text-purple-600 transition-colors">
                     {guide.title}
                   </h3>
-                  <p className="text-sm text-charcoal/60 line-clamp-2">{guide.description}</p>
+                  <p className="text-text-secondary line-clamp-2">{guide.description}</p>
 
                   {guide.tools && guide.tools.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-3">
                       {guide.tools.slice(0, 3).map((tool) => (
                         <span
                           key={tool}
-                          className="px-2 py-0.5 bg-brand-50 text-brand-600 rounded text-xs font-medium"
+                          className="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-xs font-medium"
                         >
                           {tool}
                         </span>
@@ -226,16 +221,16 @@ export default function ToolkitPage() {
         {/* Critical Pitfalls Warning */}
         {criticalPitfalls.length > 0 && (
           <section className="mb-8">
-            <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl p-6 border border-red-200">
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100">
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-red-100 rounded-xl">
-                  <AlertTriangle className="w-6 h-6 text-red-600" />
+                <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl">
+                  <AlertTriangle className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-red-900 mb-2">
+                  <h3 className="text-lg font-semibold text-purple-900 mb-2">
                     Kritische Fehler vermeiden
                   </h3>
-                  <p className="text-red-700 mb-4">
+                  <p className="text-purple-700/70 mb-4">
                     Diese {criticalPitfalls.length} Fehler machen fast alle Anfänger.
                     Lies dir diese unbedingt durch, bevor du startest!
                   </p>
@@ -243,16 +238,16 @@ export default function ToolkitPage() {
                     {criticalPitfalls.slice(0, 3).map((pitfall) => (
                       <div
                         key={pitfall.id}
-                        className="flex items-center gap-2 text-sm text-red-800"
+                        className="flex items-center gap-2 text-sm text-purple-800"
                       >
-                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                        <span className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
                         {pitfall.title}
                       </div>
                     ))}
                   </div>
                   <Link
                     to="/toolkit/pitfalls"
-                    className="inline-flex items-center gap-2 mt-4 text-red-600 hover:text-red-700 font-medium"
+                    className="inline-flex items-center gap-2 mt-4 text-purple-600 hover:text-purple-700 font-medium"
                   >
                     Alle Fehler ansehen
                     <ArrowRight className="w-4 h-4" />
@@ -265,13 +260,13 @@ export default function ToolkitPage() {
 
         {/* Journey Overview */}
         <section className="mb-8">
-          <h2 className="text-xl font-bold text-charcoal mb-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">
             Deine Build-Journey
           </h2>
 
           <div className="relative">
             {/* Connection Line */}
-            <div className="absolute left-6 top-12 bottom-12 w-0.5 bg-brand-200 hidden md:block" />
+            <div className="absolute left-6 top-12 bottom-12 w-0.5 bg-purple-200 hidden md:block" />
 
             <div className="space-y-4">
               {[
@@ -316,15 +311,15 @@ export default function ToolkitPage() {
                   to={item.link}
                   className="flex items-start gap-4 group"
                 >
-                  <div className="relative z-10 flex items-center justify-center w-12 h-12 bg-gradient-to-br from-brand-500 to-pink-500 rounded-xl text-white font-bold shadow-lg group-hover:scale-110 transition-transform">
+                  <div className="relative z-10 flex items-center justify-center w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl text-white font-bold shadow-lg group-hover:scale-110 transition-transform">
                     {item.step}
                   </div>
-                  <div className="flex-1 bg-white rounded-xl p-4 border border-sand-200 group-hover:border-brand-300 group-hover:shadow-md transition-all shadow-card">
+                  <div className="flex-1 bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-purple-100 group-hover:border-purple-300 group-hover:shadow-md transition-all">
                     <div className="flex items-center gap-2 mb-1">
-                      <item.icon className="w-4 h-4 text-brand-600" />
-                      <h3 className="font-semibold text-charcoal">{item.title}</h3>
+                      <item.icon className="w-4 h-4 text-purple-600" />
+                      <h3 className="font-semibold text-gray-900">{item.title}</h3>
                     </div>
-                    <p className="text-sm text-charcoal/60">{item.description}</p>
+                    <p className="text-sm text-gray-500">{item.description}</p>
                   </div>
                 </Link>
               ))}
@@ -336,12 +331,12 @@ export default function ToolkitPage() {
         <section>
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-bold text-charcoal">Tool-Vergleich</h2>
-              <p className="text-charcoal/60">Finde das richtige Tool für dich</p>
+              <h2 className="text-xl font-bold text-gray-900">Tool-Vergleich</h2>
+              <p className="text-gray-500">Finde das richtige Tool für dich</p>
             </div>
             <Link
               to="/toolkit/tools"
-              className="flex items-center gap-2 text-brand-600 hover:text-brand-700 font-medium"
+              className="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium"
             >
               Alle Tools
               <ArrowRight className="w-4 h-4" />
@@ -353,22 +348,21 @@ export default function ToolkitPage() {
               <Link
                 key={tool.id}
                 to={`/toolkit/tools/${tool.slug}`}
-                className="bg-white rounded-xl p-4 border border-sand-200 hover:border-brand-300 hover:shadow-md transition-all group shadow-card"
+                className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-purple-100 hover:border-purple-300 hover:shadow-md transition-all group"
               >
                 <div
-                  className="w-12 h-12 rounded-xl mb-3 flex items-center justify-center text-2xl"
-                  style={{ backgroundColor: tool.color ? `${tool.color}20` : '#f3e8ff' }}
+                  className="w-12 h-12 rounded-xl mb-3 flex items-center justify-center text-2xl bg-gradient-to-br from-purple-100 to-pink-100"
                 >
                   {tool.logoUrl ? (
                     <img src={tool.logoUrl} alt={tool.name} className="w-8 h-8" />
                   ) : (
-                    tool.name.charAt(0)
+                    <span className="text-purple-600 font-bold">{tool.name.charAt(0)}</span>
                   )}
                 </div>
-                <h3 className="font-semibold text-charcoal group-hover:text-brand-600 transition-colors">
+                <h3 className="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
                   {tool.name}
                 </h3>
-                <p className="text-sm text-charcoal/60 line-clamp-1">{tool.tagline}</p>
+                <p className="text-sm text-gray-500 line-clamp-1">{tool.tagline}</p>
               </Link>
             ))}
           </div>
