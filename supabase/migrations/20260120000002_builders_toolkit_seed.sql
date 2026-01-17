@@ -1,5 +1,5 @@
 -- ══════════════════════════════════════════════════════════════
--- SEED DATA: CATEGORIES
+-- SEED DATA: CATEGORIES (Idempotent with ON CONFLICT)
 -- ══════════════════════════════════════════════════════════════
 
 INSERT INTO toolkit_categories (slug, name, description, icon, color, sort_order) VALUES
@@ -9,10 +9,17 @@ INSERT INTO toolkit_categories (slug, name, description, icon, color, sort_order
 ('database', 'Datenbank', 'Supabase, Migrations, Schema-Design', 'Database', '#f59e0b', 4),
 ('auth', 'Authentifizierung', 'Login, Sessions, Sicherheit', 'Shield', '#ef4444', 5),
 ('deployment', 'Deployment', 'Go-Live, Hosting, CI/CD', 'Cloud', '#8b5cf6', 6),
-('best-practices', 'Best Practices', 'Tipps aus der Praxis', 'Lightbulb', '#ec4899', 7);
+('best-practices', 'Best Practices', 'Tipps aus der Praxis', 'Lightbulb', '#ec4899', 7)
+ON CONFLICT (slug) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  icon = EXCLUDED.icon,
+  color = EXCLUDED.color,
+  sort_order = EXCLUDED.sort_order,
+  updated_at = NOW();
 
 -- ══════════════════════════════════════════════════════════════
--- SEED DATA: TOOLS
+-- SEED DATA: TOOLS (Idempotent with ON CONFLICT)
 -- ══════════════════════════════════════════════════════════════
 
 INSERT INTO toolkit_tools (
@@ -224,10 +231,35 @@ INSERT INTO toolkit_tools (
   '#f26207',
   6,
   false
-);
+)
+ON CONFLICT (slug) DO UPDATE SET
+  name = EXCLUDED.name,
+  tagline = EXCLUDED.tagline,
+  description = EXCLUDED.description,
+  website_url = EXCLUDED.website_url,
+  docs_url = EXCLUDED.docs_url,
+  rating_ui = EXCLUDED.rating_ui,
+  rating_backend = EXCLUDED.rating_backend,
+  rating_database = EXCLUDED.rating_database,
+  rating_deployment = EXCLUDED.rating_deployment,
+  rating_learning_curve = EXCLUDED.rating_learning_curve,
+  strengths = EXCLUDED.strengths,
+  weaknesses = EXCLUDED.weaknesses,
+  best_for = EXCLUDED.best_for,
+  not_for = EXCLUDED.not_for,
+  pricing_model = EXCLUDED.pricing_model,
+  pricing_details = EXCLUDED.pricing_details,
+  tech_stack = EXCLUDED.tech_stack,
+  integrations = EXCLUDED.integrations,
+  pro_tips = EXCLUDED.pro_tips,
+  common_mistakes = EXCLUDED.common_mistakes,
+  color = EXCLUDED.color,
+  sort_order = EXCLUDED.sort_order,
+  is_featured = EXCLUDED.is_featured,
+  updated_at = NOW();
 
 -- ══════════════════════════════════════════════════════════════
--- SEED DATA: CHECKLISTS
+-- SEED DATA: CHECKLISTS (Idempotent with ON CONFLICT)
 -- ══════════════════════════════════════════════════════════════
 
 -- MVP Readiness Checklist
@@ -241,14 +273,26 @@ VALUES (
   '30-60 min',
   true,
   1
-);
+)
+ON CONFLICT (slug) DO UPDATE SET
+  title = EXCLUDED.title,
+  description = EXCLUDED.description,
+  icon = EXCLUDED.icon,
+  difficulty = EXCLUDED.difficulty,
+  estimated_time = EXCLUDED.estimated_time,
+  is_featured = EXCLUDED.is_featured,
+  sort_order = EXCLUDED.sort_order,
+  updated_at = NOW();
 
--- Get the checklist ID
+-- Get the checklist ID and insert items (delete existing items first for idempotency)
 DO $$
 DECLARE
   checklist_id UUID;
 BEGIN
   SELECT id INTO checklist_id FROM toolkit_checklists WHERE slug = 'mvp-readiness';
+
+  -- Delete existing items for this checklist to avoid duplicates
+  DELETE FROM toolkit_checklist_items WHERE checklist_id = checklist_id;
 
   -- Insert items
   INSERT INTO toolkit_checklist_items (checklist_id, title, description, help_text, section, sort_order, is_critical) VALUES
@@ -301,11 +345,23 @@ VALUES (
   '1-2 Stunden',
   true,
   2
-);
+)
+ON CONFLICT (slug) DO UPDATE SET
+  title = EXCLUDED.title,
+  description = EXCLUDED.description,
+  icon = EXCLUDED.icon,
+  difficulty = EXCLUDED.difficulty,
+  estimated_time = EXCLUDED.estimated_time,
+  is_featured = EXCLUDED.is_featured,
+  sort_order = EXCLUDED.sort_order,
+  updated_at = NOW();
 
 -- ══════════════════════════════════════════════════════════════
--- SEED DATA: PITFALLS (Häufige Fehler)
+-- SEED DATA: PITFALLS (Idempotent - delete and reinsert)
 -- ══════════════════════════════════════════════════════════════
+
+-- Delete existing pitfalls and reinsert (no unique constraint on title)
+DELETE FROM toolkit_pitfalls;
 
 INSERT INTO toolkit_pitfalls (category, title, description, why_bad, solution, affected_tools, severity, icon) VALUES
 
@@ -428,7 +484,7 @@ INSERT INTO toolkit_pitfalls (category, title, description, why_bad, solution, a
  'AlertOctagon');
 
 -- ══════════════════════════════════════════════════════════════
--- SEED DATA: PROMPTS
+-- SEED DATA: PROMPTS (Idempotent with ON CONFLICT)
 -- ══════════════════════════════════════════════════════════════
 
 INSERT INTO toolkit_prompts (
@@ -764,10 +820,22 @@ Design:
   ARRAY['crud', 'feature', 'full-stack'],
   true,
   6
-);
+)
+ON CONFLICT (slug) DO UPDATE SET
+  title = EXCLUDED.title,
+  description = EXCLUDED.description,
+  use_case = EXCLUDED.use_case,
+  prompt_template = EXCLUDED.prompt_template,
+  variables = EXCLUDED.variables,
+  example_output = EXCLUDED.example_output,
+  target_tool = EXCLUDED.target_tool,
+  tags = EXCLUDED.tags,
+  is_featured = EXCLUDED.is_featured,
+  sort_order = EXCLUDED.sort_order,
+  updated_at = NOW();
 
 -- ══════════════════════════════════════════════════════════════
--- SEED DATA: GUIDES
+-- SEED DATA: GUIDES (Idempotent with ON CONFLICT)
 -- ══════════════════════════════════════════════════════════════
 
 INSERT INTO toolkit_guides (
@@ -927,4 +995,16 @@ Nutze die [MVP-Readiness Checklist](/toolkit/checklists/mvp-readiness) um zu pr�
   ARRAY['basics', 'architecture', 'must-read'],
   true,
   'LaunchOS Team'
-FROM toolkit_categories c WHERE c.slug = 'getting-started';
+FROM toolkit_categories c WHERE c.slug = 'getting-started'
+ON CONFLICT (slug) DO UPDATE SET
+  title = EXCLUDED.title,
+  subtitle = EXCLUDED.subtitle,
+  description = EXCLUDED.description,
+  content_md = EXCLUDED.content_md,
+  difficulty = EXCLUDED.difficulty,
+  estimated_time = EXCLUDED.estimated_time,
+  tools = EXCLUDED.tools,
+  tags = EXCLUDED.tags,
+  is_featured = EXCLUDED.is_featured,
+  author_name = EXCLUDED.author_name,
+  updated_at = NOW();
