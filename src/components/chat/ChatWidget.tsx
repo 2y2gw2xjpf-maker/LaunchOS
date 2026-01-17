@@ -244,17 +244,21 @@ export function ChatWidget() {
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsOpen(true)}
             className={cn(
-              'fixed z-50',
+              'fixed z-40',
               // Desktop: bottom-right corner
               'md:bottom-6 md:right-6',
-              // Mobile: above bottom nav (60px nav + 16px spacing)
-              'bottom-[76px] right-4',
+              // Mobile: above bottom nav with safe area consideration
+              'right-4',
               'w-12 h-12 md:w-14 md:h-14 rounded-2xl',
               'bg-gradient-to-r from-purple-600 to-pink-600',
               'shadow-lg shadow-purple-500/30',
               'flex items-center justify-center',
               'hover:shadow-purple-500/50 transition-shadow'
             )}
+            style={{
+              // Mobile: position above nav bar (nav is ~60px + safe area)
+              bottom: 'max(calc(68px + env(safe-area-inset-bottom, 0px)), 68px)',
+            }}
           >
             <MessageSquare className="w-5 h-5 md:w-6 md:h-6 text-white" />
             <span className="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 bg-pink-500 rounded-full animate-pulse" />
@@ -272,13 +276,14 @@ export function ChatWidget() {
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className={cn(
               'fixed z-50',
-              // Mobile: full width with margins, above bottom nav
-              'left-2 right-2 bottom-[76px]',
+              // Mobile: full width with margins, positioned above nav
+              'left-2 right-2 bottom-[68px]',
+              // Desktop: fixed position bottom right
               'md:left-auto md:bottom-6 md:right-6',
               // Desktop sizes
               isExpanded ? 'md:w-[500px] md:h-[700px]' : 'md:w-[420px] md:h-[620px]',
               // Mobile: max height to fit screen minus nav
-              'h-[70vh] md:h-auto md:max-h-[85vh]',
+              'max-h-[60vh] md:h-auto md:max-h-[85vh]',
               'bg-white rounded-2xl md:rounded-3xl shadow-2xl',
               'border border-purple-100',
               'flex flex-col overflow-hidden'

@@ -174,6 +174,7 @@ export const EnhancedSidebar = () => {
     : getUngroupedAnalyses();
   const favoriteAnalyses = filteredAnalyses.filter((a) => a.isFavorite);
 
+  // All navigation items for desktop sidebar
   const navItems = [
     { name: 'Daten-Level', href: '/tier-selection', icon: Layers },
     { name: 'Founders Journey', href: '/journey', icon: Map },
@@ -186,6 +187,14 @@ export const EnhancedSidebar = () => {
     { name: 'Data Room', href: '/data-room', icon: Database },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
     { name: 'Methodik', href: '/about/methodology', icon: FileText },
+  ];
+
+  // Mobile bottom nav: most important items for quick access
+  const mobileNavItems = [
+    { name: 'Journey', href: '/journey', icon: Map },
+    { name: 'Was tun?', href: '/whats-next', icon: Compass },
+    { name: 'Toolkit', href: '/toolkit', icon: Wrench },
+    { name: 'Bewertung', href: '/valuation', icon: Calculator },
   ];
 
   return (
@@ -449,10 +458,13 @@ export const EnhancedSidebar = () => {
       </motion.aside>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-cream border-t border-purple-100 px-2 py-2 safe-area-pb">
-        <div className="flex items-center justify-around max-w-md mx-auto">
-          {/* Show first 4 main items */}
-          {navItems.slice(0, 4).map((item) => {
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-purple-100"
+        style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 8px)' }}
+      >
+        <div className="flex items-center justify-around max-w-md mx-auto px-1 pt-2 pb-1">
+          {/* Show most important mobile nav items */}
+          {mobileNavItems.map((item) => {
             const isActive = location.pathname.startsWith(item.href);
             const Icon = item.icon;
 
@@ -461,12 +473,14 @@ export const EnhancedSidebar = () => {
                 key={item.name}
                 onClick={() => navigate(item.href)}
                 className={cn(
-                  'flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors min-w-0',
-                  isActive ? 'text-purple-600' : 'text-charcoal/60'
+                  'flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-0 flex-1',
+                  isActive
+                    ? 'text-purple-600 bg-purple-50'
+                    : 'text-charcoal/60 active:bg-purple-50'
                 )}
               >
                 <Icon className="w-5 h-5 flex-shrink-0" />
-                <span className="text-[9px] font-medium truncate max-w-[56px]">{item.name}</span>
+                <span className="text-[10px] font-medium truncate">{item.name}</span>
               </button>
             );
           })}
@@ -475,12 +489,12 @@ export const EnhancedSidebar = () => {
           <button
             onClick={() => setShowMobileMenu(true)}
             className={cn(
-              'flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors',
-              showMobileMenu ? 'text-purple-600' : 'text-charcoal/60'
+              'flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all flex-1',
+              showMobileMenu ? 'text-purple-600 bg-purple-50' : 'text-charcoal/60 active:bg-purple-50'
             )}
           >
             <MoreHorizontal className="w-5 h-5" />
-            <span className="text-[9px] font-medium">Mehr</span>
+            <span className="text-[10px] font-medium">Mehr</span>
           </button>
         </div>
       </nav>
@@ -495,7 +509,7 @@ export const EnhancedSidebar = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowMobileMenu(false)}
-              className="md:hidden fixed inset-0 bg-black/50 z-50"
+              className="md:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
             />
 
             {/* Menu Panel */}
@@ -503,28 +517,29 @@ export const EnhancedSidebar = () => {
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl max-h-[70vh] overflow-hidden"
+              transition={{ type: 'spring', damping: 30, stiffness: 350 }}
+              className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl"
+              style={{ maxHeight: '75vh' }}
             >
               {/* Handle */}
               <div className="flex justify-center pt-3 pb-2">
-                <div className="w-12 h-1 bg-gray-300 rounded-full" />
+                <div className="w-10 h-1 bg-gray-300 rounded-full" />
               </div>
 
               {/* Header */}
               <div className="flex items-center justify-between px-5 pb-3 border-b border-gray-100">
-                <h3 className="text-lg font-semibold text-gray-900">Navigation</h3>
+                <h3 className="text-lg font-semibold text-charcoal">Alle Funktionen</h3>
                 <button
                   onClick={() => setShowMobileMenu(false)}
-                  className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                  className="p-2 -mr-2 hover:bg-gray-100 rounded-xl transition-colors active:bg-gray-200"
                 >
                   <X className="w-5 h-5 text-gray-500" />
                 </button>
               </div>
 
               {/* All Navigation Items */}
-              <div className="overflow-y-auto max-h-[55vh] py-2">
-                <div className="grid grid-cols-3 gap-2 px-4">
+              <div className="overflow-y-auto overscroll-contain" style={{ maxHeight: 'calc(75vh - 100px)' }}>
+                <div className="grid grid-cols-3 gap-3 p-4">
                   {navItems.map((item) => {
                     const isActive = location.pathname.startsWith(item.href);
                     const Icon = item.icon;
@@ -537,14 +552,14 @@ export const EnhancedSidebar = () => {
                           setShowMobileMenu(false);
                         }}
                         className={cn(
-                          'flex flex-col items-center gap-2 p-4 rounded-2xl transition-all',
+                          'flex flex-col items-center justify-center gap-2 p-3 rounded-2xl transition-all min-h-[80px]',
                           isActive
-                            ? 'bg-purple-100 text-purple-700'
-                            : 'bg-gray-50 text-gray-600 hover:bg-purple-50'
+                            ? 'bg-gradient-to-br from-purple-100 to-pink-100 text-purple-700 shadow-sm'
+                            : 'bg-gray-50 text-gray-600 active:bg-purple-50'
                         )}
                       >
                         <Icon className="w-6 h-6" />
-                        <span className="text-xs font-medium text-center leading-tight">
+                        <span className="text-[11px] font-medium text-center leading-tight line-clamp-2">
                           {item.name}
                         </span>
                       </button>
@@ -554,7 +569,10 @@ export const EnhancedSidebar = () => {
               </div>
 
               {/* Safe area padding for iPhone */}
-              <div className="h-8 bg-white" />
+              <div
+                className="bg-white"
+                style={{ height: 'max(env(safe-area-inset-bottom, 0px), 12px)' }}
+              />
             </motion.div>
           </>
         )}

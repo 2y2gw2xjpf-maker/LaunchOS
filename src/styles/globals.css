@@ -523,33 +523,12 @@
   padding-top: env(safe-area-inset-top, 0px);
 }
 
-/* Prevent iOS rubber band scrolling flicker */
+/* Mobile-specific optimizations */
 @layer base {
-  html, body {
-    overscroll-behavior: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Prevent text selection flicker on mobile */
+  /* Prevent tap highlight on mobile */
   @media (max-width: 768px) {
-    button, a {
+    button, a, [role="button"] {
       -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none;
-      user-select: none;
-    }
-
-    /* Smooth scrolling containers */
-    .overflow-y-auto,
-    .overflow-x-auto,
-    main {
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior: contain;
-    }
-
-    /* Prevent content shift on scroll */
-    * {
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
     }
   }
 }
