@@ -2,15 +2,16 @@
  * Analytics Dashboard - Hauptseite
  */
 
-import { useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
   BarChart3,
   RefreshCw,
   Download,
-  Calendar,
   TrendingUp,
+  FolderOpen,
 } from 'lucide-react';
+import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useVentureContext } from '@/contexts/VentureContext';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,7 @@ import { ActivityFeed } from './components/ActivityFeed';
 import { UpcomingFollowUps } from './components/UpcomingFollowUps';
 
 export default function AnalyticsPage() {
+  const navigate = useNavigate();
   const { activeVenture } = useVentureContext();
   const {
     dashboardStats,
@@ -64,23 +66,29 @@ export default function AnalyticsPage() {
   };
 
   const handleContactClick = (contactId: string) => {
-    // Navigate to CRM with contact selected
-    window.location.href = `/investors?contact=${contactId}`;
+    navigate(`/investors?contact=${contactId}`);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+    <div className="min-h-screen bg-cream">
+      <Header />
+      <EnhancedSidebar />
+
+      <PageContainer withSidebar maxWidth="wide">
+        {/* Page Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                 <BarChart3 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-                <p className="text-sm text-gray-500">
+                <h1 className="font-display text-display-sm text-charcoal">Analytics</h1>
+                <p className="text-charcoal/60">
                   {activeVenture
                     ? `Dashboard für ${activeVenture.name}`
                     : 'Übersicht aller Ventures'}
@@ -110,16 +118,14 @@ export default function AnalyticsPage() {
               </Button>
             </div>
           </div>
-        </div>
-      </div>
+        </motion.div>
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Error Message */}
         {error && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700"
+            className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700"
           >
             {error}
           </motion.div>
@@ -157,9 +163,9 @@ export default function AnalyticsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.7 }}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-6 text-white"
+            className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-6 text-white shadow-card"
           >
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <h3 className="text-lg font-semibold">Nächster Schritt</h3>
                 <p className="text-purple-100 mt-1">
@@ -174,7 +180,7 @@ export default function AnalyticsPage() {
                 <Button
                   variant="secondary"
                   className="bg-white/20 hover:bg-white/30 text-white border-0"
-                  onClick={() => (window.location.href = '/investors')}
+                  onClick={() => navigate('/investors')}
                 >
                   <TrendingUp className="w-4 h-4 mr-2" />
                   Zum CRM
@@ -182,16 +188,16 @@ export default function AnalyticsPage() {
                 <Button
                   variant="secondary"
                   className="bg-white text-purple-600 hover:bg-purple-50 border-0"
-                  onClick={() => (window.location.href = '/data-room')}
+                  onClick={() => navigate('/data-room')}
                 >
-                  <Calendar className="w-4 h-4 mr-2" />
+                  <FolderOpen className="w-4 h-4 mr-2" />
                   Data Room
                 </Button>
               </div>
             </div>
           </motion.div>
         </section>
-      </div>
+      </PageContainer>
     </div>
   );
 }
