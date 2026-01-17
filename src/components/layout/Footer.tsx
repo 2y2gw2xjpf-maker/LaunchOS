@@ -17,8 +17,8 @@ export const Footer = ({ className }: FooterProps) => {
       { name: 'Methodik', href: '/about/methodology' },
     ],
     legal: [
-      { name: 'Datenschutz', href: '/about/privacy' },
-      { name: 'Impressum', href: '/about/imprint' },
+      { name: 'Datenschutz', href: '/datenschutz' },
+      { name: 'Impressum', href: '/impressum' },
     ],
   };
 

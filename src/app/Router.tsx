@@ -25,6 +25,10 @@ const DataRoomPage = React.lazy(() => import('@/pages/DataRoom'));
 const PublicDataRoomPage = React.lazy(() => import('@/pages/DataRoom/PublicDataRoom'));
 const AnalyticsPage = React.lazy(() => import('@/pages/Analytics'));
 
+// Legal Pages
+const ImpressumPage = React.lazy(() => import('@/pages/Legal/ImpressumPage'));
+const DatenschutzPage = React.lazy(() => import('@/pages/Legal/DatenschutzPage'));
+
 // Loading fallback
 const PageLoader = () => (
   <div className="min-h-screen bg-cream flex items-center justify-center">
@@ -48,8 +52,15 @@ export const Router = () => {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/about" element={<AboutPage />} />
-              <Route path="/about/*" element={<AboutPage />} />
+              <Route path="/about/methodology" element={<AboutPage />} />
               <Route path="/contact" element={<ContactPage />} />
+
+              {/* Legal Pages (Public) */}
+              <Route path="/impressum" element={<ImpressumPage />} />
+              <Route path="/datenschutz" element={<DatenschutzPage />} />
+              {/* Redirects for old paths */}
+              <Route path="/about/imprint" element={<Navigate to="/impressum" replace />} />
+              <Route path="/about/privacy" element={<Navigate to="/datenschutz" replace />} />
 
               {/* Auth Routes */}
               <Route path="/auth/callback" element={<AuthCallback />} />
