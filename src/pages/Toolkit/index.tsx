@@ -78,7 +78,7 @@ export default function ToolkitPage() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
           {/* Hero Section */}
           <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 text-white">
             <div className="max-w-7xl mx-auto px-6 py-12">

@@ -79,7 +79,7 @@ export default function ToolComparePage() {
         <EnhancedSidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header />
-          <main className="flex-1 overflow-y-auto">
+          <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
             <div className="max-w-4xl mx-auto px-6 py-8 text-center">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Wähle zwei Tools zum Vergleichen</h2>
               <p className="text-gray-500 mb-8">
@@ -109,7 +109,7 @@ export default function ToolComparePage() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
           {/* Breadcrumb */}
           <div className="bg-white border-b border-purple-100">
             <div className="max-w-5xl mx-auto px-6 py-3">

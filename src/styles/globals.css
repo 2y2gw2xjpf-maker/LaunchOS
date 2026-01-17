@@ -509,3 +509,61 @@
     display: none;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* MOBILE OPTIMIZATIONS */
+/* ═══════════════════════════════════════════════════════════════ */
+
+/* Safe area padding for iPhone notch/home indicator */
+@utility safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@utility safe-area-pt {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Prevent iOS rubber band scrolling flicker */
+@layer base {
+  html, body {
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Prevent text selection flicker on mobile */
+  @media (max-width: 768px) {
+    button, a {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      user-select: none;
+    }
+
+    /* Smooth scrolling containers */
+    .overflow-y-auto,
+    .overflow-x-auto,
+    main {
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+
+    /* Prevent content shift on scroll */
+    * {
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+  }
+}
+
+/* Mobile bottom nav safe area */
+@layer components {
+  .mobile-safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom, 8px), 8px);
+  }
+
+  /* Mobile content padding to account for bottom nav */
+  .mobile-content-pb {
+    @media (max-width: 768px) {
+      padding-bottom: 80px;
+    }
+  }
+}
