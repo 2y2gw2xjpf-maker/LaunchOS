@@ -65,25 +65,7 @@ export default function InvestorCRMPage() {
   const [isLoadingActivities, setIsLoadingActivities] = React.useState(false);
   const [showStats, setShowStats] = React.useState(false);
 
-  // Show upgrade prompt if user doesn't have CRM access
-  if (!subscriptionLoading && !canUseFeature('investor_crm')) {
-    return (
-      <div className="min-h-screen bg-cream">
-        <Header />
-        <EnhancedSidebar />
-        <PageContainer withSidebar maxWidth="full">
-          <UpgradePrompt
-            feature="investor_crm"
-            title="Investor CRM"
-            description="Tracke Investoren mit Kanban-Board, Pipeline-Management und Follow-up-Erinnerungen. Verfügbar im Founder-Plan."
-            icon={<Users className="w-8 h-8 text-brand-600" />}
-          />
-        </PageContainer>
-      </div>
-    );
-  }
-
-  // Filter contacts
+  // Filter contacts - MUST be before any early returns (React hooks rule)
   const filteredContacts = React.useMemo(() => {
     return contacts.filter((contact) => {
       // Search
@@ -122,7 +104,7 @@ export default function InvestorCRMPage() {
     });
   }, [contacts, searchQuery, selectedStages, selectedTypes, selectedPriorities, selectedTagIds]);
 
-  // Load activities when selecting a contact
+  // Load activities when selecting a contact - MUST be before any early returns
   React.useEffect(() => {
     if (selectedContact) {
       setIsLoadingActivities(true);
@@ -131,6 +113,25 @@ export default function InvestorCRMPage() {
         .finally(() => setIsLoadingActivities(false));
     }
   }, [selectedContact, getActivities]);
+
+  // Show upgrade prompt if user doesn't have CRM access
+  // NOTE: All hooks MUST be called before this early return!
+  if (!subscriptionLoading && !canUseFeature('investor_crm')) {
+    return (
+      <div className="min-h-screen bg-cream">
+        <Header />
+        <EnhancedSidebar />
+        <PageContainer withSidebar maxWidth="full">
+          <UpgradePrompt
+            feature="investor_crm"
+            title="Investor CRM"
+            description="Tracke Investoren mit Kanban-Board, Pipeline-Management und Follow-up-Erinnerungen. Verfügbar im Founder-Plan."
+            icon={<Users className="w-8 h-8 text-brand-600" />}
+          />
+        </PageContainer>
+      </div>
+    );
+  }
 
   // Handlers
   const handleAddContact = (stage?: PipelineStage) => {

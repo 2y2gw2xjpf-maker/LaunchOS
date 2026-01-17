@@ -56,7 +56,24 @@ export default function DataRoom() {
   const [editingFolder, setEditingFolder] = useState<DataRoomFolder | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Get folder tree for navigation - MUST be before any early returns
+  const folderTree = getFolderTree();
+
+  // Filter files based on selected folder and search - MUST be before any early returns
+  const filteredFiles = files.filter((file) => {
+    const matchesFolder = selectedFolderId ? file.folderId === selectedFolderId : true;
+    const matchesSearch = searchQuery
+      ? file.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        file.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      : true;
+    return matchesFolder && matchesSearch;
+  });
+
+  // Get current folder - MUST be before any early returns
+  const currentFolder = folders.find((f) => f.id === selectedFolderId) || null;
+
   // Show upgrade prompt if user doesn't have Data Room access
+  // NOTE: All hooks and derived state MUST be calculated before this early return!
   if (!subscriptionLoading && !canUseFeature('data_room')) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-8">
@@ -79,22 +96,6 @@ export default function DataRoom() {
       </div>
     );
   }
-
-  // Get folder tree for navigation
-  const folderTree = getFolderTree();
-
-  // Filter files based on selected folder and search
-  const filteredFiles = files.filter((file) => {
-    const matchesFolder = selectedFolderId ? file.folderId === selectedFolderId : true;
-    const matchesSearch = searchQuery
-      ? file.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        file.description?.toLowerCase().includes(searchQuery.toLowerCase())
-      : true;
-    return matchesFolder && matchesSearch;
-  });
-
-  // Get current folder
-  const currentFolder = folders.find((f) => f.id === selectedFolderId) || null;
 
   // Handle folder creation
   const handleCreateFolder = async () => {
