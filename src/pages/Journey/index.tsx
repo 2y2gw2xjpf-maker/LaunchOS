@@ -138,14 +138,10 @@ function StepCard({
               <Button
                 variant="primary"
                 size="sm"
-                className="flex-shrink-0 bg-gradient-to-r from-purple-500 to-pink-500 border-0 min-w-[100px] justify-center"
+                className="flex-shrink-0 bg-gradient-to-r from-purple-500 to-pink-500 border-0 w-[90px] text-xs inline-flex items-center justify-center gap-1"
               >
-                <Sparkles className="w-4 h-4 mr-1" />
-                {/* Kürzere Beschriftungen */}
-                {step.help_type === 'chat' ? 'Beratung' :
-                 step.help_type === 'generate' ? 'Erstellen' :
-                 step.help_type === 'template' ? 'Vorlage' :
-                 'KI-Hilfe'}
+                <Sparkles className="w-3 h-3 flex-shrink-0" />
+                <span>KI-Hilfe</span>
               </Button>
             )}
           </div>
@@ -411,8 +407,9 @@ export function JourneyPage() {
               <p className="text-sm text-purple-900">
                 <span className="font-medium">KI-Assistent verfügbar</span>
                 <span className="text-purple-700/70"> – Klicke auf </span>
-                <span className="inline-flex items-center px-2 py-0.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs rounded-md mx-1">
-                  <Sparkles className="w-3 h-3 mr-1" />Beratung
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs rounded-md mx-1">
+                  <Sparkles className="w-3 h-3 flex-shrink-0" />
+                  <span>KI-Hilfe</span>
                 </span>
                 <span className="text-purple-700/70"> bei jedem Schritt für personalisierte Hilfe.</span>
               </p>
