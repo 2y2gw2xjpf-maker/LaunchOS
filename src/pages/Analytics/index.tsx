@@ -25,7 +25,21 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { UpgradePrompt } from '@/components/subscription';
 
 export default function AnalyticsPage() {
+  // All hooks must be called before any early returns (React rules of hooks)
   const { canUseFeature, isLoading: subscriptionLoading } = useSubscription();
+  const navigate = useNavigate();
+  const { activeVenture } = useVentureContext();
+  const {
+    dashboardStats,
+    pipelineFunnel,
+    valuationHistory,
+    recentActivities,
+    upcomingFollowUps,
+    journeyProgress,
+    isLoading,
+    error,
+    refresh,
+  } = useAnalytics();
 
   // Show upgrade prompt if user doesn't have Analytics access
   if (!subscriptionLoading && !canUseFeature('analytics')) {
@@ -44,19 +58,6 @@ export default function AnalyticsPage() {
       </div>
     );
   }
-  const navigate = useNavigate();
-  const { activeVenture } = useVentureContext();
-  const {
-    dashboardStats,
-    pipelineFunnel,
-    valuationHistory,
-    recentActivities,
-    upcomingFollowUps,
-    journeyProgress,
-    isLoading,
-    error,
-    refresh,
-  } = useAnalytics();
 
   const handleRefresh = () => {
     refresh();
