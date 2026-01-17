@@ -57,7 +57,17 @@ interface JourneyStep {
 
 type StepStatus = 'not_started' | 'in_progress' | 'completed' | 'skipped';
 
+type StageFilter = 'all' | 'idea' | 'building' | 'launched' | 'scaling';
+
 // ==================== CONSTANTS ====================
+
+const STAGE_CONFIG: Record<StageFilter, { label: string; description: string }> = {
+  all: { label: 'Alle', description: 'Alle 35 Schritte anzeigen' },
+  idea: { label: 'Idee', description: 'Du hast eine Idee, aber noch nicht gegründet' },
+  building: { label: 'Aufbau', description: 'Du bist dabei, dein Startup aufzubauen' },
+  launched: { label: 'Gestartet', description: 'Dein Produkt ist am Markt' },
+  scaling: { label: 'Wachstum', description: 'Du skalierst dein Geschäft' },
+};
 
 const PHASE_CONFIG: Record<
   string,
@@ -128,10 +138,14 @@ function StepCard({
               <Button
                 variant="primary"
                 size="sm"
-                className="flex-shrink-0 bg-gradient-to-r from-purple-500 to-pink-500 border-0"
+                className="flex-shrink-0 bg-gradient-to-r from-purple-500 to-pink-500 border-0 min-w-[100px] justify-center"
               >
                 <Sparkles className="w-4 h-4 mr-1" />
-                {step.help_action || 'Hilfe'}
+                {/* Kürzere Beschriftungen */}
+                {step.help_type === 'chat' ? 'Beratung' :
+                 step.help_type === 'generate' ? 'Erstellen' :
+                 step.help_type === 'template' ? 'Vorlage' :
+                 'KI-Hilfe'}
               </Button>
             )}
           </div>
@@ -208,6 +222,7 @@ export function JourneyPage() {
   const [progress, setProgress] = React.useState<Record<string, StepStatus>>({});
   const [expandedPhases, setExpandedPhases] = React.useState<string[]>(['foundation']);
   const [filter, setFilter] = React.useState<string>('all');
+  const [stageFilter, setStageFilter] = React.useState<StageFilter>('all');
   const [loading, setLoading] = React.useState(true);
 
   // Load journey data
@@ -314,9 +329,23 @@ export function JourneyPage() {
     }
   };
 
+  // Filter steps by stage
+  const filterStepsByStage = (stepsToFilter: JourneyStep[]): JourneyStep[] => {
+    if (stageFilter === 'all') return stepsToFilter;
+
+    return stepsToFilter.filter((step) => {
+      const conditions = step.applicable_when || {};
+      // Wenn der Step keine stage-Bedingung hat, zeige ihn immer
+      if (!conditions.stage || conditions.stage.length === 0) return true;
+      // Prüfe ob der aktuelle Stage-Filter in den erlaubten Stages ist
+      return conditions.stage.includes(stageFilter);
+    });
+  };
+
   const getStepsByPhase = (): Record<string, JourneyStep[]> => {
     const grouped: Record<string, JourneyStep[]> = {};
-    steps.forEach((step) => {
+    const filteredByStage = filterStepsByStage(steps);
+    filteredByStage.forEach((step) => {
       if (!grouped[step.phase]) grouped[step.phase] = [];
       grouped[step.phase].push(step);
     });
@@ -355,16 +384,73 @@ export function JourneyPage() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6"
         >
           <h1 className="font-display text-display-sm text-charcoal mb-2">
             Deine Founder Journey
           </h1>
           <p className="text-charcoal/60">
             {steps.length > 0
-              ? `${steps.length} Schritte von der Idee bis zum erfolgreichen Startup`
+              ? `${filterStepsByStage(steps).length} von ${steps.length} Schritten für deinen Reifegrad`
               : 'Lade Journey Steps...'}
           </p>
+        </motion.div>
+
+        {/* KI-Assistent Hinweis - Kompakt */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-6 p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-purple-900">
+                <span className="font-medium">KI-Assistent verfügbar</span>
+                <span className="text-purple-700/70"> – Klicke auf </span>
+                <span className="inline-flex items-center px-2 py-0.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs rounded-md mx-1">
+                  <Sparkles className="w-3 h-3 mr-1" />Beratung
+                </span>
+                <span className="text-purple-700/70"> bei jedem Schritt für personalisierte Hilfe.</span>
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Stage Filter - Reifegrad */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="mb-6"
+        >
+          <p className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+            <Filter className="w-4 h-4" />
+            Wo stehst du gerade?
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {(Object.keys(STAGE_CONFIG) as StageFilter[]).map((stage) => (
+              <button
+                key={stage}
+                onClick={() => setStageFilter(stage)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  stageFilter === stage
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/20'
+                    : 'bg-white text-gray-600 hover:bg-purple-50 border border-gray-200 hover:border-purple-300'
+                }`}
+              >
+                {STAGE_CONFIG[stage].label}
+              </button>
+            ))}
+          </div>
+          {stageFilter !== 'all' && (
+            <p className="mt-2 text-xs text-purple-600">
+              {STAGE_CONFIG[stageFilter].description}
+            </p>
+          )}
         </motion.div>
 
         {/* Progress Overview */}
