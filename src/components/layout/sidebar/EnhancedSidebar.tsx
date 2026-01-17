@@ -14,6 +14,8 @@ import {
   Layers,
   Settings,
   FolderOpen,
+  Users,
+  Database,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useStore } from '@/store';
@@ -86,7 +88,9 @@ export const EnhancedSidebar = () => {
     location.pathname.startsWith('/journey') ||
     location.pathname.startsWith('/about') ||
     location.pathname.startsWith('/settings') ||
-    location.pathname.startsWith('/deliverables');
+    location.pathname.startsWith('/deliverables') ||
+    location.pathname.startsWith('/investors') ||
+    location.pathname.startsWith('/data-room');
 
   if (!showSidebar) return null;
 
@@ -170,6 +174,8 @@ export const EnhancedSidebar = () => {
     { name: 'Vergleich', href: '/compare', icon: GitCompare },
     { name: 'Bewertung', href: '/valuation', icon: Calculator },
     { name: 'Dokumente', href: '/deliverables', icon: FolderOpen },
+    { name: 'Investoren', href: '/investors', icon: Users },
+    { name: 'Data Room', href: '/data-room', icon: Database },
     { name: 'Methodik', href: '/about/methodology', icon: FileText },
   ];
 

@@ -20,6 +20,9 @@ const ResetPasswordPage = React.lazy(() => import('@/pages/Auth/ResetPassword'))
 const ContactPage = React.lazy(() => import('@/pages/Contact'));
 const JourneyPage = React.lazy(() => import('@/pages/Journey'));
 const DeliverableLibraryPage = React.lazy(() => import('@/pages/DeliverableLibrary'));
+const InvestorCRMPage = React.lazy(() => import('@/pages/InvestorCRM'));
+const DataRoomPage = React.lazy(() => import('@/pages/DataRoom'));
+const PublicDataRoomPage = React.lazy(() => import('@/pages/DataRoom/PublicDataRoom'));
 
 // Loading fallback
 const PageLoader = () => (
@@ -61,6 +64,11 @@ export const Router = () => {
               <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
               <Route path="/settings/*" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
               <Route path="/deliverables" element={<ProtectedRoute><DeliverableLibraryPage /></ProtectedRoute>} />
+              <Route path="/investors" element={<ProtectedRoute><InvestorCRMPage /></ProtectedRoute>} />
+              <Route path="/data-room" element={<ProtectedRoute><DataRoomPage /></ProtectedRoute>} />
+
+              {/* Public Data Room Access */}
+              <Route path="/data-room/view/:token" element={<PublicDataRoomPage />} />
 
               {/* App prefixed routes - also protected */}
               <Route path="/app" element={<ProtectedRoute><Navigate to="/tier-selection" replace /></ProtectedRoute>} />
@@ -71,6 +79,8 @@ export const Router = () => {
               <Route path="/app/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
               <Route path="/app/settings/*" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
               <Route path="/app/deliverables" element={<ProtectedRoute><DeliverableLibraryPage /></ProtectedRoute>} />
+              <Route path="/app/investors" element={<ProtectedRoute><InvestorCRMPage /></ProtectedRoute>} />
+              <Route path="/app/data-room" element={<ProtectedRoute><DataRoomPage /></ProtectedRoute>} />
 
               {/* 404 Not Found */}
               <Route path="*" element={<ErrorPage />} />
