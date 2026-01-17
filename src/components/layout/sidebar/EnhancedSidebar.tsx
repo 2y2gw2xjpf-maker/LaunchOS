@@ -225,7 +225,7 @@ export const EnhancedSidebar = () => {
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className={cn(
-              'w-8 h-8 rounded-full flex items-center justify-center',
+              'w-11 h-11 rounded-full flex items-center justify-center',
               'bg-gradient-to-r from-purple-600 to-pink-600',
               'hover:shadow-lg hover:shadow-purple-500/30 transition-all',
               'active:scale-95'
@@ -408,7 +408,7 @@ export const EnhancedSidebar = () => {
                 'hover:border-purple-200 hover:shadow-sm'
               )}
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+              <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
                 <Layers className="w-4 h-4 text-white" />
               </div>
               {sidebarOpen && (

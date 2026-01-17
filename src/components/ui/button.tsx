@@ -18,12 +18,12 @@ const buttonVariants = cva(
         outline: 'border-2 border-purple-300 text-purple-700 hover:bg-purple-50 focus:ring-purple-200',
       },
       size: {
-        sm: 'h-9 px-4 text-sm',
+        sm: 'h-11 px-4 text-sm',      // 44px minimum for touch targets
         md: 'h-11 px-6 text-base',
         lg: 'h-14 px-8 text-lg',
         xl: 'h-16 px-10 text-xl',
-        icon: 'h-10 w-10',
-        'icon-sm': 'h-8 w-8',
+        icon: 'h-11 w-11',            // 44px minimum for touch targets
+        'icon-sm': 'h-11 w-11',       // 44px minimum (was h-8 w-8)
         'icon-lg': 'h-12 w-12',
       },
     },

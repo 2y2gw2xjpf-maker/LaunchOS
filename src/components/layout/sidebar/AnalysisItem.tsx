@@ -122,7 +122,7 @@ export const AnalysisItem = ({
       >
         <div
           className={cn(
-            'w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold',
+            'w-11 h-11 rounded-lg flex items-center justify-center text-xs font-semibold',
             getRouteColor(analysis.routeResult?.recommendation)
           )}
         >

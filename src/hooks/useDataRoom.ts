@@ -7,6 +7,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useOptionalVentureContext } from '@/contexts/VentureContext';
+import { showToast, toastMessages } from '@/lib/toast';
 
 // ==================== TYPES ====================
 
@@ -416,10 +417,12 @@ export function useDataRoom(): UseDataRoomReturn {
         if (error) throw error;
 
         await loadFiles();
+        showToast.success(toastMessages.fileUploaded);
         return mapFile(newFile);
       } catch (err) {
         console.error('Error uploading file:', err);
         setError('Fehler beim Hochladen');
+        showToast.error(toastMessages.uploadError);
         return null;
       }
     },
@@ -466,10 +469,12 @@ export function useDataRoom(): UseDataRoomReturn {
         if (error) throw error;
 
         await loadFiles();
+        showToast.success(toastMessages.fileDeleted);
         return true;
       } catch (err) {
         console.error('Error deleting file:', err);
         setError('Fehler beim Loeschen');
+        showToast.error(toastMessages.deleteError);
         return false;
       }
     },
@@ -508,10 +513,12 @@ export function useDataRoom(): UseDataRoomReturn {
         if (error) throw error;
 
         await loadAccessLinks();
+        showToast.success(toastMessages.linkCreated);
         return mapAccessLink(newLink);
       } catch (err) {
         console.error('Error creating access link:', err);
         setError('Fehler beim Erstellen des Links');
+        showToast.error(toastMessages.saveError);
         return null;
       }
     },

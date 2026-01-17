@@ -7,6 +7,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useOptionalVentureContext } from '@/contexts/VentureContext';
+import { showToast, toastMessages } from '@/lib/toast';
 
 // ==================== TYPES ====================
 
@@ -341,10 +342,12 @@ export function useInvestorCRM(): UseInvestorCRMReturn {
         if (error) throw error;
 
         await loadContacts();
+        showToast.success(toastMessages.contactSaved);
         return mapContact(newContact);
       } catch (err) {
         console.error('Error creating contact:', err);
         setError('Fehler beim Erstellen des Kontakts');
+        showToast.error(toastMessages.saveError);
         return null;
       }
     },
@@ -382,10 +385,12 @@ export function useInvestorCRM(): UseInvestorCRMReturn {
         if (error) throw error;
 
         await loadContacts();
+        showToast.success(toastMessages.saved);
         return true;
       } catch (err) {
         console.error('Error updating contact:', err);
         setError('Fehler beim Aktualisieren');
+        showToast.error(toastMessages.saveError);
         return false;
       }
     },
@@ -403,10 +408,12 @@ export function useInvestorCRM(): UseInvestorCRMReturn {
         if (error) throw error;
 
         await loadContacts();
+        showToast.success(toastMessages.contactDeleted);
         return true;
       } catch (err) {
         console.error('Error deleting contact:', err);
         setError('Fehler beim Loeschen');
+        showToast.error(toastMessages.deleteError);
         return false;
       }
     },
@@ -462,10 +469,12 @@ export function useInvestorCRM(): UseInvestorCRMReturn {
         }
 
         await loadContacts();
+        showToast.success(toastMessages.stageMoved);
         return true;
       } catch (err) {
         console.error('Error updating pipeline stage:', err);
         setError('Fehler beim Stage-Wechsel');
+        showToast.error(toastMessages.saveError);
         return false;
       }
     },

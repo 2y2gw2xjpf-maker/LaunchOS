@@ -82,7 +82,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className={cn(
-              'w-8 h-8 rounded-full flex items-center justify-center',
+              'w-11 h-11 rounded-full flex items-center justify-center',
               'bg-gradient-to-r from-purple-600 to-pink-600',
               'hover:shadow-lg hover:shadow-purple-500/30 transition-all',
               'active:scale-95'

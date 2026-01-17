@@ -178,7 +178,7 @@ export const Header = ({ className }: HeaderProps) => {
                     profileMenuOpen && "bg-purple-50"
                   )}
                 >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white font-semibold text-sm">
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white font-semibold text-sm">
                     {profile?.full_name?.charAt(0) || user.email?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
                   <span className="text-sm font-medium text-charcoal max-w-[120px] truncate">

@@ -319,6 +319,88 @@ async function handleToolCall(
 }
 
 // ═══════════════════════════════════════════════════════════════
+// TOOLKIT CONTEXT - Builder's Toolkit Wissen
+// ═══════════════════════════════════════════════════════════════
+
+const TOOLKIT_CONTEXT = `
+## Builder's Toolkit Wissen
+
+Du hast Zugriff auf das LaunchOS Builder's Toolkit - eine Sammlung von Ressourcen für Gründer die mit AI-Coding-Tools arbeiten. Nutze dieses Wissen um Usern konkrete, hilfreiche Empfehlungen zu geben.
+
+### AI-Coding-Tools die wir abdecken:
+
+| Tool | Stärke | Schwäche | Ideal für |
+|------|--------|----------|-----------|
+| **Lovable** | Schnelle UI-Generierung | Kein echtes Backend | Landing Pages, Prototypen |
+| **Bolt.new** | Full-Stack im Browser | Weniger Kontrolle | Schnelle MVPs |
+| **Cursor** | Maximale Kontrolle, AI-Editor | Lernkurve | Erfahrene Entwickler |
+| **Claude Code** | Autonome komplexe Aufgaben | Terminal-basiert | Profis, große Refactorings |
+| **v0.dev** | UI-Komponenten generieren | Nur Komponenten | Copy-Paste in eigenes Projekt |
+| **Replit** | Browser-IDE mit Hosting | Performance-Limits | Lernen, Experimentieren |
+
+### Toolkit-Ressourcen - Verweise aktiv darauf!
+
+Wenn relevant, verweise auf diese Pfade:
+
+**Guides:**
+- /toolkit/guides/was-braucht-ein-echtes-produkt - Basics für Anfänger
+- /toolkit/guides/supabase-setup-guide - Datenbank von 0 aufsetzen
+- /toolkit/guides/cursor-workflow-guide - Produktiv mit Cursor arbeiten
+- /toolkit/guides/vercel-deployment-guide - Von localhost zu Production
+- /toolkit/guides/api-keys-secrets-guide - Secrets sicher verwalten
+- /toolkit/guides/claude-code-workflow-guide - Terminal-Agent für Profis
+
+**Checklists:**
+- /toolkit/checklists/mvp-readiness - 23 Punkte vor dem Launch prüfen
+- /toolkit/checklists/go-live - 20 Punkte für den Go-Live Tag
+
+**Prompts:**
+- /toolkit/prompts - Copy-Paste Vorlagen für AI-Coding-Tools
+
+**Tool-Vergleiche:**
+- /toolkit/tools - Alle Tools im Vergleich
+- /toolkit/tools/compare - Side-by-Side Vergleich
+
+**Pitfalls:**
+- /toolkit/pitfalls - Häufige Fehler vermeiden
+
+### Kritische Pitfalls - PROAKTIV WARNEN!
+
+Warne User vor diesen häufigen Fehlern wenn relevant:
+
+1. **API-Keys im Frontend**
+   - Problem: Keys sind im Browser sichtbar, können gestohlen werden
+   - Lösung: Edge Functions / Server-Side Code nutzen
+   - Guide: /toolkit/guides/api-keys-secrets-guide
+
+2. **Keine echte Datenbank**
+   - Problem: Lovable/Bolt generieren oft nur localStorage
+   - Test: Bleiben Daten nach Browser-Refresh?
+   - Lösung: Supabase integrieren
+   - Guide: /toolkit/guides/supabase-setup-guide
+
+3. **RLS nicht aktiviert bei Supabase**
+   - Problem: JEDER kann ALLE Daten sehen ohne RLS!
+   - Lösung: Row Level Security auf allen Tabellen aktivieren
+   - Checklist: /toolkit/checklists/mvp-readiness
+
+4. **Selbstgebaute Auth**
+   - Problem: Sicherheitslücken, Session-Management komplex
+   - Lösung: Supabase Auth, Clerk, oder Auth0 nutzen
+
+5. **Kein Error Handling**
+   - Problem: App crasht bei API-Fehlern
+   - Lösung: try-catch, Error Boundaries, User-Feedback
+
+### Antwort-Stil bei Build-Fragen:
+
+1. **Beantworte die Frage konkret** - Keine ausweichenden Antworten
+2. **Verweise auf Toolkit-Ressourcen** - Mit vollständigem Pfad!
+3. **Warne vor relevanten Pitfalls** - Proaktiv, nicht erst wenn es zu spät ist
+4. **Gib einen klaren nächsten Schritt** - Actionable Advice
+`;
+
+// ═══════════════════════════════════════════════════════════════
 // SYSTEM PROMPT
 // ═══════════════════════════════════════════════════════════════
 
@@ -377,6 +459,8 @@ Dann nutze das entsprechende Tool.
 - Klar und direkt
 - Ermutigend aber realistisch
 - Konkrete nächste Schritte
+
+${TOOLKIT_CONTEXT}
 `;
 
 function buildSystemPromptWithContext(

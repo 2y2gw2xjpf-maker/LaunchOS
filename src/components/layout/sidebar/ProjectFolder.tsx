@@ -97,7 +97,7 @@ export const ProjectFolder = ({
           title={`${project.name} (${analyses.length})`}
         >
           <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center"
+            className="w-11 h-11 rounded-lg flex items-center justify-center"
             style={{ backgroundColor: `${project.color}20` }}
           >
             <Folder className="w-4 h-4" style={{ color: project.color }} />
