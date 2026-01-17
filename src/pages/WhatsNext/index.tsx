@@ -50,6 +50,16 @@ export const WhatsNextPage = () => {
     }
   }, [selectedTier, navigate]);
 
+  // Scroll to top on mount and when step changes
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
+  // Scroll to top when step changes
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentStep]);
+
   const handleNext = () => {
     completeStep(currentStep);
     if (currentStep < STEPS.length - 1) {

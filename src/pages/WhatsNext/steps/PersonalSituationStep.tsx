@@ -2,7 +2,15 @@ import * as React from 'react';
 import { User, Users, Building, Clock, Briefcase, Coffee } from 'lucide-react';
 import { useStore } from '@/store';
 import { QuestionCard, OptionGrid, OptionButton, NumberInput, SliderInput } from '@/components/forms';
-import type { TeamSize, Commitment, FinancialSituation } from '@/types';
+import type { TeamSize, Commitment, FinancialSituation, DataSharingTier } from '@/types';
+
+// Define which questions show at which tier level
+const TIER_LEVELS: Record<DataSharingTier, number> = {
+  minimal: 1,
+  basic: 2,
+  detailed: 3,
+  full: 4,
+};
 
 const teamOptions = [
   { value: 'solo', label: 'Solo', description: 'Nur ich', icon: <User className="w-5 h-5 text-navy" /> },
@@ -25,11 +33,15 @@ const financialOptions = [
 ];
 
 export const PersonalSituationStep = () => {
-  const { wizardData, setPersonalSituation } = useStore();
+  const { wizardData, setPersonalSituation, selectedTier } = useStore();
   const { personalSituation } = wizardData;
+
+  // Get current tier level (default to basic if not set)
+  const tierLevel = TIER_LEVELS[selectedTier || 'basic'];
 
   return (
     <div className="space-y-8">
+      {/* TIER 1+ (ALL TIERS): Team size and commitment */}
       <QuestionCard
         question="Wie gross ist dein Team?"
         required
@@ -42,7 +54,7 @@ export const PersonalSituationStep = () => {
           columns={4}
         />
 
-        {personalSituation.teamSize === 'cofounders' && (
+        {tierLevel >= 3 && personalSituation.teamSize === 'cofounders' && (
           <div className="mt-4 animate-fade-in">
             <NumberInput
               value={personalSituation.cofoundersCount}
@@ -50,38 +62,6 @@ export const PersonalSituationStep = () => {
               label="Anzahl Co-Founder (inkl. dir)"
               min={2}
               max={5}
-              showControls
-            />
-          </div>
-        )}
-      </QuestionCard>
-
-      <QuestionCard
-        question="Hast du relevante Erfahrung in der Branche?"
-        description="Vorherige Erfahrung in ahnlichen Rollen oder Branchen."
-        helpText="Branchenerfahrung reduziert das Ausfuhrungsrisiko aus Investorensicht."
-      >
-        <div className="flex gap-4 mb-4">
-          <OptionButton
-            label="Ja"
-            selected={personalSituation.hasRelevantExperience === true}
-            onClick={() => setPersonalSituation({ hasRelevantExperience: true })}
-          />
-          <OptionButton
-            label="Nein"
-            selected={personalSituation.hasRelevantExperience === false}
-            onClick={() => setPersonalSituation({ hasRelevantExperience: false })}
-          />
-        </div>
-
-        {personalSituation.hasRelevantExperience && (
-          <div className="animate-fade-in">
-            <NumberInput
-              value={personalSituation.yearsExperience}
-              onChange={(value) => setPersonalSituation({ yearsExperience: value })}
-              label="Jahre relevanter Erfahrung"
-              min={0}
-              max={30}
               showControls
             />
           </div>
@@ -101,67 +81,112 @@ export const PersonalSituationStep = () => {
         />
       </QuestionCard>
 
-      <QuestionCard
-        question="Wie ist deine finanzielle Situation?"
-        required
-        description="Dies hilft uns, realistische Empfehlungen zu geben."
-        helpText="Wir fragen nicht nach genauen Zahlen - nur nach einer groben Einschatzung."
-      >
-        <OptionGrid
-          options={financialOptions}
-          value={personalSituation.financialSituation || ''}
-          onChange={(value) => setPersonalSituation({ financialSituation: value as FinancialSituation })}
-          columns={2}
-        />
-      </QuestionCard>
+      {/* TIER 2+ (BASIC+): Financial situation */}
+      {tierLevel >= 2 && (
+        <>
+          <QuestionCard
+            question="Wie ist deine finanzielle Situation?"
+            required
+            description="Dies hilft uns, realistische Empfehlungen zu geben."
+            helpText="Wir fragen nicht nach genauen Zahlen - nur nach einer groben Einschatzung."
+          >
+            <OptionGrid
+              options={financialOptions}
+              value={personalSituation.financialSituation || ''}
+              onChange={(value) => setPersonalSituation({ financialSituation: value as FinancialSituation })}
+              columns={2}
+            />
+          </QuestionCard>
 
-      <QuestionCard
-        question="Wie viele Monate Runway hast du?"
-        description="Wie lange kannst du ohne externes Einkommen weitermachen?"
-        helpText="Runway = Monate bis dir das Geld ausgeht."
-      >
-        <NumberInput
-          value={personalSituation.runwayMonths}
-          onChange={(value) => setPersonalSituation({ runwayMonths: value })}
-          min={0}
-          max={60}
-          suffix="Monate"
-          showControls
-        />
-      </QuestionCard>
+          <QuestionCard
+            question="Hast du relevante Erfahrung in der Branche?"
+            description="Vorherige Erfahrung in ahnlichen Rollen oder Branchen."
+            helpText="Branchenerfahrung reduziert das Ausfuhrungsrisiko aus Investorensicht."
+          >
+            <div className="flex gap-4 mb-4">
+              <OptionButton
+                label="Ja"
+                selected={personalSituation.hasRelevantExperience === true}
+                onClick={() => setPersonalSituation({ hasRelevantExperience: true })}
+              />
+              <OptionButton
+                label="Nein"
+                selected={personalSituation.hasRelevantExperience === false}
+                onClick={() => setPersonalSituation({ hasRelevantExperience: false })}
+              />
+            </div>
 
-      <QuestionCard
-        question="Wie hoch ist deine Risiko-Toleranz?"
-        description="Wie viel Unsicherheit kannst du ertragen?"
-      >
-        <SliderInput
-          value={personalSituation.riskTolerance || 5}
-          onChange={(value) => setPersonalSituation({ riskTolerance: value })}
-          min={1}
-          max={10}
-          leftLabel="Sehr risikoavers"
-          rightLabel="Sehr risikobereit"
-          formatValue={(v) => `${v}/10`}
-        />
-      </QuestionCard>
+            {tierLevel >= 3 && personalSituation.hasRelevantExperience && (
+              <div className="animate-fade-in">
+                <NumberInput
+                  value={personalSituation.yearsExperience}
+                  onChange={(value) => setPersonalSituation({ yearsExperience: value })}
+                  label="Jahre relevanter Erfahrung"
+                  min={0}
+                  max={30}
+                  showControls
+                />
+              </div>
+            )}
+          </QuestionCard>
+        </>
+      )}
 
-      <QuestionCard
-        question="Hast du andere Einkommensquellen?"
-        description="Z.B. Teilzeit-Job, Partner-Einkommen, Mieteinnahmen"
-      >
-        <div className="flex gap-4">
-          <OptionButton
-            label="Ja"
-            selected={personalSituation.hasOtherIncome === true}
-            onClick={() => setPersonalSituation({ hasOtherIncome: true })}
+      {/* TIER 3+ (DETAILED+): Detailed financial questions */}
+      {tierLevel >= 3 && (
+        <>
+          <QuestionCard
+            question="Wie viele Monate Runway hast du?"
+            description="Wie lange kannst du ohne externes Einkommen weitermachen?"
+            helpText="Runway = Monate bis dir das Geld ausgeht."
+          >
+            <NumberInput
+              value={personalSituation.runwayMonths}
+              onChange={(value) => setPersonalSituation({ runwayMonths: value })}
+              min={0}
+              max={60}
+              suffix="Monate"
+              showControls
+            />
+          </QuestionCard>
+
+          <QuestionCard
+            question="Hast du andere Einkommensquellen?"
+            description="Z.B. Teilzeit-Job, Partner-Einkommen, Mieteinnahmen"
+          >
+            <div className="flex gap-4">
+              <OptionButton
+                label="Ja"
+                selected={personalSituation.hasOtherIncome === true}
+                onClick={() => setPersonalSituation({ hasOtherIncome: true })}
+              />
+              <OptionButton
+                label="Nein"
+                selected={personalSituation.hasOtherIncome === false}
+                onClick={() => setPersonalSituation({ hasOtherIncome: false })}
+              />
+            </div>
+          </QuestionCard>
+        </>
+      )}
+
+      {/* TIER 4 (FULL): Risk tolerance */}
+      {tierLevel >= 4 && (
+        <QuestionCard
+          question="Wie hoch ist deine Risiko-Toleranz?"
+          description="Wie viel Unsicherheit kannst du ertragen?"
+        >
+          <SliderInput
+            value={personalSituation.riskTolerance || 5}
+            onChange={(value) => setPersonalSituation({ riskTolerance: value })}
+            min={1}
+            max={10}
+            leftLabel="Sehr risikoavers"
+            rightLabel="Sehr risikobereit"
+            formatValue={(v) => `${v}/10`}
           />
-          <OptionButton
-            label="Nein"
-            selected={personalSituation.hasOtherIncome === false}
-            onClick={() => setPersonalSituation({ hasOtherIncome: false })}
-          />
-        </div>
-      </QuestionCard>
+        </QuestionCard>
+      )}
     </div>
   );
 };

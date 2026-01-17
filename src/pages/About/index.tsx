@@ -86,6 +86,14 @@ const valuationMethods: ValuationMethod[] = [
   },
 ];
 
+// Color classes for Tailwind - must be explicit for purge
+const levelColorClasses: Record<string, string> = {
+  'level-1': 'bg-purple-200',
+  'level-2': 'bg-purple-300',
+  'level-3': 'bg-purple-400',
+  'level-4': 'bg-purple-600',
+};
+
 const confidenceFactors: ConfidenceFactor[] = [
   {
     id: 'data_quality',
@@ -94,10 +102,10 @@ const confidenceFactors: ConfidenceFactor[] = [
     weight: 30,
     description: 'Wie vollständig und aktuell sind deine Eingaben?',
     levels: [
-      { label: 'Minimal', range: '0-25%', color: 'red' },
-      { label: 'Basis', range: '26-50%', color: 'amber' },
-      { label: 'Gut', range: '51-75%', color: 'blue' },
-      { label: 'Exzellent', range: '76-100%', color: 'green' },
+      { label: 'Minimal', range: '0-25%', color: 'level-1' },
+      { label: 'Basis', range: '26-50%', color: 'level-2' },
+      { label: 'Gut', range: '51-75%', color: 'level-3' },
+      { label: 'Exzellent', range: '76-100%', color: 'level-4' },
     ],
   },
   {
@@ -107,10 +115,10 @@ const confidenceFactors: ConfidenceFactor[] = [
     weight: 25,
     description: 'Wie stark stimmen die verschiedenen Bewertungsmethoden überein?',
     levels: [
-      { label: 'Divergent', range: '>50% Abweichung', color: 'red' },
-      { label: 'Unterschiedlich', range: '30-50%', color: 'amber' },
-      { label: 'Ähnlich', range: '15-30%', color: 'blue' },
-      { label: 'Konvergent', range: '<15%', color: 'green' },
+      { label: 'Divergent', range: '>50% Abweichung', color: 'level-1' },
+      { label: 'Unterschiedlich', range: '30-50%', color: 'level-2' },
+      { label: 'Ähnlich', range: '15-30%', color: 'level-3' },
+      { label: 'Konvergent', range: '<15%', color: 'level-4' },
     ],
   },
   {
@@ -120,10 +128,10 @@ const confidenceFactors: ConfidenceFactor[] = [
     weight: 25,
     description: 'Sind Wettbewerber, TAM/SAM/SOM und Branchendaten verfügbar?',
     levels: [
-      { label: 'Keine', range: 'Nicht angegeben', color: 'red' },
-      { label: 'Geschätzt', range: 'Eigene Schätzung', color: 'amber' },
-      { label: 'Recherchiert', range: 'Sekundärquellen', color: 'blue' },
-      { label: 'Validiert', range: 'Primärdaten', color: 'green' },
+      { label: 'Keine', range: 'Nicht angegeben', color: 'level-1' },
+      { label: 'Geschätzt', range: 'Eigene Schätzung', color: 'level-2' },
+      { label: 'Recherchiert', range: 'Sekundärquellen', color: 'level-3' },
+      { label: 'Validiert', range: 'Primärdaten', color: 'level-4' },
     ],
   },
   {
@@ -133,10 +141,10 @@ const confidenceFactors: ConfidenceFactor[] = [
     weight: 20,
     description: 'Passen die gewählten Methoden zu deiner Unternehmensphase?',
     levels: [
-      { label: 'Unpassend', range: 'Falsche Phase', color: 'red' },
-      { label: 'Grenzwertig', range: 'Teilweise', color: 'amber' },
-      { label: 'Passend', range: 'Meist korrekt', color: 'blue' },
-      { label: 'Optimal', range: 'Perfekte Wahl', color: 'green' },
+      { label: 'Unpassend', range: 'Falsche Phase', color: 'level-1' },
+      { label: 'Grenzwertig', range: 'Teilweise', color: 'level-2' },
+      { label: 'Passend', range: 'Meist korrekt', color: 'level-3' },
+      { label: 'Optimal', range: 'Perfekte Wahl', color: 'level-4' },
     ],
   },
 ];
@@ -280,12 +288,12 @@ function ConfidenceSystem({ factors }: { factors: ConfidenceFactor[] }) {
   const [activeFactor, setActiveFactor] = React.useState<string | null>(null);
   const [demoScore, setDemoScore] = React.useState(68);
 
-  // Calculate demo confidence breakdown
+  // Calculate demo confidence breakdown - using purple/pink branding
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-blue-600';
-    if (score >= 40) return 'text-amber-600';
-    return 'text-red-600';
+    if (score >= 80) return 'text-purple-700';
+    if (score >= 60) return 'text-purple-600';
+    if (score >= 40) return 'text-purple-400';
+    return 'text-purple-300';
   };
 
   const getScoreLabel = (score: number) => {
@@ -296,10 +304,10 @@ function ConfidenceSystem({ factors }: { factors: ConfidenceFactor[] }) {
   };
 
   const getBarColor = (score: number) => {
-    if (score >= 80) return 'bg-gradient-to-r from-green-400 to-green-500';
-    if (score >= 60) return 'bg-gradient-to-r from-blue-400 to-blue-500';
-    if (score >= 40) return 'bg-gradient-to-r from-amber-400 to-amber-500';
-    return 'bg-gradient-to-r from-red-400 to-red-500';
+    if (score >= 80) return 'bg-gradient-to-r from-purple-500 to-pink-500';
+    if (score >= 60) return 'bg-gradient-to-r from-purple-400 to-pink-400';
+    if (score >= 40) return 'bg-gradient-to-r from-purple-300 to-pink-300';
+    return 'bg-gradient-to-r from-purple-200 to-pink-200';
   };
 
   return (
@@ -402,11 +410,7 @@ function ConfidenceSystem({ factors }: { factors: ConfidenceFactor[] }) {
                   {factor.levels.map((level, i) => (
                     <div
                       key={i}
-                      className={`flex-1 h-1.5 rounded-full ${
-                        level.color === 'red' ? 'bg-red-300' :
-                        level.color === 'amber' ? 'bg-amber-300' :
-                        level.color === 'blue' ? 'bg-blue-300' : 'bg-green-300'
-                      }`}
+                      className={`flex-1 h-1.5 rounded-full ${levelColorClasses[level.color]}`}
                       title={`${level.label}: ${level.range}`}
                     />
                   ))}
@@ -424,12 +428,7 @@ function ConfidenceSystem({ factors }: { factors: ConfidenceFactor[] }) {
                       <div className="grid grid-cols-4 gap-1 text-[10px]">
                         {factor.levels.map((level, i) => (
                           <div key={i} className="text-center">
-                            <div className={`
-                              w-full h-1 rounded mb-1
-                              ${level.color === 'red' ? 'bg-red-400' :
-                                level.color === 'amber' ? 'bg-amber-400' :
-                                level.color === 'blue' ? 'bg-blue-400' : 'bg-green-400'}
-                            `} />
+                            <div className={`w-full h-1 rounded mb-1 ${levelColorClasses[level.color]}`} />
                             <span className="font-medium text-gray-700">{level.label}</span>
                             <p className="text-gray-400">{level.range}</p>
                           </div>

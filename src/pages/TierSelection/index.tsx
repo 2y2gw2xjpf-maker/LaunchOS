@@ -10,12 +10,23 @@ import type { DataSharingTier } from '@/types';
 
 export const TierSelectionPage = () => {
   const navigate = useNavigate();
-  const { selectedTier, setSelectedTier, setAcknowledgedPrivacy, setWizardData } = useStore();
+  const { selectedTier, setSelectedTier, setAcknowledgedPrivacy, setWizardData, setCurrentStep } = useStore();
 
   const handleSelectTier = (tier: DataSharingTier) => {
     setSelectedTier(tier);
     setAcknowledgedPrivacy(true);
-    setWizardData({ tier });
+    // Reset wizard to start fresh with new tier
+    setWizardData({
+      tier,
+      projectBasics: {},
+      personalSituation: {},
+      goals: {},
+      marketAnalysis: {},
+      detailedInput: {},
+      completedSteps: [],
+    });
+    // Reset to first step
+    setCurrentStep(0);
     navigate('/whats-next');
   };
 

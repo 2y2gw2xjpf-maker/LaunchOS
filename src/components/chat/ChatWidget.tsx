@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils/cn';
 import { useLocation } from 'react-router-dom';
 import { useChatUnified, type ChatMessage } from '@/hooks/useChatUnified';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { useStore } from '@/store';
 
 // Markdown-like rendering for assistant messages
 function renderMessageContent(content: string, isUser: boolean) {
@@ -137,7 +138,7 @@ const SUGGESTIONS = [
 ];
 
 export function ChatWidget() {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const { chatWidgetOpen, setChatWidgetOpen } = useStore();
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [showHistory, setShowHistory] = React.useState(false);
   const [inputValue, setInputValue] = React.useState('');
@@ -145,6 +146,10 @@ export function ChatWidget() {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const location = useLocation();
   const { profile } = useAuth();
+
+  // Use store state for open/close
+  const isOpen = chatWidgetOpen;
+  const setIsOpen = setChatWidgetOpen;
 
   const {
     session,

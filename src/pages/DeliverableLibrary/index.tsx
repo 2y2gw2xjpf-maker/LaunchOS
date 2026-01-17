@@ -4,8 +4,8 @@
  */
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useStore } from '@/store';
 import {
   useDeliverables,
   DELIVERABLE_LABELS,
@@ -24,7 +24,7 @@ type ViewMode = 'grid' | 'list';
 type FilterType = 'all' | DeliverableType;
 
 export default function DeliverableLibrary() {
-  const navigate = useNavigate();
+  const { openChatWidget } = useStore();
   const { deliverables, isLoading, deleteDeliverable, downloadDeliverable, getVersions } = useDeliverables();
   const ventureContext = useOptionalVentureContext();
   const activeVenture = ventureContext?.activeVenture;
@@ -144,14 +144,14 @@ export default function DeliverableLibrary() {
                 Noch keine Dokumente
               </h3>
               <p className="text-gray-500 mb-6">
-                Starte einen Chat und lass dir Dokumente generieren!
+                Nutze den KI-Assistenten, um Dokumente zu generieren.
               </p>
               <button
-                onClick={() => navigate('/whats-next')}
+                onClick={() => openChatWidget()}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:shadow-lg transition-all"
               >
                 <MessageSquare className="w-5 h-5" />
-                Zum Chat
+                KI-Assistent öffnen
               </button>
             </div>
           ) : viewMode === 'grid' ? (

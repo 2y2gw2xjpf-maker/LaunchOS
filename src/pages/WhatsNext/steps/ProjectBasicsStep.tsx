@@ -13,7 +13,19 @@ import {
 } from 'lucide-react';
 import { useStore } from '@/store';
 import { QuestionCard, OptionGrid, OptionButton, NumberInput, CurrencyInput } from '@/components/forms';
-import type { ProjectCategory, ProjectStage, TargetCustomer } from '@/types';
+import type { ProjectCategory, ProjectStage, TargetCustomer, DataSharingTier } from '@/types';
+
+// Define which questions show at which tier level
+// minimal: Only essential questions (category, stage, target)
+// basic: + hasRevenue, hasUsers
+// detailed: + revenue/user details
+// full: All questions with detailed follow-ups
+const TIER_LEVELS: Record<DataSharingTier, number> = {
+  minimal: 1,
+  basic: 2,
+  detailed: 3,
+  full: 4,
+};
 
 const categoryOptions = [
   { value: 'saas', label: 'SaaS', description: 'Software as a Service', icon: <Cloud className="w-5 h-5 text-navy" /> },
@@ -44,11 +56,15 @@ const targetOptions = [
 ];
 
 export const ProjectBasicsStep = () => {
-  const { wizardData, setProjectBasics } = useStore();
+  const { wizardData, setProjectBasics, selectedTier } = useStore();
   const { projectBasics } = wizardData;
+
+  // Get current tier level (default to basic if not set)
+  const tierLevel = TIER_LEVELS[selectedTier || 'basic'];
 
   return (
     <div className="space-y-8">
+      {/* TIER 1+ (ALL TIERS): Basic category, stage, target */}
       <QuestionCard
         question="In welcher Branche ist dein Startup?"
         required
@@ -88,79 +104,97 @@ export const ProjectBasicsStep = () => {
         />
       </QuestionCard>
 
-      <QuestionCard
-        question="Hast du bereits Umsatz?"
-        description="Zahlende Kunden sind ein starkes Signal fur Produkt-Market-Fit."
-      >
-        <div className="flex gap-4 mb-4">
-          <OptionButton
-            label="Ja"
-            selected={projectBasics.hasRevenue === true}
-            onClick={() => setProjectBasics({ hasRevenue: true })}
-          />
-          <OptionButton
-            label="Nein"
-            selected={projectBasics.hasRevenue === false}
-            onClick={() => setProjectBasics({ hasRevenue: false })}
-          />
+      {/* TIER 2+ (BASIC+): Revenue and users questions */}
+      {tierLevel >= 2 && (
+        <>
+          <QuestionCard
+            question="Hast du bereits Umsatz?"
+            description="Zahlende Kunden sind ein starkes Signal fur Produkt-Market-Fit."
+          >
+            <div className="flex gap-4 mb-4">
+              <OptionButton
+                label="Ja"
+                selected={projectBasics.hasRevenue === true}
+                onClick={() => setProjectBasics({ hasRevenue: true })}
+              />
+              <OptionButton
+                label="Nein"
+                selected={projectBasics.hasRevenue === false}
+                onClick={() => setProjectBasics({ hasRevenue: false })}
+              />
+            </div>
+
+            {/* TIER 3+ (DETAILED+): Revenue details */}
+            {tierLevel >= 3 && projectBasics.hasRevenue && (
+              <div className="grid sm:grid-cols-2 gap-4 animate-fade-in">
+                <CurrencyInput
+                  value={projectBasics.monthlyRevenue}
+                  onChange={(value) => setProjectBasics({ monthlyRevenue: value })}
+                  label="Monatlicher Umsatz (MRR)"
+                  placeholder="5.000"
+                />
+                <NumberInput
+                  value={projectBasics.revenueGrowthRate}
+                  onChange={(value) => setProjectBasics({ revenueGrowthRate: value })}
+                  label="Monatliches Wachstum"
+                  suffix="%"
+                  placeholder="10"
+                  hint="MoM Growth Rate"
+                />
+              </div>
+            )}
+          </QuestionCard>
+
+          <QuestionCard
+            question="Hast du bereits Nutzer?"
+            description="Auch ohne Umsatz konnen aktive Nutzer ein wichtiges Signal sein."
+          >
+            <div className="flex gap-4 mb-4">
+              <OptionButton
+                label="Ja"
+                selected={projectBasics.hasUsers === true}
+                onClick={() => setProjectBasics({ hasUsers: true })}
+              />
+              <OptionButton
+                label="Nein"
+                selected={projectBasics.hasUsers === false}
+                onClick={() => setProjectBasics({ hasUsers: false })}
+              />
+            </div>
+
+            {/* TIER 3+ (DETAILED+): User details */}
+            {tierLevel >= 3 && projectBasics.hasUsers && (
+              <div className="grid sm:grid-cols-2 gap-4 animate-fade-in">
+                <NumberInput
+                  value={projectBasics.userCount}
+                  onChange={(value) => setProjectBasics({ userCount: value })}
+                  label="Anzahl aktiver Nutzer"
+                  placeholder="100"
+                />
+                <NumberInput
+                  value={projectBasics.userGrowthRate}
+                  onChange={(value) => setProjectBasics({ userGrowthRate: value })}
+                  label="Monatliches Wachstum"
+                  suffix="%"
+                  placeholder="15"
+                  hint="MoM Growth Rate"
+                />
+              </div>
+            )}
+          </QuestionCard>
+        </>
+      )}
+
+      {/* Info for minimal tier */}
+      {tierLevel === 1 && (
+        <div className="p-4 bg-purple-50 rounded-xl border border-purple-100 text-sm text-purple-700">
+          <p className="font-medium mb-1">Minimale Datenfreigabe aktiv</p>
+          <p className="text-purple-600">
+            Du hast die minimale Datenfreigabe gewahlt. Fur detailliertere Empfehlungen
+            kannst du jederzeit auf der Tier-Auswahl mehr Informationen freigeben.
+          </p>
         </div>
-
-        {projectBasics.hasRevenue && (
-          <div className="grid sm:grid-cols-2 gap-4 animate-fade-in">
-            <CurrencyInput
-              value={projectBasics.monthlyRevenue}
-              onChange={(value) => setProjectBasics({ monthlyRevenue: value })}
-              label="Monatlicher Umsatz (MRR)"
-              placeholder="5.000"
-            />
-            <NumberInput
-              value={projectBasics.revenueGrowthRate}
-              onChange={(value) => setProjectBasics({ revenueGrowthRate: value })}
-              label="Monatliches Wachstum"
-              suffix="%"
-              placeholder="10"
-              hint="MoM Growth Rate"
-            />
-          </div>
-        )}
-      </QuestionCard>
-
-      <QuestionCard
-        question="Hast du bereits Nutzer?"
-        description="Auch ohne Umsatz konnen aktive Nutzer ein wichtiges Signal sein."
-      >
-        <div className="flex gap-4 mb-4">
-          <OptionButton
-            label="Ja"
-            selected={projectBasics.hasUsers === true}
-            onClick={() => setProjectBasics({ hasUsers: true })}
-          />
-          <OptionButton
-            label="Nein"
-            selected={projectBasics.hasUsers === false}
-            onClick={() => setProjectBasics({ hasUsers: false })}
-          />
-        </div>
-
-        {projectBasics.hasUsers && (
-          <div className="grid sm:grid-cols-2 gap-4 animate-fade-in">
-            <NumberInput
-              value={projectBasics.userCount}
-              onChange={(value) => setProjectBasics({ userCount: value })}
-              label="Anzahl aktiver Nutzer"
-              placeholder="100"
-            />
-            <NumberInput
-              value={projectBasics.userGrowthRate}
-              onChange={(value) => setProjectBasics({ userGrowthRate: value })}
-              label="Monatliches Wachstum"
-              suffix="%"
-              placeholder="15"
-              hint="MoM Growth Rate"
-            />
-          </div>
-        )}
-      </QuestionCard>
+      )}
     </div>
   );
 };

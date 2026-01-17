@@ -3,12 +3,16 @@ import type { Toast, Modal } from '@/types';
 
 export interface UISlice {
   sidebarOpen: boolean;
+  chatWidgetOpen: boolean;
   activeHelper: string | null;
   toasts: Toast[];
   modals: Modal[];
 
   setSidebarOpen: (open: boolean) => void;
   toggleSidebar: () => void;
+  setChatWidgetOpen: (open: boolean) => void;
+  openChatWidget: () => void;
+  closeChatWidget: () => void;
   setActiveHelper: (helperId: string | null) => void;
   addToast: (toast: Omit<Toast, 'id'>) => void;
   removeToast: (id: string) => void;
@@ -19,6 +23,7 @@ export interface UISlice {
 
 export const createUISlice: StateCreator<UISlice> = (set, get) => ({
   sidebarOpen: true,
+  chatWidgetOpen: false,
   activeHelper: null,
   toasts: [],
   modals: [],
@@ -26,6 +31,12 @@ export const createUISlice: StateCreator<UISlice> = (set, get) => ({
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
 
   toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+
+  setChatWidgetOpen: (open) => set({ chatWidgetOpen: open }),
+
+  openChatWidget: () => set({ chatWidgetOpen: true }),
+
+  closeChatWidget: () => set({ chatWidgetOpen: false }),
 
   setActiveHelper: (helperId) => set({ activeHelper: helperId }),
 
