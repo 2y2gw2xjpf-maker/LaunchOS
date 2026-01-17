@@ -20,9 +20,12 @@ export const Header = ({ className }: HeaderProps) => {
   const navigate = useNavigate();
   const { user: authUser, profile, signOut } = useAuth();
 
-  // In dev mode with SKIP_AUTH, treat as logged in for UI purposes
+  // Check if we're on a landing/public page FIRST
+  const isLandingPage = location.pathname === '/' || location.pathname === '/about' || location.pathname === '/pricing' || location.pathname === '/contact';
+
+  // In dev mode with SKIP_AUTH, treat as logged in for UI purposes - BUT ONLY on app pages, NOT on landing page
   const skipAuth = import.meta.env.VITE_SKIP_AUTH === 'true';
-  const user = authUser || (skipAuth ? { email: 'dev@launchos.de' } : null);
+  const user = authUser || (skipAuth && !isLandingPage ? { email: 'dev@launchos.de' } : null);
 
   // Close profile menu when clicking outside
   React.useEffect(() => {
@@ -35,8 +38,7 @@ export const Header = ({ className }: HeaderProps) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Different navigation for landing vs app
-  const isLandingPage = location.pathname === '/' || location.pathname === '/about' || location.pathname === '/pricing' || location.pathname === '/contact';
+  // Different navigation for landing vs app (isLandingPage already defined above)
 
   // Landing page navigation (public) - nur Features, Preise, Kontakt
   const landingNavigation = [
