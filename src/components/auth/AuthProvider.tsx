@@ -81,19 +81,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const pendingSignout = localStorage.getItem('launchos-pending-signout');
     if (pendingSignout === 'true') {
       localStorage.removeItem('launchos-pending-signout');
-      supabase.auth.signOut().then(() => {
-        setLoading(false);
-      });
-      return;
+      // Sign out but still set up the listener
+      supabase.auth.signOut();
     }
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('[Auth] Initial session check:', session ? 'Found' : 'None');
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchProfile(session.user.id);
       }
+      setLoading(false);
+    }).catch((err) => {
+      console.error('[Auth] Error getting session:', err);
       setLoading(false);
     });
 
