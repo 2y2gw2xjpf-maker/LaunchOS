@@ -383,9 +383,9 @@ export function JourneyPage() {
     return grouped;
   };
 
-  const calculateProgress = () => {
-    const total = steps.length;
-    const completed = Object.values(progress).filter((s) => s === 'completed').length;
+  const calculateProgress = (filteredSteps: JourneyStep[]) => {
+    const total = filteredSteps.length;
+    const completed = filteredSteps.filter((s) => progress[s.id] === 'completed').length;
     return { total, completed, percentage: total > 0 ? Math.round((completed / total) * 100) : 0 };
   };
 
@@ -395,8 +395,10 @@ export function JourneyPage() {
     );
   };
 
+  // Gefilterte Steps berechnen
+  const filteredSteps = filterStepsByStage(steps);
   const stepsByPhase = getStepsByPhase();
-  const progressStats = calculateProgress();
+  const progressStats = calculateProgress(filteredSteps);
 
   if (loading) {
     return (
@@ -422,7 +424,7 @@ export function JourneyPage() {
           </h1>
           <p className="text-charcoal/60">
             {steps.length > 0
-              ? `${filterStepsByStage(steps).length} von ${steps.length} Schritten für deinen Reifegrad`
+              ? `${filteredSteps.length} ${stageFilter !== 'all' ? `von ${steps.length}` : ''} Schritte${stageFilter !== 'all' ? ` für "${STAGE_CONFIG[stageFilter].label}"` : ''}`
               : 'Lade Journey Steps...'}
           </p>
         </motion.div>
