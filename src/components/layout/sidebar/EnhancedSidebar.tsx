@@ -18,6 +18,7 @@ import {
   Database,
   BarChart3,
   Wrench,
+  Rocket,
   MoreHorizontal,
   X,
 } from 'lucide-react';
@@ -97,7 +98,8 @@ export const EnhancedSidebar = () => {
     location.pathname.startsWith('/investors') ||
     location.pathname.startsWith('/data-room') ||
     location.pathname.startsWith('/analytics') ||
-    location.pathname.startsWith('/toolkit');
+    location.pathname.startsWith('/toolkit') ||
+    location.pathname.startsWith('/launch');
 
   if (!showSidebar) return null;
 
@@ -187,6 +189,7 @@ export const EnhancedSidebar = () => {
     { name: 'Data Room', href: '/data-room', icon: Database },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
     { name: 'Methodik', href: '/about/methodology', icon: FileText },
+    { name: 'Launch Checklist', href: '/launch/checklist', icon: Rocket },
   ];
 
   // Mobile bottom nav: most important items for quick access

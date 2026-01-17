@@ -42,6 +42,10 @@ const ToolDetailPage = React.lazy(() => import('@/pages/Toolkit/ToolDetailPage')
 const ToolComparePage = React.lazy(() => import('@/pages/Toolkit/ToolComparePage'));
 const PitfallsPage = React.lazy(() => import('@/pages/Toolkit/PitfallsPage'));
 
+// Launch Pages
+const LaunchChecklistPage = React.lazy(() => import('@/pages/Launch/LaunchChecklistPage'));
+const AnnouncementPage = React.lazy(() => import('@/pages/Launch/AnnouncementPage'));
+
 // Loading fallback
 const PageLoader = () => (
   <div className="min-h-screen bg-cream flex items-center justify-center">
@@ -105,6 +109,10 @@ export const Router = () => {
               <Route path="/toolkit/tools/compare" element={<ProtectedRoute><ToolComparePage /></ProtectedRoute>} />
               <Route path="/toolkit/tools/:slug" element={<ProtectedRoute><ToolDetailPage /></ProtectedRoute>} />
               <Route path="/toolkit/pitfalls" element={<ProtectedRoute><PitfallsPage /></ProtectedRoute>} />
+
+              {/* Launch Routes */}
+              <Route path="/launch/checklist" element={<ProtectedRoute><LaunchChecklistPage /></ProtectedRoute>} />
+              <Route path="/launch/announcement" element={<ProtectedRoute><AnnouncementPage /></ProtectedRoute>} />
 
               {/* Public Data Room Access */}
               <Route path="/data-room/view/:token" element={<PublicDataRoomPage />} />
