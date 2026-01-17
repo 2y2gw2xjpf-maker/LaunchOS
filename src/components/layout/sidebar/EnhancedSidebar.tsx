@@ -17,6 +17,7 @@ import {
   Users,
   Database,
   BarChart3,
+  Wrench,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useStore } from '@/store';
@@ -92,7 +93,8 @@ export const EnhancedSidebar = () => {
     location.pathname.startsWith('/deliverables') ||
     location.pathname.startsWith('/investors') ||
     location.pathname.startsWith('/data-room') ||
-    location.pathname.startsWith('/analytics');
+    location.pathname.startsWith('/analytics') ||
+    location.pathname.startsWith('/toolkit');
 
   if (!showSidebar) return null;
 
@@ -176,6 +178,7 @@ export const EnhancedSidebar = () => {
     { name: 'Vergleich', href: '/compare', icon: GitCompare },
     { name: 'Bewertung', href: '/valuation', icon: Calculator },
     { name: 'Dokumente', href: '/deliverables', icon: FolderOpen },
+    { name: "Builder's Toolkit", href: '/toolkit', icon: Wrench },
     { name: 'Investoren', href: '/investors', icon: Users },
     { name: 'Data Room', href: '/data-room', icon: Database },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },

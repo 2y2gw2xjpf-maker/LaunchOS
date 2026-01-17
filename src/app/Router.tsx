@@ -29,6 +29,19 @@ const AnalyticsPage = React.lazy(() => import('@/pages/Analytics'));
 const ImpressumPage = React.lazy(() => import('@/pages/Legal/ImpressumPage'));
 const DatenschutzPage = React.lazy(() => import('@/pages/Legal/DatenschutzPage'));
 
+// Builder's Toolkit
+const ToolkitPage = React.lazy(() => import('@/pages/Toolkit'));
+const GuidesPage = React.lazy(() => import('@/pages/Toolkit/GuidesPage'));
+const GuideDetailPage = React.lazy(() => import('@/pages/Toolkit/GuideDetailPage'));
+const ChecklistsPage = React.lazy(() => import('@/pages/Toolkit/ChecklistsPage'));
+const ChecklistDetailPage = React.lazy(() => import('@/pages/Toolkit/ChecklistDetailPage'));
+const PromptsPage = React.lazy(() => import('@/pages/Toolkit/PromptsPage'));
+const PromptDetailPage = React.lazy(() => import('@/pages/Toolkit/PromptDetailPage'));
+const ToolsPage = React.lazy(() => import('@/pages/Toolkit/ToolsPage'));
+const ToolDetailPage = React.lazy(() => import('@/pages/Toolkit/ToolDetailPage'));
+const ToolComparePage = React.lazy(() => import('@/pages/Toolkit/ToolComparePage'));
+const PitfallsPage = React.lazy(() => import('@/pages/Toolkit/PitfallsPage'));
+
 // Loading fallback
 const PageLoader = () => (
   <div className="min-h-screen bg-cream flex items-center justify-center">
@@ -79,6 +92,19 @@ export const Router = () => {
               <Route path="/investors" element={<ProtectedRoute><InvestorCRMPage /></ProtectedRoute>} />
               <Route path="/data-room" element={<ProtectedRoute><DataRoomPage /></ProtectedRoute>} />
               <Route path="/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
+
+              {/* Builder's Toolkit Routes */}
+              <Route path="/toolkit" element={<ProtectedRoute><ToolkitPage /></ProtectedRoute>} />
+              <Route path="/toolkit/guides" element={<ProtectedRoute><GuidesPage /></ProtectedRoute>} />
+              <Route path="/toolkit/guides/:slug" element={<ProtectedRoute><GuideDetailPage /></ProtectedRoute>} />
+              <Route path="/toolkit/checklists" element={<ProtectedRoute><ChecklistsPage /></ProtectedRoute>} />
+              <Route path="/toolkit/checklists/:slug" element={<ProtectedRoute><ChecklistDetailPage /></ProtectedRoute>} />
+              <Route path="/toolkit/prompts" element={<ProtectedRoute><PromptsPage /></ProtectedRoute>} />
+              <Route path="/toolkit/prompts/:slug" element={<ProtectedRoute><PromptDetailPage /></ProtectedRoute>} />
+              <Route path="/toolkit/tools" element={<ProtectedRoute><ToolsPage /></ProtectedRoute>} />
+              <Route path="/toolkit/tools/compare" element={<ProtectedRoute><ToolComparePage /></ProtectedRoute>} />
+              <Route path="/toolkit/tools/:slug" element={<ProtectedRoute><ToolDetailPage /></ProtectedRoute>} />
+              <Route path="/toolkit/pitfalls" element={<ProtectedRoute><PitfallsPage /></ProtectedRoute>} />
 
               {/* Public Data Room Access */}
               <Route path="/data-room/view/:token" element={<PublicDataRoomPage />} />
