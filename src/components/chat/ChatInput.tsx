@@ -4,10 +4,12 @@
  */
 
 import * as React from 'react';
-import { Send, Loader2, Sparkles } from 'lucide-react';
+import { Send, Loader2, Sparkles, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { Button } from '@/components/ui/button';
 import { QUICK_ACTIONS, type QuickAction } from '@/types';
+import { useSubscription } from '@/hooks/useSubscription';
+import { Link } from 'react-router-dom';
 
 interface ChatInputProps {
   onSend: (message: string) => void;
@@ -17,6 +19,7 @@ interface ChatInputProps {
   suggestions?: string[];
   showQuickActions?: boolean;
   className?: string;
+  showChatLimit?: boolean;
 }
 
 export function ChatInput({
@@ -27,9 +30,14 @@ export function ChatInput({
   suggestions = [],
   showQuickActions = true,
   className,
+  showChatLimit = true,
 }: ChatInputProps) {
   const [value, setValue] = React.useState('');
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+  const { chatLimit, isFreeTier, canSendChatMessage, incrementChatCount } = useSubscription();
+
+  const isLimitReached = !canSendChatMessage();
+  const isLow = chatLimit && chatLimit.remaining !== null && chatLimit.remaining <= 10;
 
   // Auto-resize textarea
   React.useEffect(() => {
@@ -39,9 +47,13 @@ export function ChatInput({
     }
   }, [value]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (value.trim() && !isLoading) {
+    if (value.trim() && !isLoading && !isLimitReached) {
+      // Increment chat count before sending
+      if (isFreeTier()) {
+        await incrementChatCount();
+      }
       onSend(value.trim());
       setValue('');
     }
@@ -56,8 +68,33 @@ export function ChatInput({
 
   return (
     <div className={cn('space-y-3', className)}>
+      {/* Chat Limit Warning */}
+      {showChatLimit && isFreeTier() && chatLimit && chatLimit.remaining !== null && (isLow || isLimitReached) && (
+        <div className={cn(
+          'flex items-center justify-between p-3 rounded-xl text-sm',
+          isLimitReached
+            ? 'bg-coral/10 border border-coral/20'
+            : 'bg-gold/10 border border-gold/20'
+        )}>
+          <div className="flex items-center gap-2">
+            <AlertTriangle className={cn('w-4 h-4', isLimitReached ? 'text-coral' : 'text-gold')} />
+            <span className={isLimitReached ? 'text-coral' : 'text-gold'}>
+              {isLimitReached
+                ? 'Chat-Limit erreicht (0 Nachrichten übrig)'
+                : `Noch ${chatLimit.remaining} Nachrichten diesen Monat`}
+            </span>
+          </div>
+          <Link
+            to="/pricing?plan=pro"
+            className="px-3 py-1 bg-brand-600 text-white text-xs font-medium rounded-lg hover:bg-brand-700 transition-colors"
+          >
+            Upgrade
+          </Link>
+        </div>
+      )}
+
       {/* Quick Actions */}
-      {showQuickActions && onQuickAction && (
+      {showQuickActions && onQuickAction && !isLimitReached && (
         <div className="flex flex-wrap gap-2">
           {QUICK_ACTIONS.slice(0, 4).map((action) => (
             <button
@@ -125,7 +162,7 @@ export function ChatInput({
             type="submit"
             variant="primary"
             size="icon"
-            disabled={!value.trim() || isLoading}
+            disabled={!value.trim() || isLoading || isLimitReached}
             className="flex-shrink-0 w-10 h-10 rounded-xl"
           >
             {isLoading ? (

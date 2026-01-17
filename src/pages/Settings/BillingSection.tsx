@@ -189,19 +189,19 @@ export default function BillingSection() {
         <h4 className="text-lg font-semibold text-text-primary mb-4">Nutzung</h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <UsageCard
-            label="Projekte"
-            used={2}
-            limit={currentTier?.limits.projects ?? 1}
+            label="Ventures"
+            used={1}
+            limit={currentTier?.limits.ventures ?? 1}
           />
           <UsageCard
-            label="Analysen"
-            used={5}
-            limit={currentTier?.limits.analyses ?? 3}
+            label="Chat-Nachrichten"
+            used={10}
+            limit={currentTier?.limits.chatMessages ?? 30}
           />
           <UsageCard
-            label="AI-Anfragen"
-            used={0}
-            limit={currentTier?.limits.aiRequests ?? 0}
+            label="Team-Mitglieder"
+            used={1}
+            limit={currentTier?.limits.teamMembers ?? 1}
           />
         </div>
       </div>

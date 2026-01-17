@@ -16,108 +16,133 @@ export const getStripe = () => {
 // ==================== PRICING CONFIGURATION ====================
 
 export interface PricingTier {
-  id: 'starter' | 'growth' | 'scale';
+  id: 'free' | 'pro' | 'team';
   name: string;
   price: number;
+  priceYearly: number;
   currency: 'EUR';
   interval: 'month';
   priceId: string; // Stripe Price ID - set in Stripe Dashboard
   priceIdYearly?: string; // Optional yearly Price ID
   features: string[];
   limits: {
-    projects: number; // -1 = unlimited
-    analyses: number;
-    aiRequests: number;
-    teamMembers?: number;
+    ventures: number; // -1 = unlimited
+    chatMessages: number | null; // null = unlimited
+    dataRoomStorageMb: number;
+    teamMembers: number;
+  };
+  featureFlags: {
+    hasDocumentGeneration: boolean;
+    hasInvestorCrm: boolean;
+    hasDataRoom: boolean;
+    hasAnalytics: boolean;
+    hasCustomBranding: boolean;
+    hasPrioritySupport: boolean;
   };
   popular?: boolean;
 }
 
 export const PRICING_TIERS: Record<string, PricingTier> = {
-  starter: {
-    id: 'starter',
-    name: 'Starter',
-    price: 49,
+  pro: {
+    id: 'pro',
+    name: 'Founder',
+    price: 29,
+    priceYearly: 249,
     currency: 'EUR',
     interval: 'month',
-    priceId: import.meta.env.VITE_STRIPE_PRICE_STARTER || 'price_starter',
-    priceIdYearly: import.meta.env.VITE_STRIPE_PRICE_STARTER_YEAR || 'price_starter_year',
+    priceId: import.meta.env.VITE_STRIPE_PRICE_PRO || 'price_pro',
+    priceIdYearly: import.meta.env.VITE_STRIPE_PRICE_PRO_YEAR || 'price_pro_year',
     features: [
-      '3 Projekte',
-      'Alle Bewertungsmethoden',
-      'Action Plan Generator',
-      'Progress Tracking',
+      'Unbegrenzte Chat-Nachrichten',
+      'Dokument-Generierung',
+      'Investor CRM mit Kanban',
+      'Sicherer Data Room (10 GB)',
+      'Analytics Dashboard',
+      'Bis zu 3 Ventures',
       'Email Support',
     ],
     limits: {
-      projects: 3,
-      analyses: 10,
-      aiRequests: 0,
+      ventures: 3,
+      chatMessages: null, // unlimited
+      dataRoomStorageMb: 10240, // 10 GB
+      teamMembers: 1,
     },
-  },
-  growth: {
-    id: 'growth',
-    name: 'Growth',
-    price: 99,
-    currency: 'EUR',
-    interval: 'month',
-    priceId: import.meta.env.VITE_STRIPE_PRICE_GROWTH || 'price_growth',
-    priceIdYearly: import.meta.env.VITE_STRIPE_PRICE_GROWTH_YEAR || 'price_growth_year',
-    features: [
-      'Unbegrenzte Projekte',
-      'Alle Module',
-      'AI Assistance (100 Anfragen/Monat)',
-      'Investor Research',
-      'Szenario-Vergleich',
-      'Priority Support',
-    ],
-    limits: {
-      projects: -1,
-      analyses: -1,
-      aiRequests: 100,
+    featureFlags: {
+      hasDocumentGeneration: true,
+      hasInvestorCrm: true,
+      hasDataRoom: true,
+      hasAnalytics: true,
+      hasCustomBranding: false,
+      hasPrioritySupport: false,
     },
     popular: true,
   },
-  scale: {
-    id: 'scale',
-    name: 'Scale',
-    price: 199,
+  team: {
+    id: 'team',
+    name: 'Startup',
+    price: 79,
+    priceYearly: 699,
     currency: 'EUR',
     interval: 'month',
-    priceId: import.meta.env.VITE_STRIPE_PRICE_SCALE || 'price_scale',
-    priceIdYearly: import.meta.env.VITE_STRIPE_PRICE_SCALE_YEAR || 'price_scale_year',
+    priceId: import.meta.env.VITE_STRIPE_PRICE_TEAM || 'price_team',
+    priceIdYearly: import.meta.env.VITE_STRIPE_PRICE_TEAM_YEAR || 'price_team_year',
     features: [
-      'Alles aus Growth',
-      'Team Features (bis 5 User)',
-      'API Access',
-      'Custom Exports',
-      'Pitch Deck Generator',
-      'Dedicated Support',
+      'Alles aus Founder',
+      'Unbegrenzte Ventures',
+      'Bis zu 5 Team-Mitglieder',
+      'Data Room (50 GB)',
+      'Custom Branding',
+      'Detaillierte Analytics',
+      'Priority Support (24h)',
+      'Onboarding Call (30 min)',
     ],
     limits: {
-      projects: -1,
-      analyses: -1,
-      aiRequests: 500,
+      ventures: -1, // unlimited
+      chatMessages: null, // unlimited
+      dataRoomStorageMb: 51200, // 50 GB
       teamMembers: 5,
+    },
+    featureFlags: {
+      hasDocumentGeneration: true,
+      hasInvestorCrm: true,
+      hasDataRoom: true,
+      hasAnalytics: true,
+      hasCustomBranding: true,
+      hasPrioritySupport: true,
     },
   },
 };
 
 // Free tier for comparison
-export const FREE_TIER = {
+export const FREE_TIER: PricingTier = {
   id: 'free',
-  name: 'Free',
+  name: 'Builder',
   price: 0,
+  priceYearly: 0,
+  currency: 'EUR',
+  interval: 'month',
+  priceId: '',
   features: [
-    '1 Projekt',
-    'Basis-Bewertung (Berkus)',
-    'Route-Empfehlung',
+    'Alle Toolkit-Guides',
+    'Alle Checklists (interaktiv)',
+    'Alle Prompts',
+    '1 Venture',
+    '30 Chat-Nachrichten/Monat',
     'Community Support',
   ],
   limits: {
-    projects: 1,
-    analyses: 3,
-    aiRequests: 0,
+    ventures: 1,
+    chatMessages: 30,
+    dataRoomStorageMb: 0,
+    teamMembers: 1,
+  },
+  featureFlags: {
+    hasDocumentGeneration: false,
+    hasInvestorCrm: false,
+    hasDataRoom: false,
+    hasAnalytics: false,
+    hasCustomBranding: false,
+    hasPrioritySupport: false,
   },
 };
 
@@ -208,9 +233,9 @@ export const getTierByPriceId = (priceId: string): PricingTier | undefined => {
 
 export const canAccessFeature = (
   userTier: string,
-  requiredTier: 'starter' | 'growth' | 'scale'
+  requiredTier: 'free' | 'pro' | 'team'
 ): boolean => {
-  const tierOrder = ['free', 'starter', 'growth', 'scale'];
+  const tierOrder = ['free', 'pro', 'team'];
   const userIndex = tierOrder.indexOf(userTier);
   const requiredIndex = tierOrder.indexOf(requiredTier);
   return userIndex >= requiredIndex;
@@ -218,14 +243,23 @@ export const canAccessFeature = (
 
 export const getRemainingLimits = (
   userTier: string,
-  currentUsage: { projects: number; analyses: number; aiRequests: number }
+  currentUsage: { ventures: number; chatMessages: number }
 ) => {
   const tier = PRICING_TIERS[userTier] || FREE_TIER;
   const limits = tier.limits;
 
   return {
-    projects: limits.projects === -1 ? Infinity : limits.projects - currentUsage.projects,
-    analyses: limits.analyses === -1 ? Infinity : limits.analyses - currentUsage.analyses,
-    aiRequests: limits.aiRequests - currentUsage.aiRequests,
+    ventures: limits.ventures === -1 ? Infinity : limits.ventures - currentUsage.ventures,
+    chatMessages: limits.chatMessages === null ? Infinity : limits.chatMessages - currentUsage.chatMessages,
+    dataRoomStorageMb: limits.dataRoomStorageMb,
+    teamMembers: limits.teamMembers,
   };
+};
+
+export const hasFeatureAccess = (
+  userTier: string,
+  feature: keyof PricingTier['featureFlags']
+): boolean => {
+  const tier = PRICING_TIERS[userTier] || FREE_TIER;
+  return tier.featureFlags[feature] || false;
 };

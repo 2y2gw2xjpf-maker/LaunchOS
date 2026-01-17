@@ -22,10 +22,31 @@ import { ActivityTimeline } from './components/ActivityTimeline';
 import { FilterBar } from './components/FilterBar';
 import { PipelineStats } from './components/PipelineStats';
 import { cn } from '@/lib/utils/cn';
+import { useSubscription } from '@/hooks/useSubscription';
+import { UpgradePrompt } from '@/components/subscription';
 
 type ViewMode = 'kanban' | 'table';
 
 export default function InvestorCRMPage() {
+  const { canUseFeature, isLoading: subscriptionLoading } = useSubscription();
+
+  // Show upgrade prompt if user doesn't have CRM access
+  if (!subscriptionLoading && !canUseFeature('investor_crm')) {
+    return (
+      <div className="min-h-screen bg-cream">
+        <Header />
+        <EnhancedSidebar />
+        <PageContainer withSidebar maxWidth="full">
+          <UpgradePrompt
+            feature="investor_crm"
+            title="Investor CRM"
+            description="Tracke Investoren mit Kanban-Board, Pipeline-Management und Follow-up-Erinnerungen. Verfügbar im Founder-Plan."
+            icon={<Users className="w-8 h-8 text-brand-600" />}
+          />
+        </PageContainer>
+      </div>
+    );
+  }
   const {
     contacts,
     tags,

@@ -40,7 +40,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 // ==================== SUBSCRIPTION GATE ====================
 
 interface SubscriptionGateProps {
-  requiredTier: 'starter' | 'growth' | 'scale';
+  requiredTier: 'free' | 'pro' | 'team';
   children: React.ReactNode;
   fallback?: React.ReactNode;
 }
@@ -112,14 +112,14 @@ function AuthLoadingScreen({ message = 'Laden...' }: AuthLoadingScreenProps) {
 // ==================== UPGRADE PROMPT ====================
 
 interface UpgradePromptProps {
-  requiredTier: 'starter' | 'growth' | 'scale';
+  requiredTier: 'free' | 'pro' | 'team';
 }
 
 function UpgradePrompt({ requiredTier }: UpgradePromptProps) {
   const tierNames = {
-    starter: 'Starter',
-    growth: 'Growth',
-    scale: 'Scale',
+    free: 'Builder',
+    pro: 'Founder',
+    team: 'Startup',
   };
 
   return (

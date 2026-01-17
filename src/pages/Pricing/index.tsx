@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Check, Sparkles, ArrowLeft, ArrowRight, HelpCircle, Shield, Zap, Users } from 'lucide-react';
-import { useAuth, useSubscription } from '@/components/auth';
+import { Check, X, Sparkles, ArrowLeft, ArrowRight, HelpCircle, Shield, Zap, Users } from 'lucide-react';
+import { useAuth } from '@/components/auth';
+import { useSubscription, type SubscriptionTier } from '@/hooks/useSubscription';
 import {
-  PRICING_TIERS,
   FREE_TIER,
+  PRICING_TIERS,
   formatPrice,
   createCheckoutSession,
   redirectToCheckout,
@@ -15,14 +16,68 @@ import { cn } from '@/lib/utils/cn';
 
 export function PricingPage() {
   const { user, profile, isConfigured: isAuthConfigured } = useAuth();
-  const { tier: currentTier } = useSubscription();
+  const { subscription, tiers: dbTiers, isLoading: tiersLoading } = useSubscription();
   const [loading, setLoading] = React.useState<string | null>(null);
   const [billingInterval, setBillingInterval] = React.useState<'month' | 'year'>('month');
 
-  const handleSubscribe = async (priceId: string, tierId: string) => {
+  // Use tiers from DB if available, otherwise fallback to static config
+  const allTiers: SubscriptionTier[] = React.useMemo(() => {
+    if (dbTiers.length > 0) {
+      return dbTiers;
+    }
+    // Fallback to static tiers
+    return [
+      {
+        id: FREE_TIER.id,
+        name: FREE_TIER.name,
+        description: 'Perfekt zum Starten',
+        priceMonthly: FREE_TIER.price * 100,
+        priceYearly: FREE_TIER.priceYearly * 100,
+        maxVentures: FREE_TIER.limits.ventures,
+        maxTeamMembers: FREE_TIER.limits.teamMembers,
+        maxChatMessagesPerMonth: FREE_TIER.limits.chatMessages,
+        maxDataRoomStorageMb: FREE_TIER.limits.dataRoomStorageMb,
+        hasDocumentGeneration: FREE_TIER.featureFlags.hasDocumentGeneration,
+        hasInvestorCrm: FREE_TIER.featureFlags.hasInvestorCrm,
+        hasDataRoom: FREE_TIER.featureFlags.hasDataRoom,
+        hasAnalytics: FREE_TIER.featureFlags.hasAnalytics,
+        hasCustomBranding: FREE_TIER.featureFlags.hasCustomBranding,
+        hasPrioritySupport: FREE_TIER.featureFlags.hasPrioritySupport,
+        hasOnboardingCall: false,
+        isPopular: false,
+      },
+      ...Object.values(PRICING_TIERS).map(tier => ({
+        id: tier.id,
+        name: tier.name,
+        description: tier.features[0],
+        priceMonthly: tier.price * 100,
+        priceYearly: tier.priceYearly * 100,
+        maxVentures: tier.limits.ventures,
+        maxTeamMembers: tier.limits.teamMembers,
+        maxChatMessagesPerMonth: tier.limits.chatMessages,
+        maxDataRoomStorageMb: tier.limits.dataRoomStorageMb,
+        hasDocumentGeneration: tier.featureFlags.hasDocumentGeneration,
+        hasInvestorCrm: tier.featureFlags.hasInvestorCrm,
+        hasDataRoom: tier.featureFlags.hasDataRoom,
+        hasAnalytics: tier.featureFlags.hasAnalytics,
+        hasCustomBranding: tier.featureFlags.hasCustomBranding,
+        hasPrioritySupport: tier.featureFlags.hasPrioritySupport,
+        hasOnboardingCall: tier.id === 'team',
+        isPopular: tier.popular || false,
+      })),
+    ];
+  }, [dbTiers]);
+
+  const currentTier = subscription?.tierId ?? 'free';
+
+  const handleSubscribe = async (tier: SubscriptionTier) => {
     if (!user || !profile) {
-      // Redirect to login
       window.location.href = '/login?redirect=/pricing';
+      return;
+    }
+
+    if (tier.id === 'free') {
+      window.location.href = '/app';
       return;
     }
 
@@ -31,9 +86,17 @@ export function PricingPage() {
       return;
     }
 
-    setLoading(tierId);
+    setLoading(tier.id);
 
     try {
+      const priceId = billingInterval === 'year'
+        ? (PRICING_TIERS[tier.id]?.priceIdYearly || PRICING_TIERS[tier.id]?.priceId)
+        : PRICING_TIERS[tier.id]?.priceId;
+
+      if (!priceId) {
+        throw new Error('No price ID configured');
+      }
+
       const { sessionId } = await createCheckoutSession({
         priceId,
         userId: user.id,
@@ -51,8 +114,25 @@ export function PricingPage() {
     }
   };
 
-  // Yearly discount
-  const yearlyDiscount = 0.2; // 20% off
+  const getDisplayPrice = (tier: SubscriptionTier) => {
+    if (tier.priceMonthly === 0) return '0';
+    const price = billingInterval === 'year'
+      ? Math.round(tier.priceYearly / 12 / 100)
+      : tier.priceMonthly / 100;
+    return price.toString();
+  };
+
+  const tierIcons: Record<string, React.ReactNode> = {
+    free: <Sparkles className="w-6 h-6" />,
+    pro: <Zap className="w-6 h-6" />,
+    team: <Users className="w-6 h-6" />,
+  };
+
+  const tierGradients: Record<string, string> = {
+    free: 'from-charcoal/80 to-charcoal',
+    pro: 'from-brand-600 to-brand-500',
+    team: 'from-navy to-navy-700',
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-cream-50 to-white">
@@ -102,8 +182,7 @@ export function PricingPage() {
               Wähle deinen Plan
             </h1>
             <p className="text-lg text-charcoal/70 max-w-2xl mx-auto">
-              Kostenlos registrieren, 1 Projekt gratis. Danach wählst du den Plan,
-              der zu deinem Wachstum passt.
+              Starte kostenlos mit dem Builder's Toolkit. Upgrade wenn du bereit bist für mehr.
             </p>
           </motion.div>
 
@@ -144,7 +223,7 @@ export function PricingPage() {
               Jährlich
             </span>
             <span className="ml-2 px-2 py-0.5 bg-sage/10 text-sage text-xs font-medium rounded-full">
-              20% sparen
+              2 Monate gratis
             </span>
           </motion.div>
         </div>
@@ -152,127 +231,173 @@ export function PricingPage() {
 
       {/* Pricing Cards */}
       <section className="pb-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-6">
-            {/* Free Tier */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-white rounded-2xl border border-navy/10 p-6 flex flex-col"
-            >
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-navy">{FREE_TIER.name}</h3>
-                <div className="mt-2">
-                  <span className="text-3xl font-bold text-navy">€0</span>
-                  <span className="text-charcoal/50 text-sm">/Monat</span>
-                </div>
-              </div>
-
-              <ul className="space-y-3 flex-1">
-                {FREE_TIER.features.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-sage shrink-0 mt-0.5" />
-                    <span className="text-sm text-charcoal/70">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                to={user ? '/app' : '/login'}
-                className="mt-6 w-full py-3 text-center text-navy bg-navy/5 hover:bg-navy/10 font-medium rounded-xl transition-colors"
-              >
-                {currentTier === 'free' ? 'Aktueller Plan' : 'Kostenlos starten'}
-              </Link>
-            </motion.div>
-
-            {/* Paid Tiers */}
-            {Object.values(PRICING_TIERS).map((tier, index) => {
-              const isCurrentTier = currentTier === tier.id;
-              const price =
-                billingInterval === 'year'
-                  ? Math.round(tier.price * 12 * (1 - yearlyDiscount))
-                  : tier.price;
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6">
+            {allTiers.map((tier, index) => {
+              const isCurrentPlan = currentTier === tier.id;
+              const Icon = tierIcons[tier.id] || <Sparkles className="w-6 h-6" />;
+              const gradient = tierGradients[tier.id] || tierGradients.free;
 
               return (
                 <motion.div
                   key={tier.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + (index + 1) * 0.1 }}
+                  transition={{ delay: 0.1 + index * 0.1 }}
                   className={cn(
-                    'bg-white rounded-2xl p-6 flex flex-col relative',
-                    tier.popular
-                      ? 'border-2 border-brand-500 shadow-glow-brand'
+                    'bg-white rounded-2xl overflow-hidden flex flex-col relative',
+                    tier.isPopular
+                      ? 'border-2 border-brand-500 shadow-glow-brand ring-2 ring-brand-500/20'
                       : 'border border-navy/10'
                   )}
                 >
                   {/* Popular Badge */}
-                  {tier.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="inline-flex items-center px-3 py-1 bg-brand-600 text-white text-xs font-medium rounded-full">
-                        <Sparkles className="w-3 h-3 mr-1" />
-                        Beliebt
-                      </span>
+                  {tier.isPopular && (
+                    <div className="absolute -top-0 right-0 bg-brand-500 text-white px-3 py-1 text-xs font-medium rounded-bl-xl">
+                      Beliebt
                     </div>
                   )}
 
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-navy">{tier.name}</h3>
-                    <div className="mt-2">
-                      <span className="text-3xl font-bold text-navy">
-                        {formatPrice(price)}
-                      </span>
-                      <span className="text-charcoal/50 text-sm">
-                        /{billingInterval === 'year' ? 'Jahr' : 'Monat'}
-                      </span>
+                  {/* Header */}
+                  <div className={cn('p-6 text-white bg-gradient-to-r', gradient)}>
+                    <div className="flex items-center gap-3 mb-2">
+                      {Icon}
+                      <h3 className="text-xl font-bold">{tier.name}</h3>
                     </div>
-                    {billingInterval === 'year' && (
-                      <p className="text-xs text-sage mt-1">
-                        {formatPrice(Math.round(price / 12))}/Monat
+                    <p className="text-white/80 text-sm">{tier.description}</p>
+                  </div>
+
+                  {/* Price */}
+                  <div className="p-6 border-b border-navy/5">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-bold text-navy">
+                        {getDisplayPrice(tier)}
+                      </span>
+                      {tier.priceMonthly > 0 && (
+                        <span className="text-charcoal/50">/Monat</span>
+                      )}
+                      {tier.priceMonthly === 0 && (
+                        <span className="text-charcoal/50">Kostenlos</span>
+                      )}
+                    </div>
+                    {billingInterval === 'year' && tier.priceYearly > 0 && (
+                      <p className="text-sm text-charcoal/50 mt-1">
+                        {formatPrice(tier.priceYearly / 100)} jährlich
                       </p>
                     )}
                   </div>
 
-                  <ul className="space-y-3 flex-1">
-                    {tier.features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <Check className="w-5 h-5 text-sage shrink-0 mt-0.5" />
-                        <span className="text-sm text-charcoal/70">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  {/* Features */}
+                  <div className="p-6 space-y-4 flex-1">
+                    {/* Toolkit */}
+                    <div>
+                      <p className="text-xs font-semibold text-charcoal/40 uppercase tracking-wider mb-2">
+                        Toolkit
+                      </p>
+                      <FeatureItem included>Alle Guides</FeatureItem>
+                      <FeatureItem included>Alle Checklists</FeatureItem>
+                      <FeatureItem included>Alle Prompts</FeatureItem>
+                    </div>
 
-                  <button
-                    onClick={() =>
-                      handleSubscribe(
-                        billingInterval === 'year'
-                          ? tier.priceIdYearly || tier.priceId
-                          : tier.priceId,
-                        tier.id
-                      )
-                    }
-                    disabled={isCurrentTier || loading === tier.id}
-                    className={cn(
-                      'mt-6 w-full py-3 font-medium rounded-xl transition-all flex items-center justify-center gap-2',
-                      isCurrentTier
-                        ? 'bg-navy/5 text-navy cursor-default'
-                        : tier.popular
-                        ? 'bg-brand-600 hover:bg-brand-700 text-white shadow-glow-brand'
-                        : 'bg-navy text-white hover:bg-navy-700'
+                    {/* Ventures */}
+                    <div>
+                      <p className="text-xs font-semibold text-charcoal/40 uppercase tracking-wider mb-2">
+                        Ventures
+                      </p>
+                      <FeatureItem included>
+                        {tier.maxVentures === -1 ? 'Unbegrenzt' : tier.maxVentures} Venture{tier.maxVentures !== 1 ? 's' : ''}
+                      </FeatureItem>
+                    </div>
+
+                    {/* Chat */}
+                    <div>
+                      <p className="text-xs font-semibold text-charcoal/40 uppercase tracking-wider mb-2">
+                        Chat
+                      </p>
+                      <FeatureItem included>
+                        {tier.maxChatMessagesPerMonth === null
+                          ? 'Unbegrenzte Nachrichten'
+                          : `${tier.maxChatMessagesPerMonth} Nachrichten/Monat`}
+                      </FeatureItem>
+                      <FeatureItem included={tier.hasDocumentGeneration}>
+                        Dokument-Generierung
+                      </FeatureItem>
+                    </div>
+
+                    {/* CRM & Data Room */}
+                    <div>
+                      <p className="text-xs font-semibold text-charcoal/40 uppercase tracking-wider mb-2">
+                        CRM & Data Room
+                      </p>
+                      <FeatureItem included={tier.hasInvestorCrm}>
+                        Investor CRM
+                      </FeatureItem>
+                      <FeatureItem included={tier.hasDataRoom}>
+                        Data Room {tier.maxDataRoomStorageMb > 0 && `(${tier.maxDataRoomStorageMb / 1024} GB)`}
+                      </FeatureItem>
+                      <FeatureItem included={tier.hasAnalytics}>
+                        Analytics Dashboard
+                      </FeatureItem>
+                    </div>
+
+                    {/* Team (only for team tier) */}
+                    {tier.maxTeamMembers > 1 && (
+                      <div>
+                        <p className="text-xs font-semibold text-charcoal/40 uppercase tracking-wider mb-2">
+                          Team
+                        </p>
+                        <FeatureItem included>
+                          Bis zu {tier.maxTeamMembers} Team-Mitglieder
+                        </FeatureItem>
+                        <FeatureItem included={tier.hasCustomBranding}>
+                          Custom Branding
+                        </FeatureItem>
+                      </div>
                     )}
-                  >
-                    {loading === tier.id ? (
-                      'Laden...'
-                    ) : isCurrentTier ? (
-                      'Aktueller Plan'
-                    ) : (
-                      <>
-                        Jetzt starten
-                        <ArrowRight className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
+
+                    {/* Support */}
+                    <div>
+                      <p className="text-xs font-semibold text-charcoal/40 uppercase tracking-wider mb-2">
+                        Support
+                      </p>
+                      <FeatureItem included>Community</FeatureItem>
+                      <FeatureItem included={tier.id !== 'free'}>
+                        Email Support {tier.hasPrioritySupport && '(Priority)'}
+                      </FeatureItem>
+                      <FeatureItem included={tier.hasOnboardingCall}>
+                        Onboarding Call
+                      </FeatureItem>
+                    </div>
+                  </div>
+
+                  {/* CTA */}
+                  <div className="p-6 pt-0">
+                    <button
+                      onClick={() => handleSubscribe(tier)}
+                      disabled={isCurrentPlan || loading === tier.id}
+                      className={cn(
+                        'w-full py-3 font-semibold rounded-xl transition-all flex items-center justify-center gap-2',
+                        isCurrentPlan
+                          ? 'bg-navy/5 text-charcoal/50 cursor-default'
+                          : tier.isPopular
+                          ? 'bg-gradient-to-r from-brand-600 to-brand-500 text-white hover:shadow-lg hover:shadow-brand-500/25'
+                          : 'bg-navy text-white hover:bg-navy-700'
+                      )}
+                    >
+                      {loading === tier.id ? (
+                        'Laden...'
+                      ) : isCurrentPlan ? (
+                        'Aktueller Plan'
+                      ) : tier.id === 'free' ? (
+                        'Kostenlos starten'
+                      ) : (
+                        <>
+                          Jetzt starten
+                          <ArrowRight className="w-4 h-4" />
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </motion.div>
               );
             })}
@@ -295,16 +420,13 @@ export function PricingPage() {
                     Feature
                   </th>
                   <th className="text-center py-4 px-4 text-sm font-semibold text-navy">
-                    Free
-                  </th>
-                  <th className="text-center py-4 px-4 text-sm font-semibold text-navy">
-                    Starter
+                    Builder
                   </th>
                   <th className="text-center py-4 px-4 text-sm font-semibold text-brand-600">
-                    Growth
+                    Founder
                   </th>
                   <th className="text-center py-4 px-4 text-sm font-semibold text-navy">
-                    Scale
+                    Startup
                   </th>
                 </tr>
               </thead>
@@ -317,14 +439,11 @@ export function PricingPage() {
                     <td className="py-4 px-4 text-center">
                       <FeatureCheck value={feature.free} />
                     </td>
-                    <td className="py-4 px-4 text-center">
-                      <FeatureCheck value={feature.starter} />
-                    </td>
                     <td className="py-4 px-4 text-center bg-brand-50/50">
-                      <FeatureCheck value={feature.growth} />
+                      <FeatureCheck value={feature.pro} />
                     </td>
                     <td className="py-4 px-4 text-center">
-                      <FeatureCheck value={feature.scale} />
+                      <FeatureCheck value={feature.team} />
                     </td>
                   </tr>
                 ))}
@@ -404,7 +523,7 @@ export function PricingPage() {
             Bereit durchzustarten?
           </h2>
           <p className="text-charcoal/70 mb-8">
-            Kostenlos registrieren, 1 Projekt gratis. Upgrade jederzeit möglich.
+            Starte kostenlos mit dem Builder's Toolkit. Upgrade jederzeit möglich.
           </p>
           <Link
             to={user ? '/app' : '/login'}
@@ -420,7 +539,7 @@ export function PricingPage() {
       <footer className="py-8 px-4 border-t border-navy/10">
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-sm text-charcoal/50">
-            Alle Preise zzgl. MwSt. • Bei Fragen: support@launchos.io
+            Alle Preise zzgl. MwSt. | Bei Fragen: support@launchos.io
           </p>
         </div>
       </footer>
@@ -429,6 +548,21 @@ export function PricingPage() {
 }
 
 // ==================== HELPERS ====================
+
+function FeatureItem({ included, children }: { included: boolean; children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-2 py-1">
+      {included ? (
+        <Check className="w-4 h-4 text-sage flex-shrink-0" />
+      ) : (
+        <X className="w-4 h-4 text-charcoal/20 flex-shrink-0" />
+      )}
+      <span className={included ? 'text-charcoal/70 text-sm' : 'text-charcoal/40 text-sm'}>
+        {children}
+      </span>
+    </div>
+  );
+}
 
 function FeatureCheck({ value }: { value: boolean | string | number }) {
   if (value === true) {
@@ -441,17 +575,17 @@ function FeatureCheck({ value }: { value: boolean | string | number }) {
 }
 
 const featureComparison = [
-  { name: 'Projekte', free: 1, starter: 3, growth: '∞', scale: '∞' },
-  { name: 'Analysen', free: 3, starter: 10, growth: '∞', scale: '∞' },
-  { name: 'Bewertungsmethoden', free: 1, starter: true, growth: true, scale: true },
-  { name: 'Action Plan Generator', free: true, starter: true, growth: true, scale: true },
-  { name: 'Progress Tracking', free: false, starter: true, growth: true, scale: true },
-  { name: 'Szenario-Vergleich', free: false, starter: false, growth: true, scale: true },
-  { name: 'AI Assistance', free: false, starter: false, growth: '100/Mo', scale: '500/Mo' },
-  { name: 'Investor Research', free: false, starter: false, growth: true, scale: true },
-  { name: 'Team Members', free: 1, starter: 1, growth: 1, scale: 5 },
-  { name: 'API Access', free: false, starter: false, growth: false, scale: true },
-  { name: 'Priority Support', free: false, starter: false, growth: true, scale: true },
+  { name: 'Toolkit (Guides, Checklists, Prompts)', free: true, pro: true, team: true },
+  { name: 'Ventures', free: 1, pro: 3, team: '∞' },
+  { name: 'Chat-Nachrichten', free: '30/Mo', pro: '∞', team: '∞' },
+  { name: 'Dokument-Generierung', free: false, pro: true, team: true },
+  { name: 'Investor CRM', free: false, pro: true, team: true },
+  { name: 'Data Room', free: false, pro: '10 GB', team: '50 GB' },
+  { name: 'Analytics Dashboard', free: false, pro: true, team: true },
+  { name: 'Team-Mitglieder', free: 1, pro: 1, team: 5 },
+  { name: 'Custom Branding', free: false, pro: false, team: true },
+  { name: 'Priority Support', free: false, pro: false, team: true },
+  { name: 'Onboarding Call', free: false, pro: false, team: true },
 ];
 
 const faqs = [
@@ -468,7 +602,7 @@ const faqs = [
   {
     question: 'Gibt es eine Testphase?',
     answer:
-      'Ja! Du kannst LaunchOS kostenlos mit dem Free-Plan testen. Bei kostenpflichtigen Plänen hast du außerdem 14 Tage Geld-zurück-Garantie.',
+      "Ja! Du kannst LaunchOS kostenlos mit dem Builder-Plan testen. Das Builder's Toolkit ist komplett kostenlos und bleibt es auch. Bei kostenpflichtigen Plänen hast du außerdem 14 Tage Geld-zurück-Garantie.",
   },
   {
     question: 'Kann ich meinen Plan jederzeit wechseln?',
@@ -476,9 +610,9 @@ const faqs = [
       'Ja, du kannst jederzeit upgraden oder downgraden. Bei einem Upgrade wird der Restbetrag verrechnet, bei einem Downgrade gilt der neue Plan ab dem nächsten Abrechnungszeitraum.',
   },
   {
-    question: 'Wie funktioniert die AI Assistance?',
+    question: 'Was ist der Unterschied zwischen Builder und Founder?',
     answer:
-      'Die AI Assistance hilft dir bei der Erstellung von Pitch Decks, Investor Research und mehr. Du erhältst je nach Plan eine bestimmte Anzahl an AI-Anfragen pro Monat.',
+      'Der Builder-Plan gibt dir vollen Zugriff auf das Toolkit, 1 Venture und 30 Chat-Nachrichten pro Monat. Mit dem Founder-Plan bekommst du unbegrenzte Chat-Nachrichten, bis zu 3 Ventures, Investor CRM, Data Room und Analytics.',
   },
 ];
 

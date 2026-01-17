@@ -21,8 +21,29 @@ import { PipelineFunnel } from './components/PipelineFunnel';
 import { JourneyProgress } from './components/JourneyProgress';
 import { ActivityFeed } from './components/ActivityFeed';
 import { UpcomingFollowUps } from './components/UpcomingFollowUps';
+import { useSubscription } from '@/hooks/useSubscription';
+import { UpgradePrompt } from '@/components/subscription';
 
 export default function AnalyticsPage() {
+  const { canUseFeature, isLoading: subscriptionLoading } = useSubscription();
+
+  // Show upgrade prompt if user doesn't have Analytics access
+  if (!subscriptionLoading && !canUseFeature('analytics')) {
+    return (
+      <div className="min-h-screen bg-cream">
+        <Header />
+        <EnhancedSidebar />
+        <PageContainer withSidebar maxWidth="wide">
+          <UpgradePrompt
+            feature="analytics"
+            title="Analytics Dashboard"
+            description="Erhalte Einblicke in dein Startup mit dem Analytics Dashboard. Verfolge Bewertungen, Pipeline-Fortschritt und mehr. Verfügbar im Founder-Plan."
+            icon={<BarChart3 className="w-8 h-8 text-brand-600" />}
+          />
+        </PageContainer>
+      </div>
+    );
+  }
   const navigate = useNavigate();
   const { activeVenture } = useVentureContext();
   const {

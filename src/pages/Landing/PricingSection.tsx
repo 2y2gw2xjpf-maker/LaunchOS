@@ -1,86 +1,94 @@
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, ArrowRight, Sparkles, Zap, Shield, Users, Rocket, Brain, FileText, BarChart3, MessageSquare } from 'lucide-react';
+import { Check, X, ArrowRight, Sparkles, Zap, Shield, Users, Rocket, Brain, FileText, BarChart3, MessageSquare, Wrench, FolderOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PRICING_TIERS, FREE_TIER, formatPrice } from '@/lib/stripe';
 import { SectionHeader } from '@/components/common';
 import { cn } from '@/lib/utils/cn';
 
-const yearlyDiscount = 0.2;
+const yearlyDiscount = 0.15; // ~2 months free
 
-// Feature categories with icons for the animated comparison
+// Updated feature categories for Builder/Founder/Startup tiers
 const FEATURE_CATEGORIES = [
   {
-    id: 'projects',
-    name: 'Projekte',
+    id: 'toolkit',
+    name: "Builder's Toolkit",
+    icon: Wrench,
+    free: 'Vollständig',
+    pro: 'Vollständig',
+    team: 'Vollständig',
+  },
+  {
+    id: 'ventures',
+    name: 'Ventures',
     icon: Rocket,
-    free: '1 Projekt',
-    starter: '3 Projekte',
-    growth: 'Unbegrenzt',
-    scale: 'Unbegrenzt',
+    free: '1 Venture',
+    pro: '3 Ventures',
+    team: 'Unbegrenzt',
   },
   {
-    id: 'valuation',
-    name: 'Bewertungsmethoden',
-    icon: BarChart3,
-    free: 'Berkus Methode',
-    starter: 'Alle 5 Methoden',
-    growth: 'Alle 5 Methoden',
-    scale: 'Alle 5 Methoden',
+    id: 'chat',
+    name: 'Chat-Nachrichten',
+    icon: MessageSquare,
+    free: '30/Monat',
+    pro: 'Unbegrenzt',
+    team: 'Unbegrenzt',
   },
   {
-    id: 'actionplan',
-    name: 'Action Plan',
+    id: 'docs',
+    name: 'Dokument-Generierung',
     icon: FileText,
-    free: 'Basis Route',
-    starter: 'Vollständig',
-    growth: 'Mit AI Insights',
-    scale: 'Mit AI Insights',
+    free: false,
+    pro: true,
+    team: true,
   },
   {
-    id: 'ai',
-    name: 'AI Assistance',
-    icon: Brain,
+    id: 'crm',
+    name: 'Investor CRM',
+    icon: Users,
     free: false,
-    starter: false,
-    growth: '100 Anfragen/Mo',
-    scale: '500 Anfragen/Mo',
+    pro: true,
+    team: true,
   },
   {
-    id: 'compare',
-    name: 'Szenario-Vergleich',
-    icon: Zap,
+    id: 'dataroom',
+    name: 'Data Room',
+    icon: FolderOpen,
     free: false,
-    starter: false,
-    growth: true,
-    scale: true,
+    pro: '10 GB',
+    team: '50 GB',
+  },
+  {
+    id: 'analytics',
+    name: 'Analytics Dashboard',
+    icon: BarChart3,
+    free: false,
+    pro: true,
+    team: true,
   },
   {
     id: 'team',
-    name: 'Team Features',
+    name: 'Team-Mitglieder',
     icon: Users,
+    free: '1',
+    pro: '1',
+    team: '5',
+  },
+  {
+    id: 'branding',
+    name: 'Custom Branding',
+    icon: Sparkles,
     free: false,
-    starter: false,
-    growth: false,
-    scale: 'Bis 5 User',
+    pro: false,
+    team: true,
   },
   {
     id: 'support',
     name: 'Support',
-    icon: MessageSquare,
-    free: 'Community',
-    starter: 'Email',
-    growth: 'Priority',
-    scale: 'Dedicated',
-  },
-  {
-    id: 'api',
-    name: 'API Access',
     icon: Shield,
-    free: false,
-    starter: false,
-    growth: false,
-    scale: true,
+    free: 'Community',
+    pro: 'Email',
+    team: 'Priority',
   },
 ];
 
@@ -93,7 +101,7 @@ const FeatureCell = ({ value }: { value: boolean | string }) => {
         viewport={{ once: true }}
         className="flex items-center justify-center"
       >
-        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
+        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-brand-600 to-brand-500 flex items-center justify-center">
           <Check className="w-4 h-4 text-white" />
         </div>
       </motion.div>
@@ -102,12 +110,12 @@ const FeatureCell = ({ value }: { value: boolean | string }) => {
   if (value === false) {
     return (
       <div className="flex items-center justify-center">
-        <X className="w-5 h-5 text-gray-300" />
+        <X className="w-5 h-5 text-charcoal/20" />
       </div>
     );
   }
   return (
-    <span className="text-sm font-medium text-gray-700">{value}</span>
+    <span className="text-sm font-medium text-charcoal/70">{value}</span>
   );
 };
 
@@ -115,15 +123,46 @@ export const PricingSection = () => {
   const [billingInterval, setBillingInterval] = React.useState<'month' | 'year'>('month');
   const [hoveredTier, setHoveredTier] = React.useState<string | null>(null);
   const [showFeatures, setShowFeatures] = React.useState(false);
-  const tiers = [FREE_TIER, ...Object.values(PRICING_TIERS)];
+
+  // Build tiers array with correct structure
+  const tiers = React.useMemo(() => [
+    {
+      id: FREE_TIER.id,
+      name: FREE_TIER.name,
+      price: FREE_TIER.price,
+      priceYearly: FREE_TIER.priceYearly,
+      features: FREE_TIER.features,
+      popular: false,
+    },
+    ...Object.values(PRICING_TIERS).map(tier => ({
+      id: tier.id,
+      name: tier.name,
+      price: tier.price,
+      priceYearly: tier.priceYearly,
+      features: tier.features,
+      popular: tier.popular || false,
+    })),
+  ], []);
+
+  const tierGradients: Record<string, string> = {
+    free: 'from-charcoal/80 to-charcoal',
+    pro: 'from-brand-600 to-brand-500',
+    team: 'from-navy to-navy-700',
+  };
+
+  const tierIcons: Record<string, React.ReactNode> = {
+    free: <Sparkles className="w-5 h-5" />,
+    pro: <Zap className="w-5 h-5" />,
+    team: <Users className="w-5 h-5" />,
+  };
 
   return (
-    <section id="pricing" className="section-padding bg-gradient-to-b from-white via-purple-50/30 to-white overflow-hidden">
+    <section id="pricing" className="section-padding bg-gradient-to-b from-white via-brand-50/30 to-white overflow-hidden">
       <div className="container-wide">
         <SectionHeader
           badge="Preise"
           title="Starte gratis, upgrade wenn du wächst"
-          subtitle="1 Projekt ist kostenlos. Danach wählst du den Plan, der zu deiner Ambition passt."
+          subtitle="Builder's Toolkit ist kostenlos. Upgrade auf Pro für unbegrenzten Chat, CRM und Data Room."
           align="center"
         />
 
@@ -137,7 +176,7 @@ export const PricingSection = () => {
           <span
             className={cn(
               'text-sm font-medium transition-colors',
-              billingInterval === 'month' ? 'text-gray-900' : 'text-gray-400'
+              billingInterval === 'month' ? 'text-navy' : 'text-charcoal/50'
             )}
           >
             Monatlich
@@ -146,13 +185,13 @@ export const PricingSection = () => {
             onClick={() =>
               setBillingInterval(billingInterval === 'month' ? 'year' : 'month')
             }
-            className="relative w-14 h-7 bg-purple-100 rounded-full transition-colors hover:bg-purple-200"
+            className="relative w-14 h-7 bg-brand-100 rounded-full transition-colors hover:bg-brand-200"
             aria-label="Abrechnungszeitraum umschalten"
           >
             <motion.div
               layout
               className={cn(
-                'absolute w-5 h-5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full top-1 shadow-lg',
+                'absolute w-5 h-5 bg-gradient-to-r from-brand-600 to-brand-500 rounded-full top-1 shadow-lg',
                 billingInterval === 'year' ? 'left-8' : 'left-1'
               )}
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
@@ -161,7 +200,7 @@ export const PricingSection = () => {
           <span
             className={cn(
               'text-sm font-medium transition-colors',
-              billingInterval === 'year' ? 'text-gray-900' : 'text-gray-400'
+              billingInterval === 'year' ? 'text-navy' : 'text-charcoal/50'
             )}
           >
             Jährlich
@@ -169,22 +208,24 @@ export const PricingSection = () => {
           <motion.span
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="ml-2 px-3 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-bold rounded-full shadow-lg shadow-pink-500/30"
+            className="ml-2 px-3 py-1 bg-gradient-to-r from-sage to-sage-dark text-white text-xs font-bold rounded-full"
           >
-            -20%
+            2 Monate gratis
           </motion.span>
         </motion.div>
 
-        {/* Pricing Cards */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
+        {/* Pricing Cards - 3 columns */}
+        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
           {tiers.map((tier, index) => {
             const isFree = tier.id === 'free';
-            const isPopular = !isFree && (tier as { popular?: boolean }).popular;
+            const isPopular = tier.popular;
             const monthlyPrice = tier.price;
-            const yearlyPrice = isFree
-              ? 0
-              : Math.round(monthlyPrice * 12 * (1 - yearlyDiscount));
-            const displayPrice = billingInterval === 'year' ? yearlyPrice : monthlyPrice;
+            const yearlyPrice = tier.priceYearly;
+            const displayPrice = billingInterval === 'year'
+              ? Math.round(yearlyPrice / 12)
+              : monthlyPrice;
+            const gradient = tierGradients[tier.id] || tierGradients.free;
+            const Icon = tierIcons[tier.id];
 
             return (
               <motion.div
@@ -196,92 +237,97 @@ export const PricingSection = () => {
                 onHoverStart={() => setHoveredTier(tier.id)}
                 onHoverEnd={() => setHoveredTier(null)}
                 className={cn(
-                  'relative rounded-3xl p-6 border-2 bg-white flex flex-col transition-all duration-300',
+                  'relative rounded-2xl bg-white flex flex-col transition-all duration-300 overflow-hidden',
                   isPopular
-                    ? 'border-purple-400 shadow-2xl shadow-purple-500/20 scale-[1.02] z-10'
-                    : 'border-gray-100 hover:border-purple-200 hover:shadow-xl',
+                    ? 'border-2 border-brand-500 shadow-2xl shadow-brand-500/20 scale-[1.02] z-10'
+                    : 'border border-navy/10 hover:border-brand-200 hover:shadow-xl',
                   hoveredTier === tier.id && !isPopular && 'scale-[1.02]'
                 )}
               >
-                {/* Popular Badge - Corner Ribbon */}
+                {/* Popular Badge */}
                 {isPopular && (
-                  <div className="absolute -top-px -right-px overflow-hidden w-24 h-24">
-                    <motion.div
-                      initial={{ rotate: 45, x: 100 }}
-                      animate={{ rotate: 45, x: 0 }}
-                      className="absolute top-4 -right-8 w-32 text-center bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-bold py-1.5 shadow-lg"
-                    >
-                      <Sparkles className="w-3 h-3 inline mr-1" />
-                      Beliebt
-                    </motion.div>
+                  <div className="absolute top-0 right-0 bg-brand-500 text-white px-3 py-1 text-xs font-bold rounded-bl-xl">
+                    Beliebt
                   </div>
                 )}
 
-                {/* Tier Header */}
-                <div className="mb-6 pt-2">
-                  <h3 className="text-xl font-bold text-gray-900">{tier.name}</h3>
-                  <div className="mt-4 flex items-baseline gap-1">
+                {/* Header */}
+                <div className={cn('p-5 text-white bg-gradient-to-r', gradient)}>
+                  <div className="flex items-center gap-2 mb-1">
+                    {Icon}
+                    <h3 className="text-lg font-bold">{tier.name}</h3>
+                  </div>
+                </div>
+
+                {/* Price */}
+                <div className="p-5 border-b border-navy/5">
+                  <div className="flex items-baseline gap-1">
                     <AnimatePresence mode="wait">
                       <motion.span
                         key={displayPrice}
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+                        className="text-3xl font-bold text-navy"
                       >
-                        {formatPrice(displayPrice)}
+                        {isFree ? '0' : displayPrice}
                       </motion.span>
                     </AnimatePresence>
-                    <span className="text-gray-400 text-sm">
-                      /{billingInterval === 'year' ? 'Jahr' : 'Monat'}
-                    </span>
+                    {!isFree && (
+                      <span className="text-charcoal/50 text-sm">/Monat</span>
+                    )}
+                    {isFree && (
+                      <span className="text-charcoal/50 text-sm">Kostenlos</span>
+                    )}
                   </div>
                   {billingInterval === 'year' && !isFree && (
                     <motion.p
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="text-sm text-purple-600 font-medium mt-1"
+                      className="text-sm text-brand-600 font-medium mt-1"
                     >
-                      = {formatPrice(Math.round(displayPrice / 12))}/Monat
+                      {formatPrice(yearlyPrice)}/Jahr
                     </motion.p>
                   )}
                 </div>
 
                 {/* Features List */}
-                <ul className="space-y-3 flex-grow mb-6">
+                <ul className="p-5 space-y-2 flex-grow">
                   {tier.features.map((feature, i) => (
                     <motion.li
                       key={feature}
                       initial={{ opacity: 0, x: -10 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 + i * 0.05 }}
-                      className="flex items-start gap-3"
+                      transition={{ delay: index * 0.1 + i * 0.03 }}
+                      className="flex items-start gap-2"
                     >
-                      <div className="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <Check className="w-3 h-3 text-purple-600" />
+                      <div className="w-4 h-4 rounded-full bg-sage/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Check className="w-2.5 h-2.5 text-sage" />
                       </div>
-                      <span className="text-sm text-gray-600">{feature}</span>
+                      <span className="text-sm text-charcoal/70">{feature}</span>
                     </motion.li>
                   ))}
                 </ul>
 
                 {/* CTA Button */}
-                <Link
-                  to={isFree ? '/tier-selection' : '/login'}
-                  onClick={() => window.scrollTo(0, 0)}
-                  className={cn(
-                    'inline-flex items-center justify-center gap-2 w-full px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group',
-                    isPopular
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-[1.02]'
-                      : isFree
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50'
-                      : 'bg-purple-50 text-purple-700 hover:bg-purple-100'
-                  )}
-                >
-                  {isFree ? 'Gratis starten' : 'Auswählen'}
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </Link>
+                <div className="p-5 pt-0">
+                  <Link
+                    to={isFree ? '/tier-selection' : '/pricing'}
+                    onClick={() => window.scrollTo(0, 0)}
+                    className={cn(
+                      'inline-flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-semibold transition-all duration-300 group',
+                      isPopular
+                        ? 'bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-500/30 hover:shadow-brand-500/50 hover:scale-[1.02]'
+                        : isFree
+                        ? 'bg-navy text-white hover:bg-navy-700'
+                        : 'bg-navy/5 text-navy hover:bg-navy/10'
+                    )}
+                  >
+                    {isFree ? 'Kostenlos starten' : 'Plan wählen'}
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </div>
               </motion.div>
             );
           })}
@@ -296,7 +342,7 @@ export const PricingSection = () => {
         >
           <button
             onClick={() => setShowFeatures(!showFeatures)}
-            className="inline-flex items-center gap-2 px-6 py-3 text-purple-600 font-semibold hover:text-purple-700 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 text-brand-600 font-semibold hover:text-brand-700 transition-colors"
           >
             <span>{showFeatures ? 'Feature-Vergleich ausblenden' : 'Alle Features vergleichen'}</span>
             <motion.div
@@ -316,13 +362,13 @@ export const PricingSection = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.5, ease: 'easeInOut' }}
-              className="overflow-hidden"
+              className="overflow-hidden max-w-4xl mx-auto"
             >
-              <div className="bg-white rounded-3xl border-2 border-purple-100 shadow-xl overflow-hidden">
+              <div className="bg-white rounded-2xl border border-navy/10 shadow-xl overflow-hidden">
                 {/* Header Row */}
-                <div className="grid grid-cols-5 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100">
-                  <div className="p-4 font-semibold text-gray-900">Features</div>
-                  {['Free', 'Starter', 'Growth', 'Scale'].map((name, i) => (
+                <div className="grid grid-cols-4 bg-gradient-to-r from-brand-50 to-cream border-b border-navy/10">
+                  <div className="p-4 font-semibold text-navy">Features</div>
+                  {['Builder', 'Founder', 'Startup'].map((name, i) => (
                     <motion.div
                       key={name}
                       initial={{ opacity: 0, y: -10 }}
@@ -330,12 +376,12 @@ export const PricingSection = () => {
                       transition={{ delay: i * 0.1 }}
                       className={cn(
                         'p-4 text-center font-bold',
-                        name === 'Growth' ? 'text-purple-600' : 'text-gray-700'
+                        name === 'Founder' ? 'text-brand-600' : 'text-navy'
                       )}
                     >
                       {name}
-                      {name === 'Growth' && (
-                        <span className="ml-2 px-2 py-0.5 bg-purple-100 text-purple-600 text-xs rounded-full">
+                      {name === 'Founder' && (
+                        <span className="ml-2 px-2 py-0.5 bg-brand-100 text-brand-600 text-xs rounded-full">
                           Empfohlen
                         </span>
                       )}
@@ -351,27 +397,24 @@ export const PricingSection = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
                     className={cn(
-                      'grid grid-cols-5 border-b border-purple-50 hover:bg-purple-50/50 transition-colors',
+                      'grid grid-cols-4 border-b border-navy/5 hover:bg-brand-50/30 transition-colors',
                       index === FEATURE_CATEGORIES.length - 1 && 'border-b-0'
                     )}
                   >
                     <div className="p-4 flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
-                        <feature.icon className="w-4 h-4 text-purple-600" />
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-100 to-cream flex items-center justify-center">
+                        <feature.icon className="w-4 h-4 text-brand-600" />
                       </div>
-                      <span className="font-medium text-gray-700">{feature.name}</span>
+                      <span className="font-medium text-charcoal/80 text-sm">{feature.name}</span>
                     </div>
                     <div className="p-4 flex items-center justify-center">
                       <FeatureCell value={feature.free} />
                     </div>
-                    <div className="p-4 flex items-center justify-center">
-                      <FeatureCell value={feature.starter} />
-                    </div>
-                    <div className="p-4 flex items-center justify-center bg-purple-50/30">
-                      <FeatureCell value={feature.growth} />
+                    <div className="p-4 flex items-center justify-center bg-brand-50/30">
+                      <FeatureCell value={feature.pro} />
                     </div>
                     <div className="p-4 flex items-center justify-center">
-                      <FeatureCell value={feature.scale} />
+                      <FeatureCell value={feature.team} />
                     </div>
                   </motion.div>
                 ))}
@@ -385,10 +428,10 @@ export const PricingSection = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-6 text-center"
+          className="mt-8 text-center"
         >
-          <p className="text-gray-500 text-sm">
-            ✨ Keine Kreditkarte für Free-Plan erforderlich &bull; 🔒 SSL-verschlüsselt &bull; 🇩🇪 DSGVO-konform
+          <p className="text-charcoal/50 text-sm">
+            Keine Kreditkarte für Builder erforderlich | SSL-verschlüsselt | DSGVO-konform | 14 Tage Geld-zurück
           </p>
         </motion.div>
       </div>

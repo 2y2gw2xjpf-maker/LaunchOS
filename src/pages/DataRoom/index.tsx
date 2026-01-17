@@ -17,11 +17,38 @@ import { FileList } from './components/FileList';
 import { AccessLinkManager } from './components/AccessLinkManager';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useSubscription } from '@/hooks/useSubscription';
+import { UpgradePrompt } from '@/components/subscription';
 
 type ViewMode = 'grid' | 'list';
 type Tab = 'files' | 'access';
 
 export default function DataRoom() {
+  const { canUseFeature, isLoading: subscriptionLoading } = useSubscription();
+
+  // Show upgrade prompt if user doesn't have Data Room access
+  if (!subscriptionLoading && !canUseFeature('data_room')) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-8">
+        <div className="bg-slate-800/50 rounded-2xl border border-white/10 p-8 max-w-md text-center">
+          <div className="w-16 h-16 bg-brand-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <FolderOpen className="w-8 h-8 text-brand-400" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">Data Room</h2>
+          <p className="text-slate-400 mb-6">
+            Teile Dokumente sicher mit Investoren und tracke Zugriffe. Verfügbar im Founder-Plan.
+          </p>
+          <a
+            href="/pricing?plan=pro&feature=data_room"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
+          >
+            <Sparkles className="w-5 h-5" />
+            Upgrade auf Pro
+          </a>
+        </div>
+      </div>
+    );
+  }
   const {
     folders,
     files,
