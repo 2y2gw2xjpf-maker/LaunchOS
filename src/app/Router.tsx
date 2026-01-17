@@ -23,6 +23,7 @@ const DeliverableLibraryPage = React.lazy(() => import('@/pages/DeliverableLibra
 const InvestorCRMPage = React.lazy(() => import('@/pages/InvestorCRM'));
 const DataRoomPage = React.lazy(() => import('@/pages/DataRoom'));
 const PublicDataRoomPage = React.lazy(() => import('@/pages/DataRoom/PublicDataRoom'));
+const AnalyticsPage = React.lazy(() => import('@/pages/Analytics'));
 
 // Loading fallback
 const PageLoader = () => (
@@ -66,6 +67,7 @@ export const Router = () => {
               <Route path="/deliverables" element={<ProtectedRoute><DeliverableLibraryPage /></ProtectedRoute>} />
               <Route path="/investors" element={<ProtectedRoute><InvestorCRMPage /></ProtectedRoute>} />
               <Route path="/data-room" element={<ProtectedRoute><DataRoomPage /></ProtectedRoute>} />
+              <Route path="/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
 
               {/* Public Data Room Access */}
               <Route path="/data-room/view/:token" element={<PublicDataRoomPage />} />
@@ -81,6 +83,7 @@ export const Router = () => {
               <Route path="/app/deliverables" element={<ProtectedRoute><DeliverableLibraryPage /></ProtectedRoute>} />
               <Route path="/app/investors" element={<ProtectedRoute><InvestorCRMPage /></ProtectedRoute>} />
               <Route path="/app/data-room" element={<ProtectedRoute><DataRoomPage /></ProtectedRoute>} />
+              <Route path="/app/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
 
               {/* 404 Not Found */}
               <Route path="*" element={<ErrorPage />} />

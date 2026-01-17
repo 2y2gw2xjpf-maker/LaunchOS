@@ -16,6 +16,7 @@ import {
   FolderOpen,
   Users,
   Database,
+  BarChart3,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useStore } from '@/store';
@@ -90,7 +91,8 @@ export const EnhancedSidebar = () => {
     location.pathname.startsWith('/settings') ||
     location.pathname.startsWith('/deliverables') ||
     location.pathname.startsWith('/investors') ||
-    location.pathname.startsWith('/data-room');
+    location.pathname.startsWith('/data-room') ||
+    location.pathname.startsWith('/analytics');
 
   if (!showSidebar) return null;
 
@@ -176,6 +178,7 @@ export const EnhancedSidebar = () => {
     { name: 'Dokumente', href: '/deliverables', icon: FolderOpen },
     { name: 'Investoren', href: '/investors', icon: Users },
     { name: 'Data Room', href: '/data-room', icon: Database },
+    { name: 'Analytics', href: '/analytics', icon: BarChart3 },
     { name: 'Methodik', href: '/about/methodology', icon: FileText },
   ];
 
