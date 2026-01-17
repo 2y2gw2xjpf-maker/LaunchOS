@@ -133,10 +133,19 @@ const SUGGESTIONS = [
   'Hilf mir ein Pitch Deck zu erstellen',
 ];
 
+const CHAT_SESSION_KEY = 'launchos-chat-widget-session';
+
 export function ChatWidget() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [inputValue, setInputValue] = React.useState('');
-  const [sessionId] = React.useState(() => crypto.randomUUID());
+  // Persist session ID in localStorage so chat history survives page reloads
+  const [sessionId] = React.useState(() => {
+    const stored = localStorage.getItem(CHAT_SESSION_KEY);
+    if (stored) return stored;
+    const newId = crypto.randomUUID();
+    localStorage.setItem(CHAT_SESSION_KEY, newId);
+    return newId;
+  });
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const location = useLocation();
@@ -149,7 +158,7 @@ export function ChatWidget() {
     error,
     sendMessage,
     stopStreaming,
-    clearMessages,
+    clearMessages: clearMessagesHook,
   } = useChatStream({
     sessionId,
     userContext: {
@@ -160,6 +169,15 @@ export function ChatWidget() {
       fundingPath: profile?.funding_path || undefined,
     },
   });
+
+  // Clear messages and start a new session
+  const handleClearMessages = () => {
+    clearMessagesHook();
+    // Generate a new session ID for fresh start
+    const newSessionId = crypto.randomUUID();
+    localStorage.setItem(CHAT_SESSION_KEY, newSessionId);
+    // Note: This won't update the current sessionId state, but next reload will use new session
+  };
 
   // Don't show on landing page and auth pages
   const hiddenPaths = ['/', '/login', '/pricing', '/about', '/contact', '/auth'];
@@ -257,7 +275,7 @@ export function ChatWidget() {
               <div className="flex items-center gap-2">
                 {messages.length > 0 && (
                   <button
-                    onClick={clearMessages}
+                    onClick={handleClearMessages}
                     className="p-2 hover:bg-white/10 rounded-xl transition-colors text-white/70 hover:text-white"
                     title="Chat leeren"
                   >

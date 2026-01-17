@@ -7,6 +7,9 @@ import { Button } from '@/components/ui';
 import { Logo } from '@/components/Logo';
 import { useAuth } from '@/components/auth';
 import { VentureSwitcher } from '@/components/ventures/VentureSwitcher';
+import { VentureModal } from '@/components/ventures/VentureModal';
+import { useOptionalVentureContext } from '@/contexts/VentureContext';
+import type { Venture } from '@/contexts/VentureContext';
 
 interface HeaderProps {
   className?: string;
@@ -15,10 +18,13 @@ interface HeaderProps {
 export const Header = ({ className }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = React.useState(false);
+  const [ventureModalOpen, setVentureModalOpen] = React.useState(false);
+  const [editingVenture, setEditingVenture] = React.useState<Venture | null>(null);
   const profileMenuRef = React.useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { user: authUser, profile, signOut } = useAuth();
+  const ventureContext = useOptionalVentureContext();
 
   // Check if we're on a landing/public page FIRST
   const isLandingPage = location.pathname === '/' || location.pathname === '/about' || location.pathname === '/pricing' || location.pathname === '/contact';
@@ -99,6 +105,27 @@ export const Header = ({ className }: HeaderProps) => {
     window.scrollTo(0, 0);
   };
 
+  // Handle venture creation
+  const handleCreateVenture = () => {
+    setEditingVenture(null);
+    setVentureModalOpen(true);
+  };
+
+  // Handle venture management/edit
+  const handleManageVenture = (ventureId: string) => {
+    const venture = ventureContext?.ventures.find(v => v.id === ventureId);
+    if (venture) {
+      setEditingVenture(venture);
+      setVentureModalOpen(true);
+    }
+  };
+
+  // Close venture modal
+  const handleCloseVentureModal = () => {
+    setVentureModalOpen(false);
+    setEditingVenture(null);
+  };
+
   return (
     <header
       className={cn(
@@ -134,7 +161,12 @@ export const Header = ({ className }: HeaderProps) => {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
             {/* Venture Switcher - nur wenn eingeloggt und nicht auf Landing */}
-            {user && !isLandingPage && <VentureSwitcher />}
+            {user && !isLandingPage && (
+              <VentureSwitcher
+                onCreateNew={handleCreateVenture}
+                onManage={handleManageVenture}
+              />
+            )}
 
             {user ? (
               <div className="relative" ref={profileMenuRef}>
@@ -316,6 +348,13 @@ export const Header = ({ className }: HeaderProps) => {
           )}
         </div>
       </motion.div>
+
+      {/* Venture Modal */}
+      <VentureModal
+        isOpen={ventureModalOpen}
+        onClose={handleCloseVentureModal}
+        editVenture={editingVenture}
+      />
     </header>
   );
 };
