@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   User,
   Mail,
@@ -269,12 +269,19 @@ function ProfileSection() {
 // ==================== Security Section ====================
 
 function SecuritySection() {
-  const [currentPassword, setCurrentPassword] = React.useState('');
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [newPassword, setNewPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+
+  // Delete account state
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+  const [deleteConfirmEmail, setDeleteConfirmEmail] = React.useState('');
+  const [deleteLoading, setDeleteLoading] = React.useState(false);
+  const [deleteError, setDeleteError] = React.useState<string | null>(null);
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -301,13 +308,62 @@ function SecuritySection() {
       if (updateError) throw updateError;
 
       setSuccess(true);
-      setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user?.email || deleteConfirmEmail !== user.email) {
+      setDeleteError('Bitte gib deine E-Mail-Adresse zur Bestätigung ein');
+      return;
+    }
+
+    setDeleteLoading(true);
+    setDeleteError(null);
+
+    try {
+      // Get the session token
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        throw new Error('Keine gültige Sitzung gefunden');
+      }
+
+      // Call the delete-account Edge Function
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-account`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ confirmEmail: deleteConfirmEmail }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Fehler beim Löschen des Kontos');
+      }
+
+      // Clear local storage
+      localStorage.clear();
+
+      // Sign out and redirect
+      await signOut();
+      navigate('/', { replace: true });
+    } catch (err) {
+      console.error('Delete account error:', err);
+      setDeleteError((err as Error).message);
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -395,12 +451,112 @@ function SecuritySection() {
             <p className="text-sm text-text-muted mt-1">
               Diese Aktion kann nicht rückgängig gemacht werden. Alle deine Daten werden dauerhaft gelöscht.
             </p>
-            <button className="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
+            >
               Konto dauerhaft löschen
             </button>
           </div>
         </div>
       </div>
+
+      {/* Delete Account Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+            onClick={() => !deleteLoading && setShowDeleteModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <Trash2 className="w-6 h-6 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-text-primary">
+                    Konto endgültig löschen?
+                  </h3>
+                  <p className="text-sm text-text-muted">
+                    Diese Aktion kann nicht rückgängig gemacht werden
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                <p className="text-sm text-red-800">
+                  <strong>Warnung:</strong> Alle deine Daten werden unwiderruflich gelöscht, einschließlich:
+                </p>
+                <ul className="mt-2 text-sm text-red-700 list-disc list-inside space-y-1">
+                  <li>Profil und Einstellungen</li>
+                  <li>Alle Ventures und Bewertungen</li>
+                  <li>Chat-Verlauf und Nachrichten</li>
+                  <li>Generierte Dokumente</li>
+                </ul>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  Gib deine E-Mail-Adresse zur Bestätigung ein
+                </label>
+                <input
+                  type="email"
+                  value={deleteConfirmEmail}
+                  onChange={(e) => setDeleteConfirmEmail(e.target.value)}
+                  placeholder={user?.email || 'deine@email.de'}
+                  className="w-full px-4 py-3 bg-white border border-red-200 rounded-lg text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-400"
+                />
+              </div>
+
+              {deleteError && (
+                <div className="p-3 mb-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                  {deleteError}
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setDeleteConfirmEmail('');
+                    setDeleteError(null);
+                  }}
+                  disabled={deleteLoading}
+                  className="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-text-primary font-medium rounded-lg transition-colors disabled:opacity-50"
+                >
+                  Abbrechen
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={deleteLoading || deleteConfirmEmail !== user?.email}
+                  className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  {deleteLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Wird gelöscht...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4" />
+                      Endgültig löschen
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

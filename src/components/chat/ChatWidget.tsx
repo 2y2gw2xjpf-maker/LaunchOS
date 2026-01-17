@@ -1,14 +1,17 @@
 /**
  * ChatWidget Component
- * Floating Chat Button mit Slide-out Panel und echter Claude API Integration
+ * Floating Chat Button mit Slide-out Panel, Session History und Claude API Integration
  */
 
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Bot, User, Loader2, Sparkles, Square, AlertCircle } from 'lucide-react';
+import {
+  MessageSquare, X, Send, Bot, User, Loader2, Sparkles, Square,
+  AlertCircle, History, Plus, Trash2, Minimize2, Maximize2
+} from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useLocation } from 'react-router-dom';
-import { useChatStream, type ChatMessage } from '@/hooks/useChatStream';
+import { useChatUnified, type ChatMessage } from '@/hooks/useChatUnified';
 import { useAuth } from '@/components/auth/AuthProvider';
 
 // Markdown-like rendering for assistant messages
@@ -133,51 +136,31 @@ const SUGGESTIONS = [
   'Hilf mir ein Pitch Deck zu erstellen',
 ];
 
-const CHAT_SESSION_KEY = 'launchos-chat-widget-session';
-
 export function ChatWidget() {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [showHistory, setShowHistory] = React.useState(false);
   const [inputValue, setInputValue] = React.useState('');
-  // Persist session ID in localStorage so chat history survives page reloads
-  const [sessionId] = React.useState(() => {
-    const stored = localStorage.getItem(CHAT_SESSION_KEY);
-    if (stored) return stored;
-    const newId = crypto.randomUUID();
-    localStorage.setItem(CHAT_SESSION_KEY, newId);
-    return newId;
-  });
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const location = useLocation();
   const { profile } = useAuth();
 
   const {
+    session,
+    sessions,
     messages,
     isLoading,
     isStreaming,
     error,
     sendMessage,
     stopStreaming,
-    clearMessages: clearMessagesHook,
-  } = useChatStream({
-    sessionId,
-    userContext: {
-      userName: profile?.full_name || undefined,
-      companyName: profile?.company_name || undefined,
-      industry: profile?.industry || undefined,
-      stage: profile?.stage || undefined,
-      fundingPath: profile?.funding_path || undefined,
-    },
-  });
-
-  // Clear messages and start a new session
-  const handleClearMessages = () => {
-    clearMessagesHook();
-    // Generate a new session ID for fresh start
-    const newSessionId = crypto.randomUUID();
-    localStorage.setItem(CHAT_SESSION_KEY, newSessionId);
-    // Note: This won't update the current sessionId state, but next reload will use new session
-  };
+    createSession,
+    loadSession,
+    deleteSession,
+    clearMessages,
+    loadSessions,
+  } = useChatUnified();
 
   // Don't show on landing page and auth pages
   const hiddenPaths = ['/', '/login', '/pricing', '/about', '/contact', '/auth'];
@@ -197,6 +180,13 @@ export function ChatWidget() {
     }
   }, [isOpen]);
 
+  // Load sessions when opening history
+  React.useEffect(() => {
+    if (showHistory) {
+      loadSessions();
+    }
+  }, [showHistory, loadSessions]);
+
   const handleSend = async () => {
     if (!inputValue.trim() || isLoading) return;
     const message = inputValue;
@@ -214,6 +204,24 @@ export function ChatWidget() {
   const handleSuggestionClick = async (suggestion: string) => {
     setInputValue('');
     await sendMessage(suggestion);
+  };
+
+  const handleNewChat = async () => {
+    clearMessages();
+    await createSession();
+    setShowHistory(false);
+  };
+
+  const handleLoadSession = async (sessionId: string) => {
+    await loadSession(sessionId);
+    setShowHistory(false);
+  };
+
+  const handleDeleteSession = async (sessionId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm('Chat wirklich loeschen?')) {
+      await deleteSession(sessionId);
+    }
   };
 
   if (isHidden) return null;
@@ -255,7 +263,8 @@ export function ChatWidget() {
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className={cn(
               'fixed bottom-6 right-6 z-50',
-              'w-[420px] h-[620px] max-h-[85vh]',
+              isExpanded ? 'w-[500px] h-[700px]' : 'w-[420px] h-[620px]',
+              'max-h-[85vh]',
               'bg-white rounded-3xl shadow-2xl',
               'border border-purple-100',
               'flex flex-col overflow-hidden'
@@ -268,20 +277,41 @@ export function ChatWidget() {
                   <Bot className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white">LaunchOS Chat</h3>
+                  <h3 className="font-semibold text-white truncate max-w-[180px]">
+                    {session?.title || 'LaunchOS Chat'}
+                  </h3>
                   <p className="text-xs text-white/70">Dein KI-Startup-Assistent</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                {messages.length > 0 && (
-                  <button
-                    onClick={handleClearMessages}
-                    className="p-2 hover:bg-white/10 rounded-xl transition-colors text-white/70 hover:text-white"
-                    title="Chat leeren"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setShowHistory(!showHistory)}
+                  className={cn(
+                    "p-2 hover:bg-white/10 rounded-xl transition-colors",
+                    showHistory && "bg-white/20"
+                  )}
+                  title="Chat-Verlauf"
+                >
+                  <History className="w-4 h-4 text-white" />
+                </button>
+                <button
+                  onClick={handleNewChat}
+                  className="p-2 hover:bg-white/10 rounded-xl transition-colors"
+                  title="Neuer Chat"
+                >
+                  <Plus className="w-4 h-4 text-white" />
+                </button>
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="p-2 hover:bg-white/10 rounded-xl transition-colors"
+                  title={isExpanded ? 'Verkleinern' : 'Vergrossern'}
+                >
+                  {isExpanded ? (
+                    <Minimize2 className="w-4 h-4 text-white" />
+                  ) : (
+                    <Maximize2 className="w-4 h-4 text-white" />
+                  )}
+                </button>
                 <button
                   onClick={() => setIsOpen(false)}
                   className="p-2 hover:bg-white/10 rounded-xl transition-colors"
@@ -291,17 +321,67 @@ export function ChatWidget() {
               </div>
             </div>
 
+            {/* Session History Dropdown */}
+            <AnimatePresence>
+              {showHistory && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="bg-purple-50 border-b border-purple-100 overflow-hidden"
+                >
+                  <div className="max-h-48 overflow-y-auto p-2">
+                    {sessions.length === 0 ? (
+                      <p className="text-sm text-gray-500 text-center py-4">
+                        Keine gespeicherten Chats
+                      </p>
+                    ) : (
+                      sessions.map((s) => (
+                        <div
+                          key={s.id}
+                          onClick={() => handleLoadSession(s.id)}
+                          className={cn(
+                            "flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer group",
+                            s.id === session?.id
+                              ? "bg-purple-100 text-purple-700"
+                              : "hover:bg-purple-100/50 text-gray-700"
+                          )}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{s.title}</p>
+                            <p className="text-xs text-gray-500">
+                              {s.messageCount || 0} Nachrichten
+                            </p>
+                          </div>
+                          <button
+                            onClick={(e) => handleDeleteSession(s.id, e)}
+                            className="p-1 opacity-0 group-hover:opacity-100 hover:bg-red-100 rounded transition-all"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Error Banner */}
             {error && (
               <div className="px-4 py-2 bg-red-50 border-b border-red-100 flex items-center gap-2 text-red-700 text-sm">
                 <AlertCircle className="w-4 h-4" />
-                <span>Verbindungsfehler - bitte erneut versuchen</span>
+                <span className="truncate">{error}</span>
               </div>
             )}
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {messages.length === 0 ? (
+              {isLoading && messages.length === 0 ? (
+                <div className="flex justify-center items-center h-full">
+                  <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+                </div>
+              ) : messages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center px-4">
                   <div className="p-4 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl mb-4">
                     <Sparkles className="w-8 h-8 text-purple-600" />
@@ -365,10 +445,23 @@ export function ChatWidget() {
 
                         {/* Streaming indicator */}
                         {message.role === 'assistant' &&
-                          isStreaming &&
-                          message === messages[messages.length - 1] && (
+                          message.isStreaming && (
                             <span className="inline-block w-2 h-4 bg-purple-500 animate-pulse ml-1 rounded-sm" />
                           )}
+
+                        {/* Tool Results */}
+                        {message.toolResults && message.toolResults.length > 0 && (
+                          <div className="mt-3 pt-3 border-t border-gray-200 space-y-2">
+                            {message.toolResults.map((result, idx) => (
+                              <div key={idx} className="text-xs bg-purple-50 p-2 rounded-lg">
+                                <span className="font-medium text-purple-700">{result.tool}</span>
+                                {result.result.success && (
+                                  <span className="ml-2 text-green-600">✓</span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

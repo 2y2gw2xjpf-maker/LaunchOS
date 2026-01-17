@@ -71,17 +71,53 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setLoading(false);
     });
 
-    // Listen for auth changes
+    // Listen for auth changes - comprehensive event handling
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('[Auth] Event:', event, session?.user?.id ? `User: ${session.user.id.slice(0, 8)}...` : 'No user');
+
       setSession(session);
       setUser(session?.user ?? null);
 
-      if (event === 'SIGNED_IN' && session?.user) {
-        await fetchProfile(session.user.id);
-      } else if (event === 'SIGNED_OUT') {
-        setProfile(null);
+      switch (event) {
+        case 'SIGNED_IN':
+        case 'TOKEN_REFRESHED':
+          // User signed in or token was refreshed - fetch/update profile
+          if (session?.user) {
+            await fetchProfile(session.user.id);
+          }
+          break;
+
+        case 'SIGNED_OUT':
+          // User signed out - clear all state
+          setProfile(null);
+          // Clear any local storage items related to the user session
+          try {
+            localStorage.removeItem('launchos-chat-session');
+            localStorage.removeItem('launchos-active-venture');
+          } catch (e) {
+            // Ignore localStorage errors
+          }
+          break;
+
+        case 'USER_UPDATED':
+          // User data was updated - refresh profile
+          if (session?.user) {
+            await fetchProfile(session.user.id);
+          }
+          break;
+
+        case 'PASSWORD_RECOVERY':
+          // Password recovery initiated - user might need to be redirected
+          console.log('[Auth] Password recovery initiated');
+          break;
+
+        default:
+          // Handle any other events
+          if (session?.user) {
+            await fetchProfile(session.user.id);
+          }
       }
     });
 
