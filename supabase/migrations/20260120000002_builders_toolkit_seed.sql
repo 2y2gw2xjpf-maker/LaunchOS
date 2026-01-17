@@ -287,50 +287,50 @@ ON CONFLICT (slug) DO UPDATE SET
 -- Get the checklist ID and insert items (delete existing items first for idempotency)
 DO $$
 DECLARE
-  checklist_id UUID;
+  v_checklist_id UUID;
 BEGIN
-  SELECT id INTO checklist_id FROM toolkit_checklists WHERE slug = 'mvp-readiness';
+  SELECT id INTO v_checklist_id FROM toolkit_checklists WHERE slug = 'mvp-readiness';
 
   -- Delete existing items for this checklist to avoid duplicates
-  DELETE FROM toolkit_checklist_items WHERE checklist_id = checklist_id;
+  DELETE FROM toolkit_checklist_items WHERE checklist_id = v_checklist_id;
 
   -- Insert items
   INSERT INTO toolkit_checklist_items (checklist_id, title, description, help_text, section, sort_order, is_critical) VALUES
 
   -- Section: Backend & Database
-  (checklist_id, 'Datenbank ist NICHT nur lokal/Demo', 'Daten werden in einer echten Datenbank gespeichert (z.B. Supabase, PlanetScale)', 'Viele AI-Tools generieren nur lokale State-Speicherung. Prüfe ob du eine echte Datenbank hast.', 'Backend & Database', 1, true),
-  (checklist_id, 'Daten bleiben nach Refresh erhalten', 'Wenn du die Seite neu lädst, sind alle Daten noch da', 'Teste: Erstelle Daten, lade die Seite neu, prüfe ob alles noch da ist.', 'Backend & Database', 2, true),
-  (checklist_id, 'Daten bleiben nach Logout/Login erhalten', 'Nach dem Ausloggen und wieder Einloggen sind alle User-Daten noch da', 'Wichtig für Multi-Session Support.', 'Backend & Database', 3, true),
-  (checklist_id, 'Migrations sind vorhanden', 'Datenbank-Schema ist in Migration-Dateien dokumentiert', 'Ohne Migrations kannst du Änderungen nicht nachvollziehen.', 'Backend & Database', 4, false),
-  (checklist_id, 'RLS (Row Level Security) ist aktiv', 'User können nur ihre eigenen Daten sehen', 'Bei Supabase: Prüfe dass RLS auf allen Tabellen aktiviert ist.', 'Backend & Database', 5, true),
+  (v_checklist_id, 'Datenbank ist NICHT nur lokal/Demo', 'Daten werden in einer echten Datenbank gespeichert (z.B. Supabase, PlanetScale)', 'Viele AI-Tools generieren nur lokale State-Speicherung. Prüfe ob du eine echte Datenbank hast.', 'Backend & Database', 1, true),
+  (v_checklist_id, 'Daten bleiben nach Refresh erhalten', 'Wenn du die Seite neu lädst, sind alle Daten noch da', 'Teste: Erstelle Daten, lade die Seite neu, prüfe ob alles noch da ist.', 'Backend & Database', 2, true),
+  (v_checklist_id, 'Daten bleiben nach Logout/Login erhalten', 'Nach dem Ausloggen und wieder Einloggen sind alle User-Daten noch da', 'Wichtig für Multi-Session Support.', 'Backend & Database', 3, true),
+  (v_checklist_id, 'Migrations sind vorhanden', 'Datenbank-Schema ist in Migration-Dateien dokumentiert', 'Ohne Migrations kannst du Änderungen nicht nachvollziehen.', 'Backend & Database', 4, false),
+  (v_checklist_id, 'RLS (Row Level Security) ist aktiv', 'User können nur ihre eigenen Daten sehen', 'Bei Supabase: Prüfe dass RLS auf allen Tabellen aktiviert ist.', 'Backend & Database', 5, true),
 
   -- Section: Authentication
-  (checklist_id, 'Login funktioniert', 'User können sich mit Email/Passwort anmelden', 'Teste den kompletten Flow: Registrierung, Login, Logout.', 'Authentifizierung', 6, true),
-  (checklist_id, 'Session bleibt nach Browser-Refresh', 'Nach dem Neuladen der Seite ist der User noch eingeloggt', 'Prüfe dass Session-Tokens korrekt gespeichert werden.', 'Authentifizierung', 7, true),
-  (checklist_id, 'Passwort-Reset funktioniert', 'User können ihr Passwort zurücksetzen', 'Teste den kompletten Reset-Flow inkl. Email.', 'Authentifizierung', 8, false),
-  (checklist_id, 'Geschützte Routen sind geschützt', 'Nicht eingeloggte User werden zu /login redirected', 'Teste: Öffne eine geschützte URL ohne Login.', 'Authentifizierung', 9, true),
+  (v_checklist_id, 'Login funktioniert', 'User können sich mit Email/Passwort anmelden', 'Teste den kompletten Flow: Registrierung, Login, Logout.', 'Authentifizierung', 6, true),
+  (v_checklist_id, 'Session bleibt nach Browser-Refresh', 'Nach dem Neuladen der Seite ist der User noch eingeloggt', 'Prüfe dass Session-Tokens korrekt gespeichert werden.', 'Authentifizierung', 7, true),
+  (v_checklist_id, 'Passwort-Reset funktioniert', 'User können ihr Passwort zurücksetzen', 'Teste den kompletten Reset-Flow inkl. Email.', 'Authentifizierung', 8, false),
+  (v_checklist_id, 'Geschützte Routen sind geschützt', 'Nicht eingeloggte User werden zu /login redirected', 'Teste: Öffne eine geschützte URL ohne Login.', 'Authentifizierung', 9, true),
 
   -- Section: API & Security
-  (checklist_id, 'Keine API-Keys im Frontend-Code', 'Sensible Keys sind nur in Environment Variables auf dem Server', 'Suche in deinem Code nach API_KEY, SECRET, etc. Diese gehören in .env', 'API & Security', 10, true),
-  (checklist_id, 'Environment Variables sind konfiguriert', 'Alle nötigen Env-Vars sind auf dem Server gesetzt', 'Bei Vercel: Settings > Environment Variables prüfen.', 'API & Security', 11, true),
-  (checklist_id, 'API-Endpoints sind geschützt', 'Backend-Endpoints prüfen ob der User authentifiziert ist', 'Teste: Rufe Endpoints ohne Auth-Token auf - sie sollten 401 zurückgeben.', 'API & Security', 12, true),
-  (checklist_id, 'CORS ist korrekt konfiguriert', 'Nur deine Domain kann API-Requests machen', 'Bei Supabase Edge Functions: CORS-Headers setzen.', 'API & Security', 13, false),
+  (v_checklist_id, 'Keine API-Keys im Frontend-Code', 'Sensible Keys sind nur in Environment Variables auf dem Server', 'Suche in deinem Code nach API_KEY, SECRET, etc. Diese gehören in .env', 'API & Security', 10, true),
+  (v_checklist_id, 'Environment Variables sind konfiguriert', 'Alle nötigen Env-Vars sind auf dem Server gesetzt', 'Bei Vercel: Settings > Environment Variables prüfen.', 'API & Security', 11, true),
+  (v_checklist_id, 'API-Endpoints sind geschützt', 'Backend-Endpoints prüfen ob der User authentifiziert ist', 'Teste: Rufe Endpoints ohne Auth-Token auf - sie sollten 401 zurückgeben.', 'API & Security', 12, true),
+  (v_checklist_id, 'CORS ist korrekt konfiguriert', 'Nur deine Domain kann API-Requests machen', 'Bei Supabase Edge Functions: CORS-Headers setzen.', 'API & Security', 13, false),
 
   -- Section: Deployment
-  (checklist_id, 'App läuft auf Production URL', 'Die App ist unter einer echten URL erreichbar (nicht localhost)', 'Deploy zu Vercel, Netlify, oder ähnlichem.', 'Deployment', 14, true),
-  (checklist_id, 'HTTPS ist aktiv', 'Die URL beginnt mit https://', 'Moderne Hosting-Provider machen das automatisch.', 'Deployment', 15, true),
-  (checklist_id, 'Build läuft ohne Errors', 'npm run build oder ähnlich läuft fehlerfrei durch', 'Behebe alle Build-Errors vor dem Launch.', 'Deployment', 16, true),
-  (checklist_id, 'Keine Console Errors in Production', 'Die Browser-Console zeigt keine roten Fehler', 'Öffne DevTools > Console und prüfe auf Errors.', 'Deployment', 17, false),
+  (v_checklist_id, 'App läuft auf Production URL', 'Die App ist unter einer echten URL erreichbar (nicht localhost)', 'Deploy zu Vercel, Netlify, oder ähnlichem.', 'Deployment', 14, true),
+  (v_checklist_id, 'HTTPS ist aktiv', 'Die URL beginnt mit https://', 'Moderne Hosting-Provider machen das automatisch.', 'Deployment', 15, true),
+  (v_checklist_id, 'Build läuft ohne Errors', 'npm run build oder ähnlich läuft fehlerfrei durch', 'Behebe alle Build-Errors vor dem Launch.', 'Deployment', 16, true),
+  (v_checklist_id, 'Keine Console Errors in Production', 'Die Browser-Console zeigt keine roten Fehler', 'Öffne DevTools > Console und prüfe auf Errors.', 'Deployment', 17, false),
 
   -- Section: UX Basics
-  (checklist_id, 'Loading States sind vorhanden', 'User sehen Ladeanimationen während Daten geladen werden', 'Leere Screens ohne Feedback sind verwirrend.', 'UX Basics', 18, false),
-  (checklist_id, 'Error States sind vorhanden', 'Fehler werden dem User sinnvoll angezeigt', 'User sollten verstehen was schief ging.', 'UX Basics', 19, false),
-  (checklist_id, 'Empty States sind vorhanden', 'Leere Listen zeigen hilfreiche Nachrichten', '"Noch keine Einträge. Erstelle deinen ersten!"', 'UX Basics', 20, false),
-  (checklist_id, 'Responsive Design', 'Die App sieht auf Mobile und Desktop gut aus', 'Teste auf verschiedenen Bildschirmgrößen.', 'UX Basics', 21, false),
+  (v_checklist_id, 'Loading States sind vorhanden', 'User sehen Ladeanimationen während Daten geladen werden', 'Leere Screens ohne Feedback sind verwirrend.', 'UX Basics', 18, false),
+  (v_checklist_id, 'Error States sind vorhanden', 'Fehler werden dem User sinnvoll angezeigt', 'User sollten verstehen was schief ging.', 'UX Basics', 19, false),
+  (v_checklist_id, 'Empty States sind vorhanden', 'Leere Listen zeigen hilfreiche Nachrichten', '"Noch keine Einträge. Erstelle deinen ersten!"', 'UX Basics', 20, false),
+  (v_checklist_id, 'Responsive Design', 'Die App sieht auf Mobile und Desktop gut aus', 'Teste auf verschiedenen Bildschirmgrößen.', 'UX Basics', 21, false),
 
   -- Section: Legal (DE)
-  (checklist_id, 'Impressum vorhanden', 'Rechtlich erforderlich für DE', 'Pflichtangaben: Name, Adresse, Kontakt, ggf. HRB.', 'Legal (DE)', 22, true),
-  (checklist_id, 'Datenschutzerklärung vorhanden', 'DSGVO-konforme Datenschutzseite', 'Beschreibe welche Daten du sammelst und warum.', 'Legal (DE)', 23, true);
+  (v_checklist_id, 'Impressum vorhanden', 'Rechtlich erforderlich für DE', 'Pflichtangaben: Name, Adresse, Kontakt, ggf. HRB.', 'Legal (DE)', 22, true),
+  (v_checklist_id, 'Datenschutzerklärung vorhanden', 'DSGVO-konforme Datenschutzseite', 'Beschreibe welche Daten du sammelst und warum.', 'Legal (DE)', 23, true);
 
 END $$;
 
