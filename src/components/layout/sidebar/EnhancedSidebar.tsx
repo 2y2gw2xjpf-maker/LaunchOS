@@ -323,8 +323,161 @@ export const EnhancedSidebar = () => {
           isCollapsed={!sidebarOpen}
         />
 
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto scrollbar-hide">
+        {/* ═══════════════════════════════════════════════════════════ */}
+        {/* SECTION 1: NAVIGATION (nicht scrollbar, oben)               */}
+        {/* ═══════════════════════════════════════════════════════════ */}
+        <div className="border-b border-purple-100">
+          {/* Tier Status Display */}
+          {currentTierInfo && (
+            <div className="px-3 py-3">
+              <button
+                onClick={() => navigate('/tier-selection')}
+                className={cn(
+                  'w-full flex items-center gap-3 p-2 rounded-xl transition-all',
+                  'bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100',
+                  'hover:border-purple-200 hover:shadow-sm'
+                )}
+              >
+                <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                  <Layers className="w-4 h-4 text-white" />
+                </div>
+                {sidebarOpen && (
+                  <div className="flex-1 text-left">
+                    <p className="text-xs text-purple-600 font-medium">Daten-Level</p>
+                    <p className="text-sm font-semibold text-charcoal">{currentTierInfo.name}</p>
+                    <p className="text-[10px] text-charcoal/50">Confidence: {currentTierInfo.confidence}</p>
+                  </div>
+                )}
+                {sidebarOpen && (
+                  <Settings className="w-4 h-4 text-purple-400" />
+                )}
+              </button>
+            </div>
+          )}
+
+          {/* Dashboard Link */}
+          <button
+            onClick={() => navigate('/dashboard')}
+            className={cn(
+              'w-full flex items-center gap-3 px-4 py-2.5 transition-colors',
+              isActivePath('/dashboard')
+                ? 'text-purple-600 bg-purple-50'
+                : 'text-charcoal/70 hover:bg-purple-50'
+            )}
+          >
+            <LayoutDashboard className="w-5 h-5" />
+            <AnimatePresence>
+              {sidebarOpen && (
+                <motion.span
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }}
+                  className="text-sm font-medium whitespace-nowrap"
+                >
+                  Dashboard
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
+
+          {/* Category Groups */}
+          <div className="py-1">
+            {navigationGroups.map((group) => {
+              const isGroupOpen = openGroups.includes(group.id);
+              const GroupIcon = group.icon;
+              const hasActiveItem = group.items.some((item) => isActivePath(item.href));
+
+              return (
+                <div key={group.id}>
+                  {/* Category Header */}
+                  <button
+                    onClick={() => toggleGroup(group.id)}
+                    className={cn(
+                      'w-full flex items-center justify-between px-4 py-2 transition-colors',
+                      hasActiveItem ? 'text-purple-600' : 'text-charcoal/50 hover:text-charcoal/70'
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <GroupIcon className="w-4 h-4" />
+                      <AnimatePresence>
+                        {sidebarOpen && (
+                          <motion.span
+                            initial={{ opacity: 0, width: 0 }}
+                            animate={{ opacity: 1, width: 'auto' }}
+                            exit={{ opacity: 0, width: 0 }}
+                            className="text-xs font-semibold uppercase tracking-wider whitespace-nowrap"
+                          >
+                            {group.label}
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                    {sidebarOpen && (
+                      <ChevronDown
+                        className={cn(
+                          'w-4 h-4 transition-transform',
+                          isGroupOpen ? 'rotate-0' : '-rotate-90'
+                        )}
+                      />
+                    )}
+                  </button>
+
+                  {/* Category Items */}
+                  <AnimatePresence>
+                    {isGroupOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="overflow-hidden"
+                      >
+                        <div className={cn('space-y-0.5', sidebarOpen ? 'ml-4' : '')}>
+                          {group.items.map((item) => {
+                            const ItemIcon = item.icon;
+                            const isActive = isActivePath(item.href);
+
+                            return (
+                              <button
+                                key={item.href}
+                                onClick={() => navigate(item.href)}
+                                className={cn(
+                                  'w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-colors',
+                                  isActive
+                                    ? 'bg-purple-100 text-purple-700 font-medium'
+                                    : 'text-charcoal/60 hover:bg-purple-50 hover:text-charcoal'
+                                )}
+                              >
+                                <ItemIcon className="w-4 h-4" />
+                                <AnimatePresence>
+                                  {sidebarOpen && (
+                                    <motion.span
+                                      initial={{ opacity: 0, width: 0 }}
+                                      animate={{ opacity: 1, width: 'auto' }}
+                                      exit={{ opacity: 0, width: 0 }}
+                                      className="text-sm whitespace-nowrap"
+                                    >
+                                      {item.label}
+                                    </motion.span>
+                                  )}
+                                </AnimatePresence>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════ */}
+        {/* SECTION 2: ORDNER & RECENTS (scrollbar, unten)             */}
+        {/* ═══════════════════════════════════════════════════════════ */}
+        <div className="flex-1 overflow-y-auto scrollbar-hide relative">
           {isHistoryLoading ? (
             <div className="flex items-center justify-center py-8">
               <div className="w-6 h-6 border-2 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
@@ -417,7 +570,7 @@ export const EnhancedSidebar = () => {
                 );
               })}
 
-              {/* Create Project Button - BEFORE Recents */}
+              {/* Create Project Button */}
               {sidebarOpen && (
                 <div className="px-3 mt-4">
                   <button
@@ -461,9 +614,9 @@ export const EnhancedSidebar = () => {
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.15 }}
-                        className="overflow-hidden"
+                        className="overflow-visible"
                       >
-                        <div className="px-2 space-y-1">
+                        <div className="px-2 space-y-1 pb-4">
                           {ungroupedAnalyses
                             .filter((a) => !a.isFavorite)
                             .map((analysis) => (
@@ -497,158 +650,6 @@ export const EnhancedSidebar = () => {
               )}
             </div>
           )}
-        </div>
-
-        {/* Tier Status Display */}
-        {currentTierInfo && (
-          <div className="border-t border-purple-100 px-3 py-3">
-            <button
-              onClick={() => navigate('/tier-selection')}
-              className={cn(
-                'w-full flex items-center gap-3 p-2 rounded-xl transition-all',
-                'bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100',
-                'hover:border-purple-200 hover:shadow-sm'
-              )}
-            >
-              <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
-                <Layers className="w-4 h-4 text-white" />
-              </div>
-              {sidebarOpen && (
-                <div className="flex-1 text-left">
-                  <p className="text-xs text-purple-600 font-medium">Daten-Level</p>
-                  <p className="text-sm font-semibold text-charcoal">{currentTierInfo.name}</p>
-                  <p className="text-[10px] text-charcoal/50">Confidence: {currentTierInfo.confidence}</p>
-                </div>
-              )}
-              {sidebarOpen && (
-                <Settings className="w-4 h-4 text-purple-400" />
-              )}
-            </button>
-          </div>
-        )}
-
-        {/* Navigation - Categorized */}
-        <div className="border-t border-purple-100 py-2 overflow-y-auto flex-1">
-          {/* Dashboard - Always visible at top */}
-          <button
-            onClick={() => navigate('/dashboard')}
-            className={cn(
-              'w-full flex items-center gap-3 px-4 py-2.5 transition-colors',
-              isActivePath('/dashboard')
-                ? 'text-purple-600 bg-purple-50'
-                : 'text-charcoal/70 hover:bg-purple-50'
-            )}
-          >
-            <LayoutDashboard className="w-5 h-5" />
-            <AnimatePresence>
-              {sidebarOpen && (
-                <motion.span
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 'auto' }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="text-sm font-medium whitespace-nowrap"
-                >
-                  Dashboard
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </button>
-
-          {/* Divider */}
-          {sidebarOpen && <div className="h-px bg-purple-100 mx-4 my-2" />}
-
-          {/* Category Groups */}
-          <div className="space-y-1">
-            {navigationGroups.map((group) => {
-              const isGroupOpen = openGroups.includes(group.id);
-              const GroupIcon = group.icon;
-              const hasActiveItem = group.items.some((item) => isActivePath(item.href));
-
-              return (
-                <div key={group.id}>
-                  {/* Category Header */}
-                  <button
-                    onClick={() => toggleGroup(group.id)}
-                    className={cn(
-                      'w-full flex items-center justify-between px-4 py-2 transition-colors',
-                      hasActiveItem ? 'text-purple-600' : 'text-charcoal/50 hover:text-charcoal/70'
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <GroupIcon className="w-4 h-4" />
-                      <AnimatePresence>
-                        {sidebarOpen && (
-                          <motion.span
-                            initial={{ opacity: 0, width: 0 }}
-                            animate={{ opacity: 1, width: 'auto' }}
-                            exit={{ opacity: 0, width: 0 }}
-                            className="text-xs font-semibold uppercase tracking-wider whitespace-nowrap"
-                          >
-                            {group.label}
-                          </motion.span>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                    {sidebarOpen && (
-                      <ChevronDown
-                        className={cn(
-                          'w-4 h-4 transition-transform',
-                          isGroupOpen ? 'rotate-0' : '-rotate-90'
-                        )}
-                      />
-                    )}
-                  </button>
-
-                  {/* Category Items */}
-                  <AnimatePresence>
-                    {isGroupOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.15 }}
-                        className="overflow-hidden"
-                      >
-                        <div className={cn('space-y-0.5', sidebarOpen ? 'ml-4' : '')}>
-                          {group.items.map((item) => {
-                            const ItemIcon = item.icon;
-                            const isActive = isActivePath(item.href);
-
-                            return (
-                              <button
-                                key={item.href}
-                                onClick={() => navigate(item.href)}
-                                className={cn(
-                                  'w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-colors',
-                                  isActive
-                                    ? 'bg-purple-100 text-purple-700 font-medium'
-                                    : 'text-charcoal/60 hover:bg-purple-50 hover:text-charcoal'
-                                )}
-                              >
-                                <ItemIcon className="w-4 h-4" />
-                                <AnimatePresence>
-                                  {sidebarOpen && (
-                                    <motion.span
-                                      initial={{ opacity: 0, width: 0 }}
-                                      animate={{ opacity: 1, width: 'auto' }}
-                                      exit={{ opacity: 0, width: 0 }}
-                                      className="text-sm whitespace-nowrap"
-                                    >
-                                      {item.label}
-                                    </motion.span>
-                                  )}
-                                </AnimatePresence>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-          </div>
         </div>
 
       </motion.aside>

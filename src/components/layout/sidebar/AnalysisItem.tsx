@@ -219,7 +219,7 @@ export const AnalysisItem = ({
               e.stopPropagation();
               setShowMenu(!showMenu);
             }}
-            className="p-1 rounded hover:bg-brand-100 transition-colors opacity-0 group-hover:opacity-100"
+            className="p-1 rounded hover:bg-brand-100 transition-colors"
           >
             <MoreHorizontal className="w-4 h-4 text-charcoal/40" />
           </button>
@@ -228,7 +228,7 @@ export const AnalysisItem = ({
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-medium border border-brand-100 py-1 z-50"
+              className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-medium border border-brand-100 py-1 z-[100]"
             >
               <button
                 onClick={() => {
