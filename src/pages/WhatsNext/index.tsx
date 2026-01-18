@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Download, RefreshCw, Sparkles, Target, Map, Rocket } from 'lucide-react';
+import { ArrowLeft, Download, RefreshCw, Sparkles, Target, Map, Rocket, AlertCircle, Building2 } from 'lucide-react';
 import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 import { WizardProgress, WizardNavigation } from '@/components/wizard';
 import { Button, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui';
 import { useStore } from '@/store';
+import { useVentureContext } from '@/contexts/VentureContext';
 import { calculateRoute } from '@/lib/calculations';
 import { ProjectBasicsStep } from './steps/ProjectBasicsStep';
 import { PersonalSituationStep } from './steps/PersonalSituationStep';
@@ -26,6 +27,7 @@ const STEPS = [
 
 export const WhatsNextPage = () => {
   const navigate = useNavigate();
+  const { activeVenture } = useVentureContext();
   const {
     selectedTier,
     wizardData,
@@ -42,6 +44,9 @@ export const WhatsNextPage = () => {
   const [activeResultTab, setActiveResultTab] = React.useState('recommendation');
   const [activeAnalysisSubTab, setActiveAnalysisSubTab] = React.useState<'timeline' | 'dashboard'>('timeline');
   const [showProgramRunner, setShowProgramRunner] = React.useState(false);
+
+  // Prüfe ob Tier-Daten vorhanden sind
+  const hasTierData = activeVenture?.tierData?.completed_at !== null && activeVenture?.tierData?.completed_at !== undefined;
 
   // Redirect if no tier selected
   React.useEffect(() => {
@@ -189,6 +194,63 @@ export const WhatsNextPage = () => {
       <Header />
       <EnhancedSidebar />
       <PageContainer withSidebar maxWidth="wide">
+        {/* Tier Data Info Banner */}
+        {activeVenture && hasTierData && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                <Building2 className="w-5 h-5 text-purple-600" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-purple-900">
+                  Analysiere: <span className="font-semibold">{activeVenture.name}</span>
+                </p>
+                <p className="text-xs text-purple-700/70">
+                  {activeVenture.tierData?.category} • {activeVenture.tierData?.stage}
+                  {activeVenture.tierLevel && ` • Tier ${activeVenture.tierLevel}`}
+                </p>
+              </div>
+              <Link
+                to="/venture/data-input"
+                className="text-sm text-purple-600 hover:text-purple-700 underline"
+              >
+                Daten bearbeiten
+              </Link>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Missing Tier Data Warning */}
+        {activeVenture && !hasTierData && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200"
+          >
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-amber-900">
+                  Für genauere Empfehlungen: Venture-Daten ausfüllen
+                </p>
+                <p className="text-xs text-amber-700/70 mt-1">
+                  Je mehr Informationen du teilst, desto personalisierter werden unsere Empfehlungen.
+                </p>
+              </div>
+              <Link
+                to="/venture/data-input"
+                className="text-sm font-medium text-amber-700 hover:text-amber-800 underline whitespace-nowrap"
+              >
+                Daten eingeben
+              </Link>
+            </div>
+          </motion.div>
+        )}
+
         {/* Back button */}
         {currentStep === 0 && (
           <Button

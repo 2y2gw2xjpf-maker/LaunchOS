@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calculator, TrendingUp, Briefcase, BarChart3, LineChart, Download, RefreshCw } from 'lucide-react';
+import { Calculator, TrendingUp, Briefcase, BarChart3, LineChart, Download, RefreshCw, Building2, AlertCircle } from 'lucide-react';
 import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 import { Card, Button, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui';
 import { CurrencyDisplay } from '@/components/common';
@@ -10,6 +10,7 @@ import { ValuationChart, MethodComparisonChart } from '@/components/charts';
 import { ValuationDisclaimer } from '@/components/disclaimers';
 import { MethodologyExplainer } from '@/components/valuation';
 import { useStore } from '@/store';
+import { useVentureContext } from '@/contexts/VentureContext';
 import { BerkusMethodPage } from './methods/BerkusMethod';
 import { ScorecardMethodPage } from './methods/ScorecardMethod';
 import { VCMethodPage } from './methods/VCMethod';
@@ -23,8 +24,19 @@ const methods: { id: ValuationMethod; label: string; icon: typeof Calculator }[]
 
 export const ValuationPage = () => {
   const navigate = useNavigate();
+  const { activeVenture } = useVentureContext();
   const { selectedTier, methodResults, activeMethod, setActiveMethod, resetValuation } = useStore();
   const [showResults, setShowResults] = React.useState(false);
+
+  // Prüfe ob Tier-Daten vorhanden sind
+  const hasTierData = activeVenture?.tierData?.completed_at !== null && activeVenture?.tierData?.completed_at !== undefined;
+
+  // Berechne Confidence-Bonus basierend auf Tier-Level
+  const tierConfidenceBonus = React.useMemo(() => {
+    const tierLevel = activeVenture?.tierLevel || 1;
+    // Tier 1: 0%, Tier 2: +5%, Tier 3: +10%, Tier 4: +15%
+    return (tierLevel - 1) * 5;
+  }, [activeVenture?.tierLevel]);
 
   // Redirect if no tier selected
   React.useEffect(() => {
@@ -73,6 +85,63 @@ export const ValuationPage = () => {
       <Header />
       <EnhancedSidebar />
       <PageContainer withSidebar maxWidth="wide">
+        {/* Tier Data Info Banner */}
+        {activeVenture && hasTierData && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                <Building2 className="w-5 h-5 text-purple-600" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-purple-900">
+                  Bewerte: <span className="font-semibold">{activeVenture.name}</span>
+                </p>
+                <p className="text-xs text-purple-700/70">
+                  {activeVenture.tierData?.category} • {activeVenture.tierData?.stage}
+                  {tierConfidenceBonus > 0 && ` • +${tierConfidenceBonus}% Genauigkeit durch Tier ${activeVenture.tierLevel}`}
+                </p>
+              </div>
+              <Link
+                to="/venture/data-input"
+                className="text-sm text-purple-600 hover:text-purple-700 underline"
+              >
+                Daten bearbeiten
+              </Link>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Missing Tier Data Warning */}
+        {activeVenture && !hasTierData && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200"
+          >
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-amber-900">
+                  Für genauere Bewertungen: Venture-Daten ausfüllen
+                </p>
+                <p className="text-xs text-amber-700/70 mt-1">
+                  Die Genauigkeit deiner Bewertung steigt um bis zu 15% mit vollständigen Daten.
+                </p>
+              </div>
+              <Link
+                to="/venture/data-input"
+                className="text-sm font-medium text-amber-700 hover:text-amber-800 underline whitespace-nowrap"
+              >
+                Daten eingeben
+              </Link>
+            </div>
+          </motion.div>
+        )}
+
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Methods Column */}
           <div className="lg:col-span-2">

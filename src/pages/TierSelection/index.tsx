@@ -27,7 +27,8 @@ export const TierSelectionPage = () => {
     });
     // Reset to first step
     setCurrentStep(0);
-    navigate('/whats-next');
+    // Weiterleiten zum Daten-Eingabe-Formular
+    navigate('/venture/data-input');
   };
 
   return (

@@ -9,6 +9,19 @@ import { useAuth } from '@/components/auth/AuthProvider';
 
 // ==================== TYPES ====================
 
+export interface TierData {
+  tier: number;
+  category: string;
+  stage: string;
+  description: string;
+  url: string;
+  github_url: string;
+  pitch_deck_url: string;
+  has_financials: boolean;
+  financials_summary: string;
+  completed_at: string | null;
+}
+
 export interface Venture {
   id: string;
   name: string;
@@ -30,6 +43,9 @@ export interface Venture {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  // Tier-basierte Daten
+  tierLevel?: number;
+  tierData?: TierData;
 }
 
 export interface UseVenturesReturn {
@@ -70,6 +86,9 @@ export function useVentures(): UseVenturesReturn {
     isActive: row.is_active as boolean,
     createdAt: new Date(row.created_at as string),
     updatedAt: new Date(row.updated_at as string),
+    // Tier-basierte Daten
+    tierLevel: row.tier_level as number | undefined,
+    tierData: row.tier_data as TierData | undefined,
   });
 
   // Load ventures from DB
@@ -143,7 +162,7 @@ export function useVentures(): UseVenturesReturn {
   }, [user, ventures.length, loadVentures]);
 
   // Update venture
-  const updateVenture = useCallback(async (id: string, data: Partial<Venture>): Promise<boolean> => {
+  const updateVenture = useCallback(async (id: string, data: Partial<Venture> & { tier_level?: number; tier_data?: TierData }): Promise<boolean> => {
     if (!isSupabaseConfigured()) return false;
 
     try {
@@ -161,6 +180,11 @@ export function useVentures(): UseVenturesReturn {
       if (data.teamSize !== undefined) updateData.team_size = data.teamSize;
       if (data.logoUrl !== undefined) updateData.logo_url = data.logoUrl;
       if (data.branding !== undefined) updateData.branding = data.branding;
+      // Tier-basierte Daten
+      if (data.tierLevel !== undefined) updateData.tier_level = data.tierLevel;
+      if (data.tierData !== undefined) updateData.tier_data = data.tierData;
+      if (data.tier_level !== undefined) updateData.tier_level = data.tier_level;
+      if (data.tier_data !== undefined) updateData.tier_data = data.tier_data;
 
       const { error } = await supabase
         .from('ventures')

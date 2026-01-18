@@ -105,7 +105,8 @@ export const EnhancedSidebar = () => {
     location.pathname.startsWith('/data-room') ||
     location.pathname.startsWith('/analytics') ||
     location.pathname.startsWith('/toolkit') ||
-    location.pathname.startsWith('/launch');
+    location.pathname.startsWith('/launch') ||
+    location.pathname.startsWith('/venture');
 
   if (!showSidebar) return null;
 
@@ -190,6 +191,7 @@ export const EnhancedSidebar = () => {
       icon: Compass,
       items: [
         { label: 'Daten-Level', href: '/tier-selection', icon: Layers },
+        { label: 'Venture-Daten', href: '/venture/data-input', icon: FileText },
         { label: 'Was tun?', href: '/whats-next', icon: CircleHelp },
         { label: 'Founders Journey', href: '/journey', icon: Rocket },
       ],

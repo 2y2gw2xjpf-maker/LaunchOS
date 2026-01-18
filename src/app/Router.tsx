@@ -26,6 +26,7 @@ const InvestorCRMPage = React.lazy(() => import('@/pages/InvestorCRM'));
 const DataRoomPage = React.lazy(() => import('@/pages/DataRoom'));
 const PublicDataRoomPage = React.lazy(() => import('@/pages/DataRoom/PublicDataRoom'));
 const AnalyticsPage = React.lazy(() => import('@/pages/Analytics'));
+const VentureDataInputPage = React.lazy(() => import('@/pages/VentureDataInput'));
 
 // Legal Pages
 const ImpressumPage = React.lazy(() => import('@/pages/Legal/ImpressumPage'));
@@ -100,6 +101,7 @@ export const Router = () => {
               <Route path="/investors" element={<ProtectedRoute><InvestorCRMPage /></ProtectedRoute>} />
               <Route path="/data-room" element={<ProtectedRoute><DataRoomPage /></ProtectedRoute>} />
               <Route path="/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
+              <Route path="/venture/data-input" element={<ProtectedRoute><VentureDataInputPage /></ProtectedRoute>} />
 
               {/* Builder's Toolkit Routes */}
               <Route path="/toolkit" element={<ProtectedRoute><ToolkitPage /></ProtectedRoute>} />

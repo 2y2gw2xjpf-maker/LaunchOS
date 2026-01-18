@@ -6,7 +6,7 @@
 import { createContext, useContext } from 'react';
 import type { ReactNode } from 'react';
 import { useVentures } from '@/hooks/useVentures';
-import type { Venture, UseVenturesReturn } from '@/hooks/useVentures';
+import type { Venture, UseVenturesReturn, TierData } from '@/hooks/useVentures';
 
 // ==================== CONTEXT ====================
 
@@ -45,4 +45,4 @@ export function useOptionalVentureContext(): UseVenturesReturn | null {
 }
 
 // Re-export types
-export type { Venture };
+export type { Venture, TierData };
