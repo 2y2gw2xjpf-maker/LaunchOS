@@ -8,6 +8,27 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useOptionalVentureContext } from '@/contexts/VentureContext';
 
+// Helper to check if error is an AbortError (cleanup-related)
+const isAbortError = (err: unknown): boolean => {
+  if (err instanceof Error) {
+    return err.name === 'AbortError' || err.message.includes('aborted');
+  }
+  if (typeof err === 'object' && err !== null) {
+    const errorObj = err as { message?: string; name?: string; code?: string; cause?: unknown };
+    if (errorObj.name === 'AbortError' ||
+        (typeof errorObj.message === 'string' && errorObj.message.includes('aborted'))) {
+      return true;
+    }
+    if (errorObj.code === 'PGRST301' || errorObj.code === 'FETCH_ERROR') {
+      return true;
+    }
+    if (errorObj.cause && isAbortError(errorObj.cause)) {
+      return true;
+    }
+  }
+  return false;
+};
+
 // ==================== TYPES ====================
 
 export interface ChatMessage {
@@ -275,6 +296,11 @@ export function useChatUnified(options: UseChatUnifiedOptions = {}): UseChatUnif
         messageCount: s.chat_messages?.[0]?.count || 0,
       })));
     } catch (err) {
+      // Ignore AbortError - it's from component cleanup
+      if (isAbortError(err)) {
+        console.log('[Chat] Sessions load aborted (cleanup)');
+        return;
+      }
       console.error('Error loading sessions:', err);
     }
   }, [user, activeVenture]);
