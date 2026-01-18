@@ -123,11 +123,24 @@ export function useVentures(): UseVenturesReturn {
 
   // Create new venture
   const createVenture = useCallback(async (data: Partial<Venture>): Promise<Venture | null> => {
-    if (!user || !isSupabaseConfigured()) return null;
+    // Bessere Fehlerbehandlung
+    if (!isSupabaseConfigured()) {
+      console.error('Supabase is not configured');
+      setError('Datenbankverbindung nicht konfiguriert');
+      return null;
+    }
+
+    if (!user) {
+      console.error('No user logged in');
+      setError('Bitte melde dich zuerst an');
+      return null;
+    }
 
     try {
       // Wenn erstes Venture, automatisch aktiv setzen
       const isFirstVenture = ventures.length === 0;
+
+      console.log('Creating venture for user:', user.id, 'data:', data);
 
       const { data: newVenture, error } = await supabase
         .from('ventures')
@@ -150,13 +163,18 @@ export function useVentures(): UseVenturesReturn {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
+      console.log('Venture created successfully:', newVenture);
       await loadVentures();
       return mapVenture(newVenture);
     } catch (err) {
       console.error('Error creating venture:', err);
-      setError('Fehler beim Erstellen des Ventures');
+      const errorMessage = err instanceof Error ? err.message : 'Unbekannter Fehler';
+      setError(`Fehler beim Erstellen: ${errorMessage}`);
       return null;
     }
   }, [user, ventures.length, loadVentures]);
