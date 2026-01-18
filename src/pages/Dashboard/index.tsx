@@ -230,150 +230,147 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* Zwei-Spalten Layout: Timeline links, Venture + Hilfe rechts */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* LINKS: Nächste Schritte - Vertikale Timeline (2/3 Breite) */}
-          <div className="lg:col-span-2">
-            <h2 className="text-lg font-semibold text-charcoal mb-4">
-              Nächste Schritte
-            </h2>
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-purple-100 p-6">
-              <div className="relative">
-                {/* Verbindungslinie */}
-                <div className="absolute left-[11px] top-6 bottom-6 w-0.5 bg-purple-200" />
+        {/* Nächste Schritte - Volle Breite */}
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-charcoal mb-4">
+            Nächste Schritte
+          </h2>
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-purple-100 p-6">
+            <div className="relative">
+              {/* Verbindungslinie */}
+              <div className="absolute left-[11px] top-6 bottom-6 w-0.5 bg-purple-200" />
 
-                <div className="space-y-4">
-                  {nextSteps.map((step, index) => (
-                    <div key={index} className="flex items-start gap-4 relative">
-                      {/* Punkt */}
-                      <div
-                        className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 z-10 ${
-                          step.done
-                            ? 'bg-purple-500'
-                            : 'bg-white border-2 border-purple-300'
-                        }`}
-                      >
-                        {step.done && (
-                          <CheckCircle2 className="w-4 h-4 text-white" />
-                        )}
-                      </div>
-
-                      {/* Text */}
-                      <div className="flex-1 pb-4">
-                        {step.href && !step.done ? (
-                          <Link
-                            to={step.href}
-                            className="font-medium text-charcoal hover:text-purple-600 transition-colors"
-                          >
-                            {step.text}
-                          </Link>
-                        ) : (
-                          <span
-                            className={
-                              step.done
-                                ? 'text-charcoal/40 line-through'
-                                : 'font-medium text-charcoal'
-                            }
-                          >
-                            {step.text}
-                          </span>
-                        )}
-                        {!step.done && step.href && (
-                          <p className="text-sm text-charcoal/50 mt-1">
-                            Klicke um zu starten →
-                          </p>
-                        )}
-                      </div>
+              <div className="space-y-4">
+                {nextSteps.map((step, index) => (
+                  <div key={index} className="flex items-start gap-4 relative">
+                    {/* Punkt */}
+                    <div
+                      className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 z-10 ${
+                        step.done
+                          ? 'bg-purple-500'
+                          : 'bg-white border-2 border-purple-300'
+                      }`}
+                    >
+                      {step.done && (
+                        <CheckCircle2 className="w-4 h-4 text-white" />
+                      )}
                     </div>
-                  ))}
-                </div>
+
+                    {/* Text */}
+                    <div className="flex-1 pb-4">
+                      {step.href && !step.done ? (
+                        <Link
+                          to={step.href}
+                          className="font-medium text-charcoal hover:text-purple-600 transition-colors"
+                        >
+                          {step.text}
+                        </Link>
+                      ) : (
+                        <span
+                          className={
+                            step.done
+                              ? 'text-charcoal/40 line-through'
+                              : 'font-medium text-charcoal'
+                          }
+                        >
+                          {step.text}
+                        </span>
+                      )}
+                      {!step.done && step.href && (
+                        <p className="text-sm text-charcoal/50 mt-1">
+                          Klicke um zu starten →
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
+        </div>
 
-          {/* RECHTS: Venture + Hilfe (1/3 Breite) */}
-          <div className="space-y-6">
-            {/* Aktives Venture */}
-            <div>
-              <h2 className="text-lg font-semibold text-charcoal mb-4">
-                Dein Venture
-              </h2>
-              {activeVenture ? (
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-purple-100 p-5">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                      <Rocket className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-charcoal">
-                        {activeVenture.name}
-                      </h3>
-                      <p className="text-sm text-charcoal/50">
-                        {activeVenture.industry || 'Keine Branche'}
-                      </p>
-                    </div>
+        {/* Venture + AI-Coach - Volle Breite, nebeneinander */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Aktives Venture */}
+          <div>
+            <h2 className="text-lg font-semibold text-charcoal mb-4">
+              Dein Venture
+            </h2>
+            {activeVenture ? (
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-purple-100 p-5 h-[calc(100%-2rem)]">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                    <Rocket className="w-6 h-6 text-white" />
                   </div>
-
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-charcoal/50">Stage</span>
-                      <span className="font-medium text-charcoal">
-                        {activeVenture.stage || '—'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-charcoal/50">Branche</span>
-                      <span className="font-medium text-charcoal">
-                        {activeVenture.industry || '—'}
-                      </span>
-                    </div>
+                  <div>
+                    <h3 className="font-semibold text-charcoal">
+                      {activeVenture.name}
+                    </h3>
+                    <p className="text-sm text-charcoal/50">
+                      {activeVenture.industry || 'Keine Branche'}
+                    </p>
                   </div>
-
-                  <Link
-                    to="/journey"
-                    className="mt-4 w-full py-2 px-4 bg-purple-50 hover:bg-purple-100 rounded-lg text-sm font-medium text-purple-700 transition-colors flex items-center justify-center gap-2"
-                  >
-                    Venture bearbeiten
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
                 </div>
-              ) : (
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-purple-100 p-5 text-center">
-                  <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center mx-auto mb-3">
-                    <Rocket className="w-6 h-6 text-purple-400" />
-                  </div>
-                  <p className="text-charcoal/50 mb-4">Noch kein Venture angelegt</p>
-                  <Link
-                    to="/journey"
-                    className="inline-flex items-center gap-2 py-2 px-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-sm font-medium hover:shadow-lg transition-shadow"
-                  >
-                    Venture starten
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              )}
-            </div>
 
-            {/* Hilfe */}
-            <div>
-              <h2 className="text-lg font-semibold text-charcoal mb-4">
-                Brauchst du Hilfe?
-              </h2>
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-100 p-5">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-white" />
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-charcoal/50">Stage</span>
+                    <span className="font-medium text-charcoal">
+                      {activeVenture.stage || '—'}
+                    </span>
                   </div>
-                  <h3 className="font-semibold text-charcoal">AI-Coach</h3>
+                  <div className="flex justify-between">
+                    <span className="text-charcoal/50">Branche</span>
+                    <span className="font-medium text-charcoal">
+                      {activeVenture.industry || '—'}
+                    </span>
+                  </div>
                 </div>
-                <p className="text-sm text-charcoal/60 mb-4">
-                  Unser AI-Coach hilft dir bei allen Fragen rund um dein Startup.
-                  Egal ob Strategie, Finanzierung oder Produktentwicklung.
-                </p>
-                <button className="w-full py-2 px-4 bg-white border border-purple-200 rounded-lg text-sm font-medium text-purple-600 hover:bg-purple-50 transition-colors">
-                  Chat öffnen
-                </button>
+
+                <Link
+                  to="/journey"
+                  className="mt-4 w-full py-2 px-4 bg-purple-50 hover:bg-purple-100 rounded-lg text-sm font-medium text-purple-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  Venture bearbeiten
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
               </div>
+            ) : (
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-purple-100 p-5 text-center h-[calc(100%-2rem)] flex flex-col justify-center">
+                <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center mx-auto mb-3">
+                  <Rocket className="w-6 h-6 text-purple-400" />
+                </div>
+                <p className="text-charcoal/50 mb-4">Noch kein Venture angelegt</p>
+                <Link
+                  to="/journey"
+                  className="inline-flex items-center gap-2 py-2 px-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-sm font-medium hover:shadow-lg transition-shadow mx-auto"
+                >
+                  Venture starten
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* AI-Coach */}
+          <div>
+            <h2 className="text-lg font-semibold text-charcoal mb-4">
+              Brauchst du Hilfe?
+            </h2>
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-100 p-5 h-[calc(100%-2rem)] flex flex-col">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="font-semibold text-charcoal">AI-Coach</h3>
+              </div>
+              <p className="text-sm text-charcoal/60 mb-4 flex-1">
+                Unser AI-Coach hilft dir bei allen Fragen rund um dein Startup.
+                Egal ob Strategie, Finanzierung oder Produktentwicklung.
+              </p>
+              <button className="w-full py-2 px-4 bg-white border border-purple-200 rounded-lg text-sm font-medium text-purple-600 hover:bg-purple-50 transition-colors">
+                Chat öffnen
+              </button>
             </div>
           </div>
         </div>
