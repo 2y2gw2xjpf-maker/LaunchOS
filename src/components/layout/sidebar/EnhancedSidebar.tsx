@@ -25,6 +25,7 @@ import {
   LayoutDashboard,
   CircleHelp,
   ClipboardCheck,
+  Clock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useStore } from '@/store';
@@ -231,8 +232,11 @@ export const EnhancedSidebar = () => {
     },
   ];
 
-  // State for open groups - default open first two
-  const [openGroups, setOpenGroups] = React.useState<string[]>(['start', 'build']);
+  // State for open groups - default all collapsed
+  const [openGroups, setOpenGroups] = React.useState<string[]>([]);
+
+  // State for Recents collapsed
+  const [recentsOpen, setRecentsOpen] = React.useState(false);
 
   // Toggle group open/closed
   const toggleGroup = (groupId: string) => {
@@ -292,24 +296,24 @@ export const EnhancedSidebar = () => {
           'bg-cream border-r border-purple-100'
         )}
       >
-        {/* Collapse Toggle Button at Top */}
-        <div className="px-3 pt-4 pb-2 flex justify-end">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className={cn(
-              'w-11 h-11 rounded-full flex items-center justify-center',
-              'bg-gradient-to-r from-purple-600 to-pink-600',
-              'hover:shadow-lg hover:shadow-purple-500/30 transition-all',
-              'active:scale-95'
-            )}
-          >
-            {sidebarOpen ? (
-              <ChevronLeft className="w-4 h-4 text-white" />
-            ) : (
-              <ChevronRight className="w-4 h-4 text-white" />
-            )}
-          </button>
-        </div>
+        {/* Collapse Toggle Button - positioned on sidebar border */}
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className={cn(
+            'absolute -right-5 top-4 z-50',
+            'w-10 h-10 rounded-full flex items-center justify-center',
+            'bg-gradient-to-r from-purple-600 to-pink-600',
+            'hover:shadow-lg hover:shadow-purple-500/30 transition-all',
+            'active:scale-95',
+            'border-2 border-cream'
+          )}
+        >
+          {sidebarOpen ? (
+            <ChevronLeft className="w-4 h-4 text-white" />
+          ) : (
+            <ChevronRight className="w-4 h-4 text-white" />
+          )}
+        </button>
 
         {/* Header */}
         <SidebarHeader
@@ -413,47 +417,7 @@ export const EnhancedSidebar = () => {
                 );
               })}
 
-              {/* Ungrouped Analyses */}
-              {ungroupedAnalyses.length > 0 && (
-                <div className="mt-4">
-                  {sidebarOpen && (
-                    <div className="px-3 py-2">
-                      <span className="text-xs font-medium text-charcoal/60 uppercase tracking-wider">
-                        Recents
-                      </span>
-                    </div>
-                  )}
-                  <div className="px-2 space-y-1">
-                    {ungroupedAnalyses
-                      .filter((a) => !a.isFavorite)
-                      .map((analysis) => (
-                        <AnalysisItem
-                          key={analysis.id}
-                          analysis={analysis}
-                          isActive={analysis.id === activeAnalysisId}
-                          isInComparison={isInComparison(analysis.id)}
-                          isCollapsed={!sidebarOpen}
-                          onSelect={() => handleSelectAnalysis(analysis.id)}
-                          onToggleFavorite={() => toggleAnalysisFavorite(analysis.id)}
-                          onDelete={() => deleteAnalysis(analysis.id)}
-                          onDuplicate={() => duplicateAnalysis(analysis.id)}
-                          onRename={(name) => handleRenameAnalysis(analysis.id, name)}
-                          onToggleComparison={() => toggleInComparison(analysis.id)}
-                          onMoveToProject={(projectId) =>
-                            moveAnalysisToProject(analysis.id, projectId)
-                          }
-                          projects={projects.map((p) => ({
-                            id: p.id,
-                            name: p.name,
-                            color: p.color,
-                          }))}
-                        />
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Create Project Button */}
+              {/* Create Project Button - BEFORE Recents */}
               {sidebarOpen && (
                 <div className="px-3 mt-4">
                   <button
@@ -463,6 +427,72 @@ export const EnhancedSidebar = () => {
                     <FolderPlus className="w-4 h-4" />
                     Neuer Ordner
                   </button>
+                </div>
+              )}
+
+              {/* Recents - Collapsible */}
+              {ungroupedAnalyses.filter((a) => !a.isFavorite).length > 0 && (
+                <div className="mt-4">
+                  <button
+                    onClick={() => setRecentsOpen(!recentsOpen)}
+                    className="w-full px-3 py-2 flex items-center justify-between hover:bg-purple-50/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-charcoal/50" />
+                      {sidebarOpen && (
+                        <span className="text-xs font-medium text-charcoal/60 uppercase tracking-wider">
+                          Recents
+                        </span>
+                      )}
+                    </div>
+                    {sidebarOpen && (
+                      <ChevronDown
+                        className={cn(
+                          'w-4 h-4 text-charcoal/40 transition-transform',
+                          recentsOpen ? 'rotate-0' : '-rotate-90'
+                        )}
+                      />
+                    )}
+                  </button>
+                  <AnimatePresence>
+                    {recentsOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-2 space-y-1">
+                          {ungroupedAnalyses
+                            .filter((a) => !a.isFavorite)
+                            .map((analysis) => (
+                              <AnalysisItem
+                                key={analysis.id}
+                                analysis={analysis}
+                                isActive={analysis.id === activeAnalysisId}
+                                isInComparison={isInComparison(analysis.id)}
+                                isCollapsed={!sidebarOpen}
+                                onSelect={() => handleSelectAnalysis(analysis.id)}
+                                onToggleFavorite={() => toggleAnalysisFavorite(analysis.id)}
+                                onDelete={() => deleteAnalysis(analysis.id)}
+                                onDuplicate={() => duplicateAnalysis(analysis.id)}
+                                onRename={(name) => handleRenameAnalysis(analysis.id, name)}
+                                onToggleComparison={() => toggleInComparison(analysis.id)}
+                                onMoveToProject={(projectId) =>
+                                  moveAnalysisToProject(analysis.id, projectId)
+                                }
+                                projects={projects.map((p) => ({
+                                  id: p.id,
+                                  name: p.name,
+                                  color: p.color,
+                                }))}
+                              />
+                            ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               )}
             </div>
