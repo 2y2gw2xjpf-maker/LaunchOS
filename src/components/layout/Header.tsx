@@ -98,7 +98,7 @@ export const Header = ({ className }: HeaderProps) => {
   const handleCTAClick = () => {
     setMobileMenuOpen(false);
     if (user) {
-      navigate('/tier-selection');
+      navigate('/dashboard');
     } else {
       navigate('/login');
     }

@@ -311,7 +311,7 @@ export const PricingSection = () => {
                 {/* CTA Button */}
                 <div className="p-5 pt-0">
                   <Link
-                    to={isFree ? '/tier-selection' : '/pricing'}
+                    to={isFree ? '/dashboard' : '/pricing'}
                     onClick={() => window.scrollTo(0, 0)}
                     className={cn(
                       'inline-flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-semibold transition-all duration-300 group',

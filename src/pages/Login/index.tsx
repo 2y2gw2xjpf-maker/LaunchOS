@@ -37,7 +37,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = (location.state as { from?: Location })?.from?.pathname || '/app';
+  const from = (location.state as { from?: Location })?.from?.pathname || '/dashboard';
 
   React.useEffect(() => {
     if (user) {
@@ -104,7 +104,7 @@ export function LoginPage() {
             Du kannst LaunchOS im Demo-Modus testen ohne dich anzumelden.
           </p>
           <Link
-            to="/tier-selection"
+            to="/dashboard"
             className="inline-flex items-center justify-center w-full px-6 py-4 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold rounded-2xl transition-all shadow-lg shadow-purple-500/25"
           >
             Demo starten

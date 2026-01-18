@@ -8,6 +8,7 @@ import { VentureProvider } from '@/contexts/VentureContext';
 
 // Lazy load pages for better performance
 const LandingPage = React.lazy(() => import('@/pages/Landing'));
+const DashboardPage = React.lazy(() => import('@/pages/Dashboard'));
 const TierSelectionPage = React.lazy(() => import('@/pages/TierSelection'));
 const WhatsNextPage = React.lazy(() => import('@/pages/WhatsNext'));
 const ValuationPage = React.lazy(() => import('@/pages/Valuation'));
@@ -87,6 +88,7 @@ export const Router = () => {
               <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
 
               {/* Protected App Routes - require authentication */}
+              <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
               <Route path="/tier-selection" element={<ProtectedRoute><TierSelectionPage /></ProtectedRoute>} />
               <Route path="/whats-next" element={<ProtectedRoute><WhatsNextPage /></ProtectedRoute>} />
               <Route path="/valuation" element={<ProtectedRoute><ValuationPage /></ProtectedRoute>} />
@@ -120,7 +122,8 @@ export const Router = () => {
               <Route path="/data-room/view/:token" element={<PublicDataRoomPage />} />
 
               {/* App prefixed routes - also protected */}
-              <Route path="/app" element={<ProtectedRoute><Navigate to="/tier-selection" replace /></ProtectedRoute>} />
+              <Route path="/app" element={<ProtectedRoute><Navigate to="/dashboard" replace /></ProtectedRoute>} />
+              <Route path="/app/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
               <Route path="/app/journey" element={<ProtectedRoute><JourneyPage /></ProtectedRoute>} />
               <Route path="/app/valuation" element={<ProtectedRoute><ValuationPage /></ProtectedRoute>} />
               <Route path="/app/whats-next" element={<ProtectedRoute><WhatsNextPage /></ProtectedRoute>} />

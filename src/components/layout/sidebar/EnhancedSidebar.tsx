@@ -21,6 +21,7 @@ import {
   Rocket,
   MoreHorizontal,
   X,
+  LayoutDashboard,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useStore } from '@/store';
@@ -87,6 +88,7 @@ export const EnhancedSidebar = () => {
 
   // Only show on certain pages
   const showSidebar =
+    location.pathname.startsWith('/dashboard') ||
     location.pathname.startsWith('/tier-selection') ||
     location.pathname.startsWith('/whats-next') ||
     location.pathname.startsWith('/valuation') ||
@@ -136,7 +138,7 @@ export const EnhancedSidebar = () => {
     resetValuation?.();
     setHasUnsavedChanges(false);
     // Navigate to the start
-    navigate('/tier-selection');
+    navigate('/dashboard');
   };
 
   const handleSaveAndNew = async (name: string) => {
@@ -178,24 +180,24 @@ export const EnhancedSidebar = () => {
 
   // All navigation items for desktop sidebar
   const navItems = [
-    { name: 'Daten-Level', href: '/tier-selection', icon: Layers },
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Founders Journey', href: '/journey', icon: Map },
-    { name: 'Was tun?', href: '/whats-next', icon: Compass },
-    { name: 'Vergleich', href: '/compare', icon: GitCompare },
     { name: 'Bewertung', href: '/valuation', icon: Calculator },
-    { name: 'Dokumente', href: '/deliverables', icon: FolderOpen },
     { name: "Builder's Toolkit", href: '/toolkit', icon: Wrench },
+    { name: 'Was tun?', href: '/whats-next', icon: Compass },
     { name: 'Investoren', href: '/investors', icon: Users },
     { name: 'Data Room', href: '/data-room', icon: Database },
+    { name: 'Dokumente', href: '/deliverables', icon: FolderOpen },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-    { name: 'Methodik', href: '/about/methodology', icon: FileText },
+    { name: 'Vergleich', href: '/compare', icon: GitCompare },
+    { name: 'Daten-Level', href: '/tier-selection', icon: Layers },
     { name: 'Launch Checklist', href: '/launch/checklist', icon: Rocket },
   ];
 
   // Mobile bottom nav: most important items for quick access
   const mobileNavItems = [
+    { name: 'Home', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Journey', href: '/journey', icon: Map },
-    { name: 'Was tun?', href: '/whats-next', icon: Compass },
     { name: 'Toolkit', href: '/toolkit', icon: Wrench },
     { name: 'Bewertung', href: '/valuation', icon: Calculator },
   ];
