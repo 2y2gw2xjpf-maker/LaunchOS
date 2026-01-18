@@ -3,33 +3,37 @@ interface LogoProps {
   showText?: boolean;
 }
 
-// LaunchOS Logo Icon - Rakete mit Schweif
+// LaunchOS Logo Icon - Rakete mit geschwungenem Schweif (exakt wie im Branding)
 const LogoIcon = ({ size = 28 }: { size?: number }) => (
   <svg
     width={size}
     height={size}
-    viewBox="0 0 32 32"
+    viewBox="0 0 24 24"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    {/* Rakete */}
+    {/* Geschwungener Schweif */}
     <path
-      d="M20.5 4C16.5 4 13.5 7 11 11C9 14 8 17 8 19C8 21 9 22 11 22C13 22 16 21 19 19C23 16.5 26 13.5 26 9.5C26 6.5 23.5 4 20.5 4Z"
+      d="M3.5 20.5C3.5 20.5 6 18 8.5 15.5C11 13 13.5 11 13.5 11"
+      stroke="white"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+    />
+    {/* Raketen-Körper */}
+    <path
+      d="M13 11C13 11 14.5 9.5 16.5 7.5C18.5 5.5 20 4 20 4C20 4 20.5 6 19.5 8.5C18.5 11 16 14 13 17C10 20 7 21.5 7 21.5C7 21.5 8 19 9.5 16.5C11 14 13 11 13 11Z"
       fill="white"
     />
-    {/* Schweif/Flamme */}
+    {/* Flügel links */}
     <path
-      d="M6 26C6 26 7 23 9 21C10.5 19.5 12 19 12 19C12 19 11.5 20.5 10 22C8 24 6 26 6 26Z"
+      d="M7 14C7 14 5 15.5 4 17C5.5 16 7 14 7 14Z"
       fill="white"
-      opacity="0.9"
     />
+    {/* Flügel unten */}
     <path
-      d="M4 28C4 28 5.5 25 8 23C9.5 21.5 11 21 11 21C11 21 10 23 8 25C6 27 4 28 4 28Z"
+      d="M10 17C10 17 8.5 19 7 20C8 18.5 10 17 10 17Z"
       fill="white"
-      opacity="0.7"
     />
-    {/* Fenster */}
-    <circle cx="18" cy="12" r="2.5" fill="#9333EA" />
   </svg>
 );
 
