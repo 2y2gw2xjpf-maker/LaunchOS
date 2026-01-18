@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   FolderPlus,
   Star,
   GitCompare,
@@ -22,6 +23,8 @@ import {
   MoreHorizontal,
   X,
   LayoutDashboard,
+  CircleHelp,
+  ClipboardCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useStore } from '@/store';
@@ -178,28 +181,95 @@ export const EnhancedSidebar = () => {
     : getUngroupedAnalyses();
   const favoriteAnalyses = filteredAnalyses.filter((a) => a.isFavorite);
 
-  // All navigation items for desktop sidebar
-  const navItems = [
+  // Navigation groups for categorized sidebar
+  const navigationGroups = [
+    {
+      id: 'start',
+      label: 'START',
+      icon: Compass,
+      items: [
+        { label: 'Founders Journey', href: '/journey', icon: Rocket },
+        { label: 'Was tun?', href: '/whats-next', icon: CircleHelp },
+      ],
+    },
+    {
+      id: 'build',
+      label: 'BUILD',
+      icon: Wrench,
+      items: [
+        { label: "Builder's Toolkit", href: '/toolkit', icon: Wrench },
+        { label: 'Launch Checklist', href: '/launch/checklist', icon: ClipboardCheck },
+      ],
+    },
+    {
+      id: 'validate',
+      label: 'VALIDATE',
+      icon: Calculator,
+      items: [
+        { label: 'Bewertung', href: '/valuation', icon: Calculator },
+        { label: 'Methodik', href: '/about/methodology', icon: GitCompare },
+        { label: 'Daten-Level', href: '/tier-selection', icon: Layers },
+      ],
+    },
+    {
+      id: 'fundraise',
+      label: 'FUNDRAISE',
+      icon: Users,
+      items: [
+        { label: 'Investoren', href: '/investors', icon: Users },
+        { label: 'Data Room', href: '/data-room', icon: Database },
+        { label: 'Dokumente', href: '/deliverables', icon: FileText },
+      ],
+    },
+    {
+      id: 'insights',
+      label: 'INSIGHTS',
+      icon: BarChart3,
+      items: [
+        { label: 'Analytics', href: '/analytics', icon: BarChart3 },
+      ],
+    },
+  ];
+
+  // State for open groups - default open first two
+  const [openGroups, setOpenGroups] = React.useState<string[]>(['start', 'build']);
+
+  // Toggle group open/closed
+  const toggleGroup = (groupId: string) => {
+    setOpenGroups((prev) =>
+      prev.includes(groupId) ? prev.filter((id) => id !== groupId) : [...prev, groupId]
+    );
+  };
+
+  // Check if a path is active
+  const isActivePath = (href: string) =>
+    location.pathname === href || location.pathname.startsWith(href + '/');
+
+  // Auto-open group when active page is inside it
+  React.useEffect(() => {
+    navigationGroups.forEach((group) => {
+      if (group.items.some((item) => isActivePath(item.href))) {
+        if (!openGroups.includes(group.id)) {
+          setOpenGroups((prev) => [...prev, group.id]);
+        }
+      }
+    });
+  }, [location.pathname]);
+
+  // All navigation items for mobile "more" menu
+  const allNavItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Founders Journey', href: '/journey', icon: Map },
-    { name: 'Bewertung', href: '/valuation', icon: Calculator },
-    { name: "Builder's Toolkit", href: '/toolkit', icon: Wrench },
-    { name: 'Was tun?', href: '/whats-next', icon: Compass },
-    { name: 'Investoren', href: '/investors', icon: Users },
-    { name: 'Data Room', href: '/data-room', icon: Database },
-    { name: 'Dokumente', href: '/deliverables', icon: FolderOpen },
-    { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-    { name: 'Vergleich', href: '/compare', icon: GitCompare },
-    { name: 'Daten-Level', href: '/tier-selection', icon: Layers },
-    { name: 'Launch Checklist', href: '/launch/checklist', icon: Rocket },
+    ...navigationGroups.flatMap((g) =>
+      g.items.map((item) => ({ name: item.label, href: item.href, icon: item.icon }))
+    ),
   ];
 
   // Mobile bottom nav: most important items for quick access
   const mobileNavItems = [
     { name: 'Home', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Journey', href: '/journey', icon: Map },
+    { name: 'Journey', href: '/journey', icon: Rocket },
     { name: 'Toolkit', href: '/toolkit', icon: Wrench },
-    { name: 'Bewertung', href: '/valuation', icon: Calculator },
+    { name: 'Investoren', href: '/investors', icon: Users },
   ];
 
   return (
@@ -427,37 +497,128 @@ export const EnhancedSidebar = () => {
           </div>
         )}
 
-        {/* Navigation */}
-        <div className="border-t border-purple-100 py-2">
-          {navItems.map((item) => {
-            const isActive = location.pathname.startsWith(item.href);
-            const Icon = item.icon;
+        {/* Navigation - Categorized */}
+        <div className="border-t border-purple-100 py-2 overflow-y-auto flex-1">
+          {/* Dashboard - Always visible at top */}
+          <button
+            onClick={() => navigate('/dashboard')}
+            className={cn(
+              'w-full flex items-center gap-3 px-4 py-2.5 transition-colors',
+              isActivePath('/dashboard')
+                ? 'text-purple-600 bg-purple-50'
+                : 'text-charcoal/70 hover:bg-purple-50'
+            )}
+          >
+            <LayoutDashboard className="w-5 h-5" />
+            <AnimatePresence>
+              {sidebarOpen && (
+                <motion.span
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }}
+                  className="text-sm font-medium whitespace-nowrap"
+                >
+                  Dashboard
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
 
-            return (
-              <button
-                key={item.name}
-                onClick={() => navigate(item.href)}
-                className={cn(
-                  'w-full flex items-center gap-3 px-4 py-2 transition-colors',
-                  isActive ? 'text-purple-600 bg-purple-50' : 'text-charcoal/60 hover:bg-purple-50'
-                )}
-              >
-                <Icon className="w-5 h-5" />
-                <AnimatePresence>
-                  {sidebarOpen && (
-                    <motion.span
-                      initial={{ opacity: 0, width: 0 }}
-                      animate={{ opacity: 1, width: 'auto' }}
-                      exit={{ opacity: 0, width: 0 }}
-                      className="text-sm font-medium whitespace-nowrap"
-                    >
-                      {item.name}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </button>
-            );
-          })}
+          {/* Divider */}
+          {sidebarOpen && <div className="h-px bg-purple-100 mx-4 my-2" />}
+
+          {/* Category Groups */}
+          <div className="space-y-1">
+            {navigationGroups.map((group) => {
+              const isGroupOpen = openGroups.includes(group.id);
+              const GroupIcon = group.icon;
+              const hasActiveItem = group.items.some((item) => isActivePath(item.href));
+
+              return (
+                <div key={group.id}>
+                  {/* Category Header */}
+                  <button
+                    onClick={() => toggleGroup(group.id)}
+                    className={cn(
+                      'w-full flex items-center justify-between px-4 py-2 transition-colors',
+                      hasActiveItem ? 'text-purple-600' : 'text-charcoal/50 hover:text-charcoal/70'
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <GroupIcon className="w-4 h-4" />
+                      <AnimatePresence>
+                        {sidebarOpen && (
+                          <motion.span
+                            initial={{ opacity: 0, width: 0 }}
+                            animate={{ opacity: 1, width: 'auto' }}
+                            exit={{ opacity: 0, width: 0 }}
+                            className="text-xs font-semibold uppercase tracking-wider whitespace-nowrap"
+                          >
+                            {group.label}
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                    {sidebarOpen && (
+                      <ChevronDown
+                        className={cn(
+                          'w-4 h-4 transition-transform',
+                          isGroupOpen ? 'rotate-0' : '-rotate-90'
+                        )}
+                      />
+                    )}
+                  </button>
+
+                  {/* Category Items */}
+                  <AnimatePresence>
+                    {isGroupOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="overflow-hidden"
+                      >
+                        <div className={cn('space-y-0.5', sidebarOpen ? 'ml-4' : '')}>
+                          {group.items.map((item) => {
+                            const ItemIcon = item.icon;
+                            const isActive = isActivePath(item.href);
+
+                            return (
+                              <button
+                                key={item.href}
+                                onClick={() => navigate(item.href)}
+                                className={cn(
+                                  'w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-colors',
+                                  isActive
+                                    ? 'bg-purple-100 text-purple-700 font-medium'
+                                    : 'text-charcoal/60 hover:bg-purple-50 hover:text-charcoal'
+                                )}
+                              >
+                                <ItemIcon className="w-4 h-4" />
+                                <AnimatePresence>
+                                  {sidebarOpen && (
+                                    <motion.span
+                                      initial={{ opacity: 0, width: 0 }}
+                                      animate={{ opacity: 1, width: 'auto' }}
+                                      exit={{ opacity: 0, width: 0 }}
+                                      className="text-sm whitespace-nowrap"
+                                    >
+                                      {item.label}
+                                    </motion.span>
+                                  )}
+                                </AnimatePresence>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
       </motion.aside>
@@ -545,13 +706,13 @@ export const EnhancedSidebar = () => {
               {/* All Navigation Items */}
               <div className="overflow-y-auto overscroll-contain" style={{ maxHeight: 'calc(75vh - 100px)' }}>
                 <div className="grid grid-cols-3 gap-3 p-4">
-                  {navItems.map((item) => {
+                  {allNavItems.map((item) => {
                     const isActive = location.pathname.startsWith(item.href);
                     const Icon = item.icon;
 
                     return (
                       <button
-                        key={item.name}
+                        key={item.href}
                         onClick={() => {
                           navigate(item.href);
                           setShowMobileMenu(false);
