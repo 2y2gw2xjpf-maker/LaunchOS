@@ -1,40 +1,17 @@
+import { Rocket } from 'lucide-react';
+
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
   showText?: boolean;
 }
 
-// LaunchOS Logo Icon - Rakete mit geschwungenem Schweif (exakt wie im Branding)
+// LaunchOS Logo Icon - Nutzt das Lucide Rocket Icon (wie im Footer)
 const LogoIcon = ({ size = 28 }: { size?: number }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    {/* Geschwungener Schweif */}
-    <path
-      d="M3.5 20.5C3.5 20.5 6 18 8.5 15.5C11 13 13.5 11 13.5 11"
-      stroke="white"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-    />
-    {/* Raketen-Körper */}
-    <path
-      d="M13 11C13 11 14.5 9.5 16.5 7.5C18.5 5.5 20 4 20 4C20 4 20.5 6 19.5 8.5C18.5 11 16 14 13 17C10 20 7 21.5 7 21.5C7 21.5 8 19 9.5 16.5C11 14 13 11 13 11Z"
-      fill="white"
-    />
-    {/* Flügel links */}
-    <path
-      d="M7 14C7 14 5 15.5 4 17C5.5 16 7 14 7 14Z"
-      fill="white"
-    />
-    {/* Flügel unten */}
-    <path
-      d="M10 17C10 17 8.5 19 7 20C8 18.5 10 17 10 17Z"
-      fill="white"
-    />
-  </svg>
+  <Rocket
+    size={size}
+    className="text-white"
+    strokeWidth={2}
+  />
 );
 
 export function Logo({ size = 'md', showText = true }: LogoProps) {
