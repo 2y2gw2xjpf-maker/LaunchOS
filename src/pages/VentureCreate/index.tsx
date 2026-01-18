@@ -94,144 +94,191 @@ export function VentureCreatePage() {
       <Header />
       <EnhancedSidebar />
       <PageContainer withSidebar maxWidth="wide">
-        <div className="max-w-2xl mx-auto">
-          {/* Back Button */}
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/dashboard')}
-            className="mb-6"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Zurück zum Dashboard
-          </Button>
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/dashboard')}
+          className="mb-6"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Zurück zum Dashboard
+        </Button>
 
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-8"
-          >
-            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center">
-              <Rocket className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="font-display text-display-sm text-charcoal mb-2">
-              Neues Venture erstellen
-            </h1>
-            <p className="text-charcoal/60">
-              Starte mit den Basisdaten deines Startups
-            </p>
-          </motion.div>
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <h1 className="font-display text-display-sm text-charcoal mb-2">
+            Neues Venture erstellen
+          </h1>
+          <p className="text-charcoal/60">
+            Starte mit den Basisdaten deines Startups
+          </p>
+        </motion.div>
 
-          {/* Form Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <Card className="p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Name */}
-                <div>
-                  <label className="block text-sm font-medium text-charcoal mb-2">
-                    <Building2 className="w-4 h-4 inline mr-2" />
-                    Name deines Ventures *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="z.B. Mein Startup GmbH"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition-all"
-                    autoFocus
-                  />
-                </div>
-
-                {/* Industry */}
-                <div>
-                  <label className="block text-sm font-medium text-charcoal mb-2">
-                    <Briefcase className="w-4 h-4 inline mr-2" />
-                    Branche (optional)
-                  </label>
-                  <select
-                    value={formData.industry}
-                    onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition-all bg-white"
-                  >
-                    <option value="">Branche auswählen...</option>
-                    {INDUSTRIES.map((ind) => (
-                      <option key={ind.value} value={ind.value}>
-                        {ind.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Stage */}
-                <div>
-                  <label className="block text-sm font-medium text-charcoal mb-3">
-                    <Sparkles className="w-4 h-4 inline mr-2" />
-                    Phase
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {STAGES.map((stage) => (
-                      <button
-                        key={stage.value}
-                        type="button"
-                        onClick={() => setFormData({ ...formData, stage: stage.value as typeof formData.stage })}
-                        className={`p-4 rounded-xl border-2 text-left transition-all ${
-                          formData.stage === stage.value
-                            ? 'border-purple-500 bg-purple-50'
-                            : 'border-gray-200 hover:border-purple-200 bg-white'
-                        }`}
-                      >
-                        <p className={`font-medium ${formData.stage === stage.value ? 'text-purple-700' : 'text-charcoal'}`}>
-                          {stage.label}
-                        </p>
-                        <p className="text-xs text-charcoal/60 mt-1">{stage.description}</p>
-                      </button>
-                    ))}
+        {/* Two Column Layout like other pages */}
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Form Column */}
+          <div className="lg:col-span-2">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <Card className="p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                    <Rocket className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-charcoal">Venture Details</h2>
+                    <p className="text-sm text-charcoal/60">Grundlegende Informationen</p>
                   </div>
                 </div>
 
-                {/* Error */}
-                {error && (
-                  <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
-                    {error}
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Name */}
+                  <div>
+                    <label className="block text-sm font-medium text-charcoal mb-2">
+                      <Building2 className="w-4 h-4 inline mr-2" />
+                      Name deines Ventures *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="z.B. Mein Startup GmbH"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition-all"
+                      autoFocus
+                    />
                   </div>
-                )}
 
-                {/* Submit */}
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className="w-full py-4"
-                  disabled={!isValid || isSubmitting || contextLoading}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Erstelle Venture...
-                    </>
-                  ) : (
-                    <>
-                      <Rocket className="w-4 h-4 mr-2" />
-                      Venture erstellen
-                    </>
+                  {/* Industry */}
+                  <div>
+                    <label className="block text-sm font-medium text-charcoal mb-2">
+                      <Briefcase className="w-4 h-4 inline mr-2" />
+                      Branche (optional)
+                    </label>
+                    <select
+                      value={formData.industry}
+                      onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none transition-all bg-white"
+                    >
+                      <option value="">Branche auswählen...</option>
+                      {INDUSTRIES.map((ind) => (
+                        <option key={ind.value} value={ind.value}>
+                          {ind.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Stage */}
+                  <div>
+                    <label className="block text-sm font-medium text-charcoal mb-3">
+                      <Sparkles className="w-4 h-4 inline mr-2" />
+                      Phase
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {STAGES.map((stage) => (
+                        <button
+                          key={stage.value}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, stage: stage.value as typeof formData.stage })}
+                          className={`p-4 rounded-xl border-2 text-left transition-all ${
+                            formData.stage === stage.value
+                              ? 'border-purple-500 bg-purple-50'
+                              : 'border-gray-200 hover:border-purple-200 bg-white'
+                          }`}
+                        >
+                          <p className={`font-medium ${formData.stage === stage.value ? 'text-purple-700' : 'text-charcoal'}`}>
+                            {stage.label}
+                          </p>
+                          <p className="text-xs text-charcoal/60 mt-1">{stage.description}</p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Error */}
+                  {error && (
+                    <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+                      {error}
+                    </div>
                   )}
-                </Button>
-              </form>
-            </Card>
-          </motion.div>
 
-          {/* Info */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-center text-sm text-charcoal/50 mt-6"
-          >
-            Nach dem Erstellen kannst du weitere Details in der Daten-Eingabe hinzufügen.
-          </motion.p>
+                  {/* Submit */}
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="w-full py-4"
+                    disabled={!isValid || isSubmitting || contextLoading}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Erstelle Venture...
+                      </>
+                    ) : (
+                      <>
+                        <Rocket className="w-4 h-4 mr-2" />
+                        Venture erstellen
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </Card>
+            </motion.div>
+          </div>
+
+          {/* Sidebar Column */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-24 space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-100">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <h3 className="font-semibold text-charcoal">Nächste Schritte</h3>
+                  </div>
+                  <ul className="space-y-3 text-sm text-charcoal/70">
+                    <li className="flex items-start gap-2">
+                      <span className="w-5 h-5 rounded-full bg-purple-200 text-purple-700 flex items-center justify-center text-xs font-medium flex-shrink-0 mt-0.5">1</span>
+                      <span>Venture erstellen mit Basisdaten</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="w-5 h-5 rounded-full bg-purple-200 text-purple-700 flex items-center justify-center text-xs font-medium flex-shrink-0 mt-0.5">2</span>
+                      <span>Detaillierte Daten im Tier-Formular eingeben</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="w-5 h-5 rounded-full bg-purple-200 text-purple-700 flex items-center justify-center text-xs font-medium flex-shrink-0 mt-0.5">3</span>
+                      <span>Personalisierte Empfehlungen erhalten</span>
+                    </li>
+                  </ul>
+                </Card>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <Card className="p-6">
+                  <h3 className="font-semibold text-charcoal mb-2">Tipp</h3>
+                  <p className="text-sm text-charcoal/60">
+                    Je mehr Informationen du teilst, desto genauer werden unsere Analysen und Empfehlungen für dein Startup.
+                  </p>
+                </Card>
+              </motion.div>
+            </div>
+          </div>
         </div>
       </PageContainer>
     </div>
