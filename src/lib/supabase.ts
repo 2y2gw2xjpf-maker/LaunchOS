@@ -52,6 +52,7 @@ export interface UserAnalysis {
   id: string;
   user_id: string;
   project_id: string | null;
+  venture_id: string | null;  // Verknüpfung zum Venture (1:n)
   name: string;
   type: 'valuation' | 'whatsnext' | 'actionplan' | 'full';
   data: Record<string, unknown>;
@@ -188,11 +189,26 @@ export const getAnalysisByProject = async (
   return (data || []) as UserAnalysis[];
 };
 
+export const getAnalysesByVenture = async (
+  userId: string,
+  ventureId: string
+): Promise<UserAnalysis[]> => {
+  const { data, error } = await supabase
+    .from('analyses')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('venture_id', ventureId)
+    .order('updated_at', { ascending: false });
+  if (error) throw error;
+  return (data || []) as UserAnalysis[];
+};
+
 export const createAnalysis = async (analysis: {
   user_id: string;
   name: string;
   type: 'valuation' | 'whatsnext' | 'actionplan' | 'full';
   project_id?: string | null;
+  venture_id?: string | null;
   data?: Record<string, unknown>;
 }): Promise<UserAnalysis> => {
   const { data, error } = await supabase.from('analyses').insert(analysis).select().single();
@@ -205,6 +221,7 @@ export const updateAnalysis = async (
   updates: {
     name?: string;
     project_id?: string | null;
+    venture_id?: string | null;
     data?: Record<string, unknown>;
     is_favorite?: boolean;
     position?: number;

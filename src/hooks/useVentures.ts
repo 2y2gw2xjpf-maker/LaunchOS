@@ -70,6 +70,8 @@ export interface Venture {
   // Tier-basierte Daten
   tierLevel?: number;
   tierData?: TierData;
+  // Anzahl verknüpfter Analysen (wird beim Laden berechnet)
+  analysesCount?: number;
 }
 
 export interface UseVenturesReturn {
