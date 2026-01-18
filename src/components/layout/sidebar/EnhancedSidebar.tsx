@@ -189,8 +189,9 @@ export const EnhancedSidebar = () => {
       label: 'START',
       icon: Compass,
       items: [
-        { label: 'Founders Journey', href: '/journey', icon: Rocket },
+        { label: 'Daten-Level', href: '/tier-selection', icon: Layers },
         { label: 'Was tun?', href: '/whats-next', icon: CircleHelp },
+        { label: 'Founders Journey', href: '/journey', icon: Rocket },
       ],
     },
     {
@@ -208,8 +209,8 @@ export const EnhancedSidebar = () => {
       icon: Calculator,
       items: [
         { label: 'Bewertung', href: '/valuation', icon: Calculator },
-        { label: 'Methodik', href: '/about/methodology', icon: GitCompare },
-        { label: 'Daten-Level', href: '/tier-selection', icon: Layers },
+        { label: 'Szenario-Vergleich', href: '/compare', icon: GitCompare },
+        { label: 'Methodik', href: '/about/methodology', icon: Map },
       ],
     },
     {
