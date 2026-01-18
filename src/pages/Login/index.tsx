@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Mail, ArrowRight, Eye, EyeOff, AlertCircle, CheckCircle, Sparkles } from 'lucide-react';
 import { useAuth } from '@/components/auth';
 import { cn } from '@/lib/utils/cn';
+import { Logo, LogoIcon } from '@/components/Logo';
 
 // Apple Icon Component
 const AppleIcon = ({ className }: { className?: string }) => (
@@ -149,7 +150,7 @@ export function LoginPage() {
             {/* Logo */}
             <div className="flex items-center gap-3 mb-12">
               <div className="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
-                <span className="text-2xl">🚀</span>
+                <LogoIcon size={28} />
               </div>
               <span className="text-2xl font-bold text-white">LaunchOS</span>
             </div>
@@ -200,11 +201,8 @@ export function LoginPage() {
         >
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-8">
-            <Link to="/" className="inline-flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-500 rounded-xl flex items-center justify-center">
-                <span className="text-xl">🚀</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">LaunchOS</span>
+            <Link to="/" className="inline-flex items-center justify-center">
+              <Logo size="md" />
             </Link>
           </div>
 
