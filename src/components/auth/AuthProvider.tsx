@@ -77,6 +77,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return;
     }
 
+    // Timeout fallback - ensure loading is set to false after 5 seconds max
+    const timeoutId = setTimeout(() => {
+      console.warn('[Auth] Session check timeout - setting loading to false');
+      setLoading(false);
+    }, 5000);
+
     // Check for pending signout from previous session
     const pendingSignout = localStorage.getItem('launchos-pending-signout');
     if (pendingSignout === 'true') {
@@ -87,6 +93,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      clearTimeout(timeoutId);
       console.log('[Auth] Initial session check:', session ? 'Found' : 'None');
       setSession(session);
       setUser(session?.user ?? null);
@@ -95,6 +102,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
       setLoading(false);
     }).catch((err) => {
+      clearTimeout(timeoutId);
       console.error('[Auth] Error getting session:', err);
       setLoading(false);
     });
@@ -150,6 +158,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     });
 
     return () => {
+      clearTimeout(timeoutId);
       subscription.unsubscribe();
     };
   }, [isConfigured, fetchProfile]);

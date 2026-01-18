@@ -2,6 +2,7 @@ import * as React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, ProtectedRoute, AuthCallback } from '@/components/auth';
 import { ErrorBoundary, ErrorPage } from '@/components/common/ErrorBoundary';
+import { ScrollToTop } from '@/components/common';
 import { ChatWidget } from '@/components/chat/ChatWidget';
 import { VentureProvider } from '@/contexts/VentureContext';
 
@@ -60,6 +61,7 @@ export const Router = () => {
   return (
     <ErrorBoundary>
       <BrowserRouter>
+        <ScrollToTop />
         <AuthProvider>
           <VentureProvider>
             <React.Suspense fallback={<PageLoader />}>
