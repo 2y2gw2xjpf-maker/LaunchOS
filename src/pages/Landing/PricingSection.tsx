@@ -143,9 +143,9 @@ export const PricingSection = () => {
   ], []);
 
   const tierGradients: Record<string, string> = {
-    free: 'from-gray-600 to-gray-700',
+    free: 'from-purple-500 to-purple-600',
     pro: 'from-purple-600 to-pink-500',
-    team: 'from-purple-700 to-purple-900',
+    team: 'from-purple-700 to-pink-600',
   };
 
   const tierIcons: Record<string, React.ReactNode> = {
