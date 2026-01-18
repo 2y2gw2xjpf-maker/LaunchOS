@@ -15,7 +15,16 @@ COMMENT ON COLUMN analyses.venture_id IS 'Verknüpfung zur Venture (optional) - 
 
 -- RLS Policy für venture-basierte Abfragen
 -- Nutzer können nur Analysen sehen, deren Venture ihnen gehört
-CREATE POLICY IF NOT EXISTS "Users can view analyses of their ventures"
+-- DROP falls bereits existiert, dann neu erstellen
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "Users can view analyses of their ventures" ON analyses;
+EXCEPTION WHEN undefined_object THEN
+  -- Policy existierte nicht, das ist OK
+END;
+$$;
+
+CREATE POLICY "Users can view analyses of their ventures"
 ON analyses FOR SELECT
 USING (
   venture_id IS NULL
