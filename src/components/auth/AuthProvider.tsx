@@ -77,11 +77,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return;
     }
 
-    // Timeout fallback - ensure loading is set to false after 5 seconds max
+    // Timeout fallback - ensure loading is set to false after 3 seconds max
+    // This prevents infinite loading if Supabase connection hangs
     const timeoutId = setTimeout(() => {
       console.warn('[Auth] Session check timeout - setting loading to false');
       setLoading(false);
-    }, 5000);
+    }, 3000);
 
     // Check for pending signout from previous session
     const pendingSignout = localStorage.getItem('launchos-pending-signout');
