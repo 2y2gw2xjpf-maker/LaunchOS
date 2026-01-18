@@ -133,15 +133,17 @@ export const Header = ({ className }: HeaderProps) => {
         className
       )}
     >
-      <nav className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link to="/" onClick={() => window.scrollTo(0, 0)}>
-            <Logo size="md" />
-          </Link>
+      <nav className="w-full px-6">
+        <div className="flex items-center h-20">
+          {/* Logo - Links */}
+          <div className="flex-shrink-0">
+            <Link to="/" onClick={() => window.scrollTo(0, 0)}>
+              <Logo size="md" />
+            </Link>
+          </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          {/* Desktop Navigation - Zentriert */}
+          <div className="hidden md:flex items-center justify-center gap-8 flex-1">
             {navigation.map((item) => (
               <button
                 key={item.name}
@@ -158,8 +160,8 @@ export const Header = ({ className }: HeaderProps) => {
             ))}
           </div>
 
-          {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Desktop CTA - Rechts */}
+          <div className="hidden md:flex items-center gap-4 flex-shrink-0">
             {/* Venture Switcher - nur wenn eingeloggt und nicht auf Landing */}
             {user && !isLandingPage && (
               <VentureSwitcher
