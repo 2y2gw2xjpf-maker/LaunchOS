@@ -18,7 +18,9 @@ import {
   Circle,
   TrendingUp,
   Sparkles,
+  ChevronDown,
 } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useVentureContext } from '@/contexts/VentureContext';
@@ -28,6 +30,9 @@ export function DashboardPage() {
   const { user } = useAuth();
   const { activeVenture } = useVentureContext();
   const { contacts } = useInvestorCRM();
+
+  // State für Nächste Schritte - default eingeklappt
+  const [nextStepsOpen, setNextStepsOpen] = React.useState(false);
 
   // Berechne Stats
   const investorCount = contacts?.length || 0;
@@ -230,63 +235,86 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* Nächste Schritte - Volle Breite */}
+        {/* Nächste Schritte - Collapsible, default eingeklappt */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-charcoal mb-4">
-            Nächste Schritte
-          </h2>
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-purple-100 p-6">
-            <div className="relative">
-              {/* Verbindungslinie */}
-              <div className="absolute left-[11px] top-6 bottom-6 w-0.5 bg-purple-200" />
+          <button
+            onClick={() => setNextStepsOpen(!nextStepsOpen)}
+            className="w-full flex items-center justify-between mb-4 group"
+          >
+            <h2 className="text-lg font-semibold text-charcoal">
+              Nächste Schritte
+              <span className="ml-2 text-sm font-normal text-charcoal/50">
+                ({nextSteps.filter((s) => s.done).length}/{nextSteps.length} erledigt)
+              </span>
+            </h2>
+            <ChevronDown
+              className={`w-5 h-5 text-charcoal/40 transition-transform ${
+                nextStepsOpen ? 'rotate-0' : '-rotate-90'
+              }`}
+            />
+          </button>
+          <AnimatePresence>
+            {nextStepsOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-purple-100 p-6">
+                  <div className="relative">
+                    {/* Verbindungslinie */}
+                    <div className="absolute left-[11px] top-6 bottom-6 w-0.5 bg-purple-200" />
 
-              <div className="space-y-4">
-                {nextSteps.map((step, index) => (
-                  <div key={index} className="flex items-start gap-4 relative">
-                    {/* Punkt */}
-                    <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 z-10 ${
-                        step.done
-                          ? 'bg-purple-500'
-                          : 'bg-white border-2 border-purple-300'
-                      }`}
-                    >
-                      {step.done && (
-                        <CheckCircle2 className="w-4 h-4 text-white" />
-                      )}
-                    </div>
+                    <div className="space-y-4">
+                      {nextSteps.map((step, index) => (
+                        <div key={index} className="flex items-start gap-4 relative">
+                          {/* Punkt */}
+                          <div
+                            className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 z-10 ${
+                              step.done
+                                ? 'bg-purple-500'
+                                : 'bg-white border-2 border-purple-300'
+                            }`}
+                          >
+                            {step.done && (
+                              <CheckCircle2 className="w-4 h-4 text-white" />
+                            )}
+                          </div>
 
-                    {/* Text */}
-                    <div className="flex-1 pb-4">
-                      {step.href && !step.done ? (
-                        <Link
-                          to={step.href}
-                          className="font-medium text-charcoal hover:text-purple-600 transition-colors"
-                        >
-                          {step.text}
-                        </Link>
-                      ) : (
-                        <span
-                          className={
-                            step.done
-                              ? 'text-charcoal/40 line-through'
-                              : 'font-medium text-charcoal'
-                          }
-                        >
-                          {step.text}
-                        </span>
-                      )}
-                      {!step.done && step.href && (
-                        <p className="text-sm text-charcoal/50 mt-1">
-                          Klicke um zu starten →
-                        </p>
-                      )}
+                          {/* Text */}
+                          <div className="flex-1 pb-4">
+                            {step.href && !step.done ? (
+                              <Link
+                                to={step.href}
+                                className="block font-medium text-charcoal hover:text-purple-600 transition-colors"
+                              >
+                                {step.text}
+                                <span className="block text-sm text-purple-500 mt-1 hover:underline">
+                                  Klicke um zu starten →
+                                </span>
+                              </Link>
+                            ) : (
+                              <span
+                                className={
+                                  step.done
+                                    ? 'text-charcoal/40 line-through'
+                                    : 'font-medium text-charcoal'
+                                }
+                              >
+                                {step.text}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Venture + AI-Coach - Volle Breite, nebeneinander */}
