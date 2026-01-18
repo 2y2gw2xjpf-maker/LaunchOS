@@ -364,22 +364,19 @@ export const PricingSection = () => {
             >
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl border-2 border-purple-100 shadow-xl overflow-hidden">
                 {/* Header Row */}
-                <div className="grid grid-cols-4 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100">
-                  <div className="p-4 font-display font-semibold text-text-primary">Features</div>
+                <div className="grid grid-cols-4 bg-gradient-to-r from-purple-600 to-pink-500 border-b border-purple-100">
+                  <div className="p-4 font-display font-semibold text-white">Features</div>
                   {['Builder', 'Founder', 'Startup'].map((name, i) => (
                     <motion.div
                       key={name}
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.1 }}
-                      className={cn(
-                        'p-4 text-center font-display font-bold',
-                        name === 'Founder' ? 'text-purple-600' : 'text-text-primary'
-                      )}
+                      className="p-4 text-center font-display font-bold text-white"
                     >
                       {name}
                       {name === 'Founder' && (
-                        <span className="ml-2 px-2 py-0.5 bg-purple-100 text-purple-600 text-xs rounded-full">
+                        <span className="ml-2 px-2 py-0.5 bg-white/20 text-white text-xs rounded-full">
                           Empfohlen
                         </span>
                       )}
