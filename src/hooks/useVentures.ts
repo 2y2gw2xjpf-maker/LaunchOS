@@ -87,7 +87,7 @@ export interface UseVenturesReturn {
 // ==================== HOOK ====================
 
 export function useVentures(): UseVenturesReturn {
-  const { user, loading: authLoading } = useAuth();
+  const { user, session, loading: authLoading } = useAuth();
   const [ventures, setVentures] = useState<Venture[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -167,6 +167,7 @@ export function useVentures(): UseVenturesReturn {
   }, [user]);
 
   // Create new venture using direct fetch to bypass Supabase's global AbortController
+  // Uses session token from AuthContext (already in memory) to avoid async getSession() calls
   const createVenture = useCallback(async (data: Partial<Venture>): Promise<Venture | null> => {
     // Bessere Fehlerbehandlung
     if (!isSupabaseConfigured()) {
@@ -181,21 +182,19 @@ export function useVentures(): UseVenturesReturn {
       return null;
     }
 
+    // Get access token from session in context (no async call needed)
+    const accessToken = session?.access_token;
+    if (!accessToken) {
+      console.error('[Ventures] No access token in session');
+      setError('Sitzung abgelaufen. Bitte lade die Seite neu.');
+      return null;
+    }
+
     try {
       // Wenn erstes Venture, automatisch aktiv setzen
       const isFirstVenture = ventures.length === 0;
 
       console.log('[Ventures] Creating venture for user:', user.id);
-
-      // Get current session for auth token
-      const { data: sessionData } = await supabase.auth.getSession();
-      const accessToken = sessionData?.session?.access_token;
-
-      if (!accessToken) {
-        console.error('[Ventures] No access token available');
-        setError('Bitte melde dich erneut an');
-        return null;
-      }
 
       // Use direct fetch to bypass Supabase client's AbortController issues
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -217,6 +216,8 @@ export function useVentures(): UseVenturesReturn {
         branding: data.branding || null,
         is_active: isFirstVenture,
       };
+
+      console.log('[Ventures] Making direct API call to create venture');
 
       const response = await fetch(`${supabaseUrl}/rest/v1/ventures`, {
         method: 'POST',
@@ -258,7 +259,7 @@ export function useVentures(): UseVenturesReturn {
       }
       return null;
     }
-  }, [user, ventures.length, loadVentures]);
+  }, [user, session, ventures.length, loadVentures]);
 
   // Update venture
   const updateVenture = useCallback(async (id: string, data: Partial<Venture> & { tier_level?: number; tier_data?: TierData }): Promise<boolean> => {
