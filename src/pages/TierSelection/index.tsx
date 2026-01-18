@@ -5,14 +5,28 @@ import { Lock, CheckCircle } from 'lucide-react';
 import { Header, PageContainer } from '@/components/layout';
 import { EnhancedSidebar } from '@/components/layout/sidebar/EnhancedSidebar';
 import { useStore, TIER_CONFIGS } from '@/store';
+import { useVentureContext } from '@/contexts/VentureContext';
 import { TierCard } from './TierCard';
+import { VentureSelectionDialog } from './VentureSelectionDialog';
 import type { DataSharingTier } from '@/types';
+import type { Venture } from '@/hooks/useVentures';
 
 export const TierSelectionPage = () => {
   const navigate = useNavigate();
   const { selectedTier, setSelectedTier, setAcknowledgedPrivacy, setWizardData, setCurrentStep } = useStore();
+  const { setActiveVenture } = useVentureContext();
+
+  // State für Venture-Auswahl Dialog
+  const [showVentureDialog, setShowVentureDialog] = React.useState(false);
+  const [pendingTier, setPendingTier] = React.useState<DataSharingTier | null>(null);
 
   const handleSelectTier = (tier: DataSharingTier) => {
+    // Speichere Tier und zeige Venture-Auswahl Dialog
+    setPendingTier(tier);
+    setShowVentureDialog(true);
+  };
+
+  const finalizeTierSelection = (tier: DataSharingTier) => {
     setSelectedTier(tier);
     setAcknowledgedPrivacy(true);
     // Reset wizard to start fresh with new tier
@@ -27,8 +41,38 @@ export const TierSelectionPage = () => {
     });
     // Reset to first step
     setCurrentStep(0);
-    // Weiterleiten zum Daten-Eingabe-Formular
+  };
+
+  const handleSelectExistingVenture = async (venture: Venture) => {
+    if (!pendingTier) return;
+
+    // Setze das ausgewählte Venture als aktiv
+    await setActiveVenture(venture.id);
+
+    // Finalisiere Tier-Auswahl
+    finalizeTierSelection(pendingTier);
+
+    // Schließe Dialog und navigiere
+    setShowVentureDialog(false);
+    setPendingTier(null);
     navigate('/venture/data-input');
+  };
+
+  const handleCreateNewVenture = () => {
+    if (!pendingTier) return;
+
+    // Finalisiere Tier-Auswahl
+    finalizeTierSelection(pendingTier);
+
+    // Schließe Dialog und navigiere zur Venture-Erstellung
+    setShowVentureDialog(false);
+    setPendingTier(null);
+    navigate('/venture/create');
+  };
+
+  const handleCloseDialog = () => {
+    setShowVentureDialog(false);
+    setPendingTier(null);
   };
 
   return (
@@ -102,6 +146,14 @@ export const TierSelectionPage = () => {
           </motion.div>
         </motion.div>
       </PageContainer>
+
+      {/* Venture Selection Dialog */}
+      <VentureSelectionDialog
+        open={showVentureDialog}
+        onClose={handleCloseDialog}
+        onSelectExisting={handleSelectExistingVenture}
+        onCreateNew={handleCreateNewVenture}
+      />
     </div>
   );
 };

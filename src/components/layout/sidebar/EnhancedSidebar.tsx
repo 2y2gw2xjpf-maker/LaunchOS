@@ -26,9 +26,11 @@ import {
   CircleHelp,
   ClipboardCheck,
   Clock,
+  Building2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useStore } from '@/store';
+import { useVentureContext } from '@/contexts/VentureContext';
 import { Button } from '@/components/ui';
 import { SidebarHeader } from './SidebarHeader';
 import { ProjectFolder } from './ProjectFolder';
@@ -84,6 +86,12 @@ export const EnhancedSidebar = () => {
     resetWizard,
     resetValuation,
   } = useStore();
+
+  // Get ventures from context
+  const { ventures, activeVenture, setActiveVenture } = useVentureContext();
+
+  // State for Ventures collapsed
+  const [venturesOpen, setVenturesOpen] = React.useState(true);
 
   // Initialize history on mount
   React.useEffect(() => {
@@ -583,6 +591,98 @@ export const EnhancedSidebar = () => {
                     <FolderPlus className="w-4 h-4" />
                     Neuer Ordner
                   </button>
+                </div>
+              )}
+
+              {/* Ventures - Collapsible */}
+              {ventures.length > 0 && (
+                <div className="mt-4">
+                  <button
+                    onClick={() => setVenturesOpen(!venturesOpen)}
+                    className="w-full px-3 py-2 flex items-center justify-between hover:bg-purple-50/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-purple-500" />
+                      {sidebarOpen && (
+                        <span className="text-xs font-medium text-charcoal/60 uppercase tracking-wider">
+                          Ventures
+                        </span>
+                      )}
+                    </div>
+                    {sidebarOpen && (
+                      <ChevronDown
+                        className={cn(
+                          'w-4 h-4 text-charcoal/40 transition-transform',
+                          venturesOpen ? 'rotate-0' : '-rotate-90'
+                        )}
+                      />
+                    )}
+                  </button>
+                  <AnimatePresence>
+                    {venturesOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="overflow-visible"
+                      >
+                        <div className="px-2 space-y-1 pb-2">
+                          {ventures.map((venture) => (
+                            <button
+                              key={venture.id}
+                              onClick={() => {
+                                setActiveVenture(venture.id);
+                                navigate('/venture/data-input');
+                              }}
+                              className={cn(
+                                'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-left',
+                                activeVenture?.id === venture.id
+                                  ? 'bg-purple-100 text-purple-700'
+                                  : 'text-charcoal/70 hover:bg-purple-50'
+                              )}
+                            >
+                              <div className={cn(
+                                'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
+                                activeVenture?.id === venture.id
+                                  ? 'bg-purple-200'
+                                  : 'bg-gray-100'
+                              )}>
+                                <Building2 className="w-4 h-4" />
+                              </div>
+                              {sidebarOpen && (
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium truncate">
+                                    {venture.name}
+                                  </p>
+                                  <p className="text-xs text-charcoal/50 truncate">
+                                    {venture.industry || 'Keine Branche'}
+                                  </p>
+                                </div>
+                              )}
+                              {sidebarOpen && activeVenture?.id === venture.id && (
+                                <span className="px-1.5 py-0.5 text-[10px] bg-green-100 text-green-700 rounded-full">
+                                  Aktiv
+                                </span>
+                              )}
+                            </button>
+                          ))}
+                          {/* Button to create new venture */}
+                          <button
+                            onClick={() => navigate('/venture/create')}
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-charcoal/50 hover:bg-purple-50 hover:text-purple-600 transition-all"
+                          >
+                            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center border-2 border-dashed border-gray-200">
+                              <span className="text-lg">+</span>
+                            </div>
+                            {sidebarOpen && (
+                              <span className="text-sm">Neues Venture</span>
+                            )}
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               )}
 
