@@ -191,37 +191,36 @@ export const ProjectFolder = ({
                 Umbenennen
               </button>
 
-              <div className="relative">
-                <button
-                  onClick={() => setShowColorPicker(!showColorPicker)}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50"
-                >
-                  <Palette className="w-4 h-4" />
-                  Farbe andern
-                </button>
+              <button
+                onClick={() => setShowColorPicker(!showColorPicker)}
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50"
+              >
+                <Palette className="w-4 h-4" />
+                Farbe ändern
+              </button>
 
-                {showColorPicker && (
-                  <div className="absolute left-full top-0 ml-1 w-32 bg-white rounded-xl shadow-medium border border-brand-100 p-2">
-                    <div className="grid grid-cols-4 gap-1">
-                      {DEFAULT_PROJECT_COLORS.map((color) => (
-                        <button
-                          key={color}
-                          onClick={() => {
-                            onUpdateProject({ color });
-                            setShowMenu(false);
-                            setShowColorPicker(false);
-                          }}
-                          className={cn(
-                            'w-6 h-6 rounded transition-transform hover:scale-110',
-                            project.color === color && 'ring-2 ring-brand-600 ring-offset-1'
-                          )}
-                          style={{ backgroundColor: color }}
-                        />
-                      ))}
-                    </div>
+              {/* Color Picker - inline below button */}
+              {showColorPicker && (
+                <div className="px-3 py-2 border-t border-brand-50">
+                  <div className="grid grid-cols-8 gap-1.5">
+                    {DEFAULT_PROJECT_COLORS.map((color) => (
+                      <button
+                        key={color}
+                        onClick={() => {
+                          onUpdateProject({ color });
+                          setShowMenu(false);
+                          setShowColorPicker(false);
+                        }}
+                        className={cn(
+                          'w-5 h-5 rounded transition-transform hover:scale-110',
+                          project.color === color && 'ring-2 ring-purple-600 ring-offset-1'
+                        )}
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
               <div className="border-t border-brand-100 my-1" />
               <button

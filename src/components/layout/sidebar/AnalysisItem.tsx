@@ -255,54 +255,53 @@ export const AnalysisItem = ({
                   onToggleComparison();
                   setShowMenu(false);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50 text-left"
               >
-                <GitCompare className="w-4 h-4" />
-                {isInComparison ? 'Aus Vergleich entfernen' : 'Zum Vergleich hinzufügen'}
+                <GitCompare className="w-4 h-4 flex-shrink-0" />
+                <span className="text-left">{isInComparison ? 'Aus Vergleich entfernen' : 'Zum Vergleich hinzufügen'}</span>
               </button>
 
-              {/* Move to folder submenu */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowMoveMenu(!showMoveMenu)}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50"
-                >
-                  <FolderInput className="w-4 h-4" />
-                  Verschieben...
-                </button>
+              {/* Move to folder */}
+              <button
+                onClick={() => setShowMoveMenu(!showMoveMenu)}
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50 text-left"
+              >
+                <FolderInput className="w-4 h-4 flex-shrink-0" />
+                <span>Verschieben...</span>
+              </button>
 
-                {showMoveMenu && (
-                  <div className="absolute left-full top-0 ml-1 w-40 bg-white rounded-xl shadow-medium border border-brand-100 py-1">
+              {/* Move submenu - inline below */}
+              {showMoveMenu && (
+                <div className="border-t border-brand-50 py-1 bg-brand-50/50">
+                  <button
+                    onClick={() => {
+                      onMoveToProject(null);
+                      setShowMenu(false);
+                      setShowMoveMenu(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-1.5 text-sm text-charcoal hover:bg-brand-100 text-left"
+                  >
+                    Ohne Ordner
+                  </button>
+                  {projects.map((project) => (
                     <button
+                      key={project.id}
                       onClick={() => {
-                        onMoveToProject(null);
+                        onMoveToProject(project.id);
                         setShowMenu(false);
                         setShowMoveMenu(false);
                       }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50"
+                      className="w-full flex items-center gap-2 px-4 py-1.5 text-sm text-charcoal hover:bg-brand-100 text-left"
                     >
-                      Ohne Ordner
+                      <div
+                        className="w-3 h-3 rounded flex-shrink-0"
+                        style={{ backgroundColor: project.color }}
+                      />
+                      {project.name}
                     </button>
-                    {projects.map((project) => (
-                      <button
-                        key={project.id}
-                        onClick={() => {
-                          onMoveToProject(project.id);
-                          setShowMenu(false);
-                          setShowMoveMenu(false);
-                        }}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-charcoal hover:bg-brand-50"
-                      >
-                        <div
-                          className="w-3 h-3 rounded"
-                          style={{ backgroundColor: project.color }}
-                        />
-                        {project.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+                  ))}
+                </div>
+              )}
 
               <div className="border-t border-brand-100 my-1" />
               <button
