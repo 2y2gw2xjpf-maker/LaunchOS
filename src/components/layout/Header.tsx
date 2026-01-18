@@ -1,15 +1,10 @@
 import * as React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, User, Settings, CreditCard, LogOut, Mail } from 'lucide-react';
+import { Menu, X, Settings, CreditCard, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import { Button } from '@/components/ui';
 import { Logo } from '@/components/Logo';
 import { useAuth } from '@/components/auth';
-import { VentureSwitcher } from '@/components/ventures/VentureSwitcher';
-import { VentureModal } from '@/components/ventures/VentureModal';
-import { useOptionalVentureContext } from '@/contexts/VentureContext';
-import type { Venture } from '@/contexts/VentureContext';
 
 interface HeaderProps {
   className?: string;
@@ -18,13 +13,10 @@ interface HeaderProps {
 export const Header = ({ className }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = React.useState(false);
-  const [ventureModalOpen, setVentureModalOpen] = React.useState(false);
-  const [editingVenture, setEditingVenture] = React.useState<Venture | null>(null);
   const profileMenuRef = React.useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { user: authUser, profile, signOut } = useAuth();
-  const ventureContext = useOptionalVentureContext();
 
   // Check if we're on a landing/public page FIRST
   const isLandingPage = location.pathname === '/' || location.pathname === '/about' || location.pathname === '/pricing' || location.pathname === '/contact';
@@ -44,9 +36,7 @@ export const Header = ({ className }: HeaderProps) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Different navigation for landing vs app (isLandingPage already defined above)
-
-  // Landing page navigation (public) - nur Features, Preise, Kontakt
+  // Landing page navigation (public)
   const landingNavigation = [
     { name: 'Features', href: '/#features' },
     { name: 'Preise', href: '/#pricing' },
@@ -72,7 +62,6 @@ export const Header = ({ className }: HeaderProps) => {
   const handleNavigation = (href: string) => {
     setMobileMenuOpen(false);
     if (href.startsWith('/#')) {
-      // Handle anchor links on landing page
       const elementId = href.replace('/#', '');
       if (location.pathname === '/') {
         const element = document.getElementById(elementId);
@@ -94,177 +83,143 @@ export const Header = ({ className }: HeaderProps) => {
     }
   };
 
-  // Handle CTA click - go to login if not authenticated
+  // Handle CTA click
   const handleCTAClick = () => {
     setMobileMenuOpen(false);
-    if (user) {
-      navigate('/dashboard');
-    } else {
-      navigate('/login');
-    }
+    navigate(user ? '/dashboard' : '/login');
     window.scrollTo(0, 0);
-  };
-
-  // Handle venture creation
-  const handleCreateVenture = () => {
-    setEditingVenture(null);
-    setVentureModalOpen(true);
-  };
-
-  // Handle venture management/edit
-  const handleManageVenture = (ventureId: string) => {
-    const venture = ventureContext?.ventures.find(v => v.id === ventureId);
-    if (venture) {
-      setEditingVenture(venture);
-      setVentureModalOpen(true);
-    }
-  };
-
-  // Close venture modal
-  const handleCloseVentureModal = () => {
-    setVentureModalOpen(false);
-    setEditingVenture(null);
   };
 
   return (
     <header
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-lg border-b border-purple-100/50',
+        'fixed top-0 left-0 right-0 z-50 h-20 bg-white/80 backdrop-blur-lg border-b border-purple-100/50',
         className
       )}
     >
-      <nav className="w-full px-6">
-        <div className="flex items-center h-20">
-          {/* Logo - Links */}
-          <div className="flex-shrink-0">
-            <Link to="/" onClick={() => window.scrollTo(0, 0)}>
-              <Logo size="md" />
-            </Link>
-          </div>
+      <div className="h-full px-6 flex items-center justify-between">
+        {/* LINKS: Logo */}
+        <Link to="/" onClick={() => window.scrollTo(0, 0)} className="flex-shrink-0">
+          <Logo size="md" />
+        </Link>
 
-          {/* Desktop Navigation - Zentriert */}
-          <div className="hidden md:flex items-center justify-center gap-8 flex-1">
-            {navigation.map((item) => (
+        {/* MITTE: Navigation - WIRKLICH MITTIG */}
+        <nav className="hidden md:flex items-center gap-8">
+          {navigation.map((item) => (
+            <button
+              key={item.name}
+              onClick={() => handleNavigation(item.href)}
+              className={cn(
+                'text-sm font-medium transition-colors',
+                isActive(item.href)
+                  ? 'text-purple-600'
+                  : 'text-charcoal/70 hover:text-purple-600'
+              )}
+            >
+              {item.name}
+            </button>
+          ))}
+        </nav>
+
+        {/* RECHTS: User - KEIN LEERER BUTTON */}
+        <div className="hidden md:flex items-center gap-3 flex-shrink-0">
+          {user ? (
+            <div className="relative" ref={profileMenuRef}>
               <button
-                key={item.name}
-                onClick={() => handleNavigation(item.href)}
+                onClick={() => setProfileMenuOpen(!profileMenuOpen)}
                 className={cn(
-                  'text-sm font-medium transition-colors',
-                  isActive(item.href)
-                    ? 'text-purple-600'
-                    : 'text-text-secondary hover:text-purple-600'
+                  "flex items-center gap-2 px-3 py-2 rounded-xl transition-all",
+                  "hover:bg-purple-50",
+                  profileMenuOpen && "bg-purple-50"
                 )}
               >
-                {item.name}
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white font-semibold text-sm">
+                  {profile?.full_name?.charAt(0) || user.email?.charAt(0)?.toUpperCase() || 'U'}
+                </div>
+                <span className="text-sm font-medium text-charcoal max-w-[120px] truncate">
+                  {profile?.full_name || user.email?.split('@')[0]}
+                </span>
               </button>
-            ))}
-          </div>
 
-          {/* Desktop CTA - Rechts */}
-          <div className="hidden md:flex items-center gap-4 flex-shrink-0">
-            {/* Venture Switcher - nur wenn eingeloggt und nicht auf Landing */}
-            {user && !isLandingPage && (
-              <VentureSwitcher
-                onCreateNew={handleCreateVenture}
-                onManage={handleManageVenture}
-              />
-            )}
+              <AnimatePresence>
+                {profileMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-purple-100 py-2 z-50"
+                  >
+                    <div className="px-4 py-3 border-b border-purple-50">
+                      <p className="text-sm font-semibold text-charcoal truncate">
+                        {profile?.full_name || 'User'}
+                      </p>
+                      <p className="text-xs text-charcoal/60 truncate">{user.email}</p>
+                    </div>
 
-            {user ? (
-              <div className="relative" ref={profileMenuRef}>
-                <button
-                  onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                  className={cn(
-                    "flex items-center gap-2 px-3 py-2 rounded-xl transition-all",
-                    "hover:bg-purple-50",
-                    profileMenuOpen && "bg-purple-50"
-                  )}
-                >
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white font-semibold text-sm">
-                    {profile?.full_name?.charAt(0) || user.email?.charAt(0)?.toUpperCase() || 'U'}
-                  </div>
-                  <span className="text-sm font-medium text-charcoal max-w-[120px] truncate">
-                    {profile?.full_name || user.email?.split('@')[0]}
-                  </span>
-                </button>
+                    <div className="py-1">
+                      <Link
+                        to="/settings"
+                        onClick={() => { setProfileMenuOpen(false); window.scrollTo(0, 0); }}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-charcoal hover:bg-purple-50 transition-colors"
+                      >
+                        <Settings className="w-4 h-4 text-purple-500" />
+                        Einstellungen
+                      </Link>
+                      <Link
+                        to="/settings/billing"
+                        onClick={() => { setProfileMenuOpen(false); window.scrollTo(0, 0); }}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-charcoal hover:bg-purple-50 transition-colors"
+                      >
+                        <CreditCard className="w-4 h-4 text-purple-500" />
+                        Abrechnung
+                      </Link>
+                    </div>
 
-                <AnimatePresence>
-                  {profileMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-purple-100 py-2 z-50"
-                    >
-                      <div className="px-4 py-3 border-b border-purple-50">
-                        <p className="text-sm font-semibold text-charcoal truncate">
-                          {profile?.full_name || 'User'}
-                        </p>
-                        <p className="text-xs text-charcoal/60 truncate">{user.email}</p>
-                      </div>
-
-                      <div className="py-1">
-                        <Link
-                          to="/settings"
-                          onClick={() => { setProfileMenuOpen(false); window.scrollTo(0, 0); }}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-charcoal hover:bg-purple-50 transition-colors"
-                        >
-                          <Settings className="w-4 h-4 text-purple-500" />
-                          Einstellungen
-                        </Link>
-                        <Link
-                          to="/settings/billing"
-                          onClick={() => { setProfileMenuOpen(false); window.scrollTo(0, 0); }}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-charcoal hover:bg-purple-50 transition-colors"
-                        >
-                          <CreditCard className="w-4 h-4 text-purple-500" />
-                          Abrechnung
-                        </Link>
-                      </div>
-
-                      <div className="border-t border-purple-50 py-1">
-                        <button
-                          onClick={() => {
-                            setProfileMenuOpen(false);
-                            signOut();
-                          }}
-                          className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                        >
-                          <LogOut className="w-4 h-4" />
-                          Abmelden
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  onClick={() => window.scrollTo(0, 0)}
-                  className="text-sm font-medium text-text-secondary hover:text-purple-600 transition-colors"
-                >
-                  Anmelden
-                </Link>
-                <button onClick={handleCTAClick} className="btn-primary text-base px-6 py-3">
-                  <span>Kostenlos starten</span>
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Mobile menu button */}
-          <button
-            type="button"
-            className="md:hidden p-2 rounded-lg text-purple-600 hover:bg-purple-50"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+                    <div className="border-t border-purple-50 py-1">
+                      <button
+                        onClick={() => {
+                          setProfileMenuOpen(false);
+                          signOut();
+                        }}
+                        className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Abmelden
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                onClick={() => window.scrollTo(0, 0)}
+                className="text-sm font-medium text-charcoal/70 hover:text-purple-600 transition-colors"
+              >
+                Anmelden
+              </Link>
+              <button
+                onClick={handleCTAClick}
+                className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-lg transition-shadow"
+              >
+                Kostenlos starten
+              </button>
+            </>
+          )}
         </div>
-      </nav>
+
+        {/* Mobile menu button */}
+        <button
+          type="button"
+          className="md:hidden p-2 rounded-lg text-purple-600 hover:bg-purple-50"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
 
       {/* Mobile menu */}
       <motion.div
@@ -281,17 +236,16 @@ export const Header = ({ className }: HeaderProps) => {
                 'block w-full text-left px-4 py-3 rounded-xl font-medium transition-colors',
                 isActive(item.href)
                   ? 'bg-purple-50 text-purple-600'
-                  : 'text-text-secondary hover:bg-purple-50 hover:text-purple-600'
+                  : 'text-charcoal/70 hover:bg-purple-50 hover:text-purple-600'
               )}
             >
               {item.name}
             </button>
           ))}
 
-          {/* Mobile: User Menu wenn eingeloggt */}
+          {/* Mobile: User Menu */}
           {user ? (
             <div className="pt-4 border-t border-purple-100 space-y-2">
-              {/* User Info */}
               <div className="flex items-center gap-3 px-4 py-3 bg-purple-50 rounded-xl">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white font-semibold">
                   {profile?.full_name?.charAt(0) || user.email?.charAt(0)?.toUpperCase() || 'U'}
@@ -304,7 +258,6 @@ export const Header = ({ className }: HeaderProps) => {
                 </div>
               </div>
 
-              {/* Settings Links */}
               <Link
                 to="/settings"
                 onClick={() => { setMobileMenuOpen(false); window.scrollTo(0, 0); }}
@@ -322,7 +275,6 @@ export const Header = ({ className }: HeaderProps) => {
                 <span className="font-medium">Abrechnung</span>
               </Link>
 
-              {/* Logout */}
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
@@ -343,20 +295,16 @@ export const Header = ({ className }: HeaderProps) => {
               >
                 Anmelden
               </Link>
-              <button onClick={handleCTAClick} className="btn-primary w-full">
-                <span>Kostenlos starten</span>
+              <button
+                onClick={handleCTAClick}
+                className="w-full px-5 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-lg transition-shadow"
+              >
+                Kostenlos starten
               </button>
             </div>
           )}
         </div>
       </motion.div>
-
-      {/* Venture Modal */}
-      <VentureModal
-        isOpen={ventureModalOpen}
-        onClose={handleCloseVentureModal}
-        editVenture={editingVenture}
-      />
     </header>
   );
 };
