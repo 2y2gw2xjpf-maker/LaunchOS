@@ -13,9 +13,20 @@ const isAbortError = (err: unknown): boolean => {
     return err.name === 'AbortError' || err.message.includes('aborted');
   }
   if (typeof err === 'object' && err !== null) {
-    const errorObj = err as { message?: string; name?: string };
-    return errorObj.name === 'AbortError' ||
-           (typeof errorObj.message === 'string' && errorObj.message.includes('aborted'));
+    const errorObj = err as { message?: string; name?: string; code?: string; cause?: unknown };
+    // Check direct properties
+    if (errorObj.name === 'AbortError' ||
+        (typeof errorObj.message === 'string' && errorObj.message.includes('aborted'))) {
+      return true;
+    }
+    // Check Supabase error code
+    if (errorObj.code === 'PGRST301' || errorObj.code === 'FETCH_ERROR') {
+      return true;
+    }
+    // Check nested cause
+    if (errorObj.cause && isAbortError(errorObj.cause)) {
+      return true;
+    }
   }
   return false;
 };
@@ -155,7 +166,7 @@ export function useVentures(): UseVenturesReturn {
     }
   }, [user]);
 
-  // Create new venture
+  // Create new venture with retry logic
   const createVenture = useCallback(async (data: Partial<Venture>): Promise<Venture | null> => {
     // Bessere Fehlerbehandlung
     if (!isSupabaseConfigured()) {
@@ -170,65 +181,88 @@ export function useVentures(): UseVenturesReturn {
       return null;
     }
 
-    try {
-      // Wenn erstes Venture, automatisch aktiv setzen
-      const isFirstVenture = ventures.length === 0;
+    const maxRetries = 3;
+    let lastError: unknown = null;
 
-      console.log('[Ventures] Creating venture for user:', user.id, 'data:', data);
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        // Wenn erstes Venture, automatisch aktiv setzen
+        const isFirstVenture = ventures.length === 0;
 
-      const { data: newVenture, error } = await supabase
-        .from('ventures')
-        .insert({
-          user_id: user.id,
-          name: data.name,
-          tagline: data.tagline,
-          description: data.description,
-          industry: data.industry,
-          stage: data.stage,
-          company_type: data.companyType,
-          funding_path: data.fundingPath,
-          funding_goal: data.fundingGoal,
-          monthly_revenue: data.monthlyRevenue,
-          team_size: data.teamSize,
-          logo_url: data.logoUrl,
-          branding: data.branding,
-          is_active: isFirstVenture,
-        })
-        .select()
-        .single();
+        console.log(`[Ventures] Creating venture (attempt ${attempt}/${maxRetries}) for user:`, user.id);
 
-      if (error) {
-        console.error('[Ventures] Supabase error:', error);
-        throw error;
-      }
+        const { data: newVenture, error } = await supabase
+          .from('ventures')
+          .insert({
+            user_id: user.id,
+            name: data.name,
+            tagline: data.tagline,
+            description: data.description,
+            industry: data.industry,
+            stage: data.stage,
+            company_type: data.companyType,
+            funding_path: data.fundingPath,
+            funding_goal: data.fundingGoal,
+            monthly_revenue: data.monthlyRevenue,
+            team_size: data.teamSize,
+            logo_url: data.logoUrl,
+            branding: data.branding,
+            is_active: isFirstVenture,
+          })
+          .select()
+          .single();
 
-      console.log('[Ventures] Venture created successfully:', newVenture);
+        if (error) {
+          // Check if this is an AbortError - if so, retry
+          if (isAbortError(error)) {
+            console.log(`[Ventures] Request aborted on attempt ${attempt}, retrying...`);
+            lastError = error;
+            // Small delay before retry
+            await new Promise(resolve => setTimeout(resolve, 100 * attempt));
+            continue;
+          }
+          console.error('[Ventures] Supabase error:', error);
+          throw error;
+        }
 
-      // Update local state immediately, then refresh
-      const mappedVenture = mapVenture(newVenture);
-      if (mountedRef.current) {
-        setVentures(prev => [mappedVenture, ...prev]);
-      }
+        console.log('[Ventures] Venture created successfully:', newVenture);
 
-      // Refresh in background (don't await to avoid blocking)
-      loadVentures().catch(() => {});
+        // Update local state immediately, then refresh
+        const mappedVenture = mapVenture(newVenture);
+        if (mountedRef.current) {
+          setVentures(prev => [mappedVenture, ...prev]);
+        }
 
-      return mappedVenture;
-    } catch (err) {
-      // Ignore AbortError
-      if (isAbortError(err)) {
-        console.log('[Ventures] Create request aborted');
-        // Even if aborted, the venture might have been created - reload
+        // Refresh in background (don't await to avoid blocking)
         loadVentures().catch(() => {});
-        return null;
+
+        return mappedVenture;
+      } catch (err) {
+        lastError = err;
+        // If AbortError, retry
+        if (isAbortError(err) && attempt < maxRetries) {
+          console.log(`[Ventures] Create request aborted on attempt ${attempt}, retrying...`);
+          await new Promise(resolve => setTimeout(resolve, 100 * attempt));
+          continue;
+        }
+        // For other errors, don't retry
+        if (!isAbortError(err)) {
+          console.error('[Ventures] Error creating venture:', err);
+          const errorMessage = err instanceof Error ? err.message : 'Unbekannter Fehler';
+          if (mountedRef.current) {
+            setError(`Fehler beim Erstellen: ${errorMessage}`);
+          }
+          return null;
+        }
       }
-      console.error('[Ventures] Error creating venture:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Unbekannter Fehler';
-      if (mountedRef.current) {
-        setError(`Fehler beim Erstellen: ${errorMessage}`);
-      }
-      return null;
     }
+
+    // All retries exhausted
+    console.error('[Ventures] All retry attempts failed:', lastError);
+    if (mountedRef.current) {
+      setError('Verbindungsproblem. Bitte versuche es erneut.');
+    }
+    return null;
   }, [user, ventures.length, loadVentures]);
 
   // Update venture
