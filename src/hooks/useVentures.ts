@@ -166,7 +166,7 @@ export function useVentures(): UseVenturesReturn {
     }
   }, [user]);
 
-  // Create new venture with retry logic
+  // Create new venture using direct fetch to bypass Supabase's global AbortController
   const createVenture = useCallback(async (data: Partial<Venture>): Promise<Venture | null> => {
     // Bessere Fehlerbehandlung
     if (!isSupabaseConfigured()) {
@@ -181,88 +181,83 @@ export function useVentures(): UseVenturesReturn {
       return null;
     }
 
-    const maxRetries = 3;
-    let lastError: unknown = null;
+    try {
+      // Wenn erstes Venture, automatisch aktiv setzen
+      const isFirstVenture = ventures.length === 0;
 
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        // Wenn erstes Venture, automatisch aktiv setzen
-        const isFirstVenture = ventures.length === 0;
+      console.log('[Ventures] Creating venture for user:', user.id);
 
-        console.log(`[Ventures] Creating venture (attempt ${attempt}/${maxRetries}) for user:`, user.id);
+      // Get current session for auth token
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
 
-        const { data: newVenture, error } = await supabase
-          .from('ventures')
-          .insert({
-            user_id: user.id,
-            name: data.name,
-            tagline: data.tagline,
-            description: data.description,
-            industry: data.industry,
-            stage: data.stage,
-            company_type: data.companyType,
-            funding_path: data.fundingPath,
-            funding_goal: data.fundingGoal,
-            monthly_revenue: data.monthlyRevenue,
-            team_size: data.teamSize,
-            logo_url: data.logoUrl,
-            branding: data.branding,
-            is_active: isFirstVenture,
-          })
-          .select()
-          .single();
-
-        if (error) {
-          // Check if this is an AbortError - if so, retry
-          if (isAbortError(error)) {
-            console.log(`[Ventures] Request aborted on attempt ${attempt}, retrying...`);
-            lastError = error;
-            // Small delay before retry
-            await new Promise(resolve => setTimeout(resolve, 100 * attempt));
-            continue;
-          }
-          console.error('[Ventures] Supabase error:', error);
-          throw error;
-        }
-
-        console.log('[Ventures] Venture created successfully:', newVenture);
-
-        // Update local state immediately, then refresh
-        const mappedVenture = mapVenture(newVenture);
-        if (mountedRef.current) {
-          setVentures(prev => [mappedVenture, ...prev]);
-        }
-
-        // Refresh in background (don't await to avoid blocking)
-        loadVentures().catch(() => {});
-
-        return mappedVenture;
-      } catch (err) {
-        lastError = err;
-        // If AbortError, retry
-        if (isAbortError(err) && attempt < maxRetries) {
-          console.log(`[Ventures] Create request aborted on attempt ${attempt}, retrying...`);
-          await new Promise(resolve => setTimeout(resolve, 100 * attempt));
-          continue;
-        }
-        // For other errors, don't retry
-        if (!isAbortError(err)) {
-          console.error('[Ventures] Error creating venture:', err);
-          const errorMessage = err instanceof Error ? err.message : 'Unbekannter Fehler';
-          if (mountedRef.current) {
-            setError(`Fehler beim Erstellen: ${errorMessage}`);
-          }
-          return null;
-        }
+      if (!accessToken) {
+        console.error('[Ventures] No access token available');
+        setError('Bitte melde dich erneut an');
+        return null;
       }
-    }
 
-    // All retries exhausted
-    console.error('[Ventures] All retry attempts failed:', lastError);
-    if (mountedRef.current) {
-      setError('Verbindungsproblem. Bitte versuche es erneut.');
+      // Use direct fetch to bypass Supabase client's AbortController issues
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      const ventureData = {
+        user_id: user.id,
+        name: data.name,
+        tagline: data.tagline || null,
+        description: data.description || null,
+        industry: data.industry || null,
+        stage: data.stage || null,
+        company_type: data.companyType || null,
+        funding_path: data.fundingPath || null,
+        funding_goal: data.fundingGoal || null,
+        monthly_revenue: data.monthlyRevenue || null,
+        team_size: data.teamSize || null,
+        logo_url: data.logoUrl || null,
+        branding: data.branding || null,
+        is_active: isFirstVenture,
+      };
+
+      const response = await fetch(`${supabaseUrl}/rest/v1/ventures`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${accessToken}`,
+          'Prefer': 'return=representation',
+        },
+        body: JSON.stringify(ventureData),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[Ventures] API error:', response.status, errorText);
+        throw new Error(`API Error: ${response.status} - ${errorText}`);
+      }
+
+      const newVentureArray = await response.json();
+      const newVenture = Array.isArray(newVentureArray) ? newVentureArray[0] : newVentureArray;
+
+      console.log('[Ventures] Venture created successfully:', newVenture);
+
+      // Update local state immediately
+      const mappedVenture = mapVenture(newVenture);
+      if (mountedRef.current) {
+        setVentures(prev => [mappedVenture, ...prev]);
+      }
+
+      // Refresh in background (don't await to avoid blocking)
+      loadVentures().catch(() => {});
+
+      return mappedVenture;
+    } catch (err) {
+      console.error('[Ventures] Error creating venture:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Unbekannter Fehler';
+      if (mountedRef.current) {
+        setError(`Fehler beim Erstellen: ${errorMessage}`);
+      }
+      return null;
     }
-    return null;
   }, [user, ventures.length, loadVentures]);
 
   // Update venture
