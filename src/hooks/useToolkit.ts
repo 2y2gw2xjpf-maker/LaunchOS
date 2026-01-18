@@ -1,6 +1,6 @@
 // src/hooks/useToolkit.ts
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/components/auth';
 import { useVentureContext } from '@/contexts/VentureContext';
@@ -226,6 +226,10 @@ export function useToolkit(): UseToolkitReturn {
   const [bookmarks, setBookmarks] = useState<{ type: string; id: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Track if initial load has been done to prevent re-fetching
+  const hasLoadedRef = useRef(false);
+  const isLoadingRef = useRef(false);
 
   // ════════════════════════════════════════════════════════════
   // DATA LOADING
@@ -757,7 +761,11 @@ export function useToolkit(): UseToolkitReturn {
   // INITIALIZATION
   // ════════════════════════════════════════════════════════════
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (force = false) => {
+    // Prevent concurrent loads
+    if (isLoadingRef.current && !force) return;
+
+    isLoadingRef.current = true;
     setIsLoading(true);
     setError(null);
 
@@ -771,17 +779,38 @@ export function useToolkit(): UseToolkitReturn {
         loadPitfalls(),
         loadBookmarks(),
       ]);
-    } catch (err) {
+      hasLoadedRef.current = true;
+    } catch (err: unknown) {
+      // Ignore AbortError - this is expected during cleanup
+      if (err instanceof Error && err.name === 'AbortError') {
+        return;
+      }
+      // Also check for abort in error message
+      const errObj = err as { message?: string };
+      if (errObj?.message?.includes('AbortError') || errObj?.message?.includes('aborted')) {
+        return;
+      }
       console.error('Error loading toolkit:', err);
       setError('Fehler beim Laden des Toolkits');
     } finally {
+      isLoadingRef.current = false;
       setIsLoading(false);
     }
   }, [loadCategories, loadGuides, loadChecklists, loadPrompts, loadTools, loadPitfalls, loadBookmarks]);
 
   useEffect(() => {
-    refresh();
-  }, [refresh]);
+    // Only load once on mount
+    if (!hasLoadedRef.current) {
+      refresh();
+    }
+  }, []); // Empty dependency array - only run once on mount
+
+  // Re-load bookmarks when user changes
+  useEffect(() => {
+    if (hasLoadedRef.current) {
+      loadBookmarks();
+    }
+  }, [user, loadBookmarks]);
 
   return {
     categories,

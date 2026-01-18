@@ -2,8 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, Search } from 'lucide-react';
 import { useToolkit } from '@/hooks/useToolkit';
-import { EnhancedSidebar } from '@/components/layout/sidebar/EnhancedSidebar';
-import { Header } from '@/components/layout/Header';
+import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 import { GuideCard } from './components/GuideCard';
 
 export default function GuidesPage() {
@@ -34,135 +33,137 @@ export default function GuidesPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen bg-gray-50">
+      <div className="min-h-screen bg-cream">
+        <Header />
         <EnhancedSidebar />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-12 h-12 rounded-full border-2 border-purple-500 border-t-transparent animate-spin mx-auto mb-4" />
-            <p className="text-gray-500">Guides werden geladen...</p>
+        <PageContainer withSidebar maxWidth="wide">
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-full border-2 border-brand border-t-transparent animate-spin mx-auto mb-4" />
+              <p className="text-charcoal/60">Guides werden geladen...</p>
+            </div>
           </div>
-        </div>
+        </PageContainer>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="min-h-screen bg-cream">
+      <Header />
       <EnhancedSidebar />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
+      <PageContainer withSidebar maxWidth="wide">
+        {/* Page Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <h1 className="font-display text-display-sm text-charcoal mb-2">Guides</h1>
+          <p className="text-charcoal/60">
+            Schritt-für-Schritt Anleitungen für jeden Aspekt deines Produkts
+          </p>
+        </motion.div>
 
-        <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
-          <div className="max-w-7xl mx-auto px-6 py-8">
-            {/* Header */}
-            <div className="mb-8">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-purple-100 rounded-xl">
-                  <BookOpen className="w-6 h-6 text-purple-600" />
-                </div>
-                <h1 className="text-3xl font-bold text-gray-900">Guides</h1>
-              </div>
-              <p className="text-gray-500">
-                Schritt-für-Schritt Anleitungen für jeden Aspekt deines Produkts
-              </p>
-            </div>
-
-            {/* Filters */}
-            <div className="bg-white rounded-2xl border border-purple-100 p-4 mb-8">
-              <div className="flex flex-wrap gap-4">
-                {/* Search */}
-                <div className="flex-1 min-w-64">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Suche nach Guides..."
-                      className="w-full pl-10 pr-4 py-2 border border-purple-200 rounded-xl
-                               focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Category Filter */}
-                <select
-                  value={selectedCategory || ''}
-                  onChange={(e) => setSelectedCategory(e.target.value || null)}
-                  className="px-4 py-2 border border-purple-200 rounded-xl bg-white
-                           focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none"
-                >
-                  <option value="">Alle Kategorien</option>
-                  {guideCategories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
-
-                {/* Tool Filter */}
-                <select
-                  value={selectedTool || ''}
-                  onChange={(e) => setSelectedTool(e.target.value || null)}
-                  className="px-4 py-2 border border-purple-200 rounded-xl bg-white
-                           focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none"
-                >
-                  <option value="">Alle Tools</option>
-                  {tools.map(tool => (
-                    <option key={tool.slug} value={tool.slug}>{tool.name}</option>
-                  ))}
-                </select>
-
-                {/* Difficulty Filter */}
-                <select
-                  value={selectedDifficulty || ''}
-                  onChange={(e) => setSelectedDifficulty(e.target.value || null)}
-                  className="px-4 py-2 border border-purple-200 rounded-xl bg-white
-                           focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none"
-                >
-                  <option value="">Alle Levels</option>
-                  <option value="beginner">Anfänger</option>
-                  <option value="intermediate">Mittel</option>
-                  <option value="advanced">Fortgeschritten</option>
-                </select>
+        {/* Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white/90 backdrop-blur-sm rounded-2xl border border-purple-100 shadow-card p-4 mb-6"
+        >
+          <div className="flex flex-wrap gap-4">
+            {/* Search */}
+            <div className="flex-1 min-w-64">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/40" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Suche nach Guides..."
+                  className="w-full pl-10 pr-4 py-2.5 border border-purple-200 rounded-xl
+                           focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none bg-white"
+                />
               </div>
             </div>
 
-            {/* Results Count */}
-            <p className="text-sm text-gray-500 mb-4">
-              {filteredGuides.length} {filteredGuides.length === 1 ? 'Guide' : 'Guides'} gefunden
-            </p>
-
-            {/* Guides Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredGuides.map((guide, index) => (
-                <motion.div
-                  key={guide.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <GuideCard
-                    guide={guide}
-                    isBookmarked={isBookmarked('guide', guide.id)}
-                    onToggleBookmark={() => toggleBookmark('guide', guide.id)}
-                  />
-                </motion.div>
+            {/* Category Filter */}
+            <select
+              value={selectedCategory || ''}
+              onChange={(e) => setSelectedCategory(e.target.value || null)}
+              className="px-4 py-2.5 border border-purple-200 rounded-xl bg-white
+                       focus:border-purple-400 outline-none"
+            >
+              <option value="">Alle Kategorien</option>
+              {guideCategories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
               ))}
-            </div>
+            </select>
 
-            {/* Empty State */}
-            {filteredGuides.length === 0 && (
-              <div className="text-center py-12">
-                <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Guides gefunden</h3>
-                <p className="text-gray-500">
-                  Versuche andere Filter oder eine andere Suchanfrage
-                </p>
-              </div>
-            )}
+            {/* Tool Filter */}
+            <select
+              value={selectedTool || ''}
+              onChange={(e) => setSelectedTool(e.target.value || null)}
+              className="px-4 py-2.5 border border-purple-200 rounded-xl bg-white
+                       focus:border-purple-400 outline-none"
+            >
+              <option value="">Alle Tools</option>
+              {tools.map(tool => (
+                <option key={tool.slug} value={tool.slug}>{tool.name}</option>
+              ))}
+            </select>
+
+            {/* Difficulty Filter */}
+            <select
+              value={selectedDifficulty || ''}
+              onChange={(e) => setSelectedDifficulty(e.target.value || null)}
+              className="px-4 py-2.5 border border-purple-200 rounded-xl bg-white
+                       focus:border-purple-400 outline-none"
+            >
+              <option value="">Alle Levels</option>
+              <option value="beginner">Anfänger</option>
+              <option value="intermediate">Mittel</option>
+              <option value="advanced">Fortgeschritten</option>
+            </select>
           </div>
-        </main>
-      </div>
+        </motion.div>
+
+        {/* Results Count */}
+        <p className="text-sm text-charcoal/60 mb-4">
+          {filteredGuides.length} {filteredGuides.length === 1 ? 'Guide' : 'Guides'} gefunden
+        </p>
+
+        {/* Guides Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredGuides.map((guide, index) => (
+            <motion.div
+              key={guide.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <GuideCard
+                guide={guide}
+                isBookmarked={isBookmarked('guide', guide.id)}
+                onToggleBookmark={() => toggleBookmark('guide', guide.id)}
+              />
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Empty State */}
+        {filteredGuides.length === 0 && (
+          <div className="text-center py-12">
+            <BookOpen className="w-12 h-12 text-charcoal/30 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-charcoal mb-2">Keine Guides gefunden</h3>
+            <p className="text-charcoal/60">
+              Versuche andere Filter oder eine andere Suchanfrage
+            </p>
+          </div>
+        )}
+      </PageContainer>
     </div>
   );
 }

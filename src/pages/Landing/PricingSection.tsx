@@ -1,12 +1,10 @@
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, ArrowRight, Sparkles, Zap, Shield, Users, Rocket, Brain, FileText, BarChart3, MessageSquare, Wrench, FolderOpen } from 'lucide-react';
+import { Check, X, ArrowRight, Sparkles, Zap, Shield, Users, Rocket, FileText, BarChart3, MessageSquare, Wrench, FolderOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PRICING_TIERS, FREE_TIER, formatPrice } from '@/lib/stripe';
 import { SectionHeader } from '@/components/common';
 import { cn } from '@/lib/utils/cn';
-
-const yearlyDiscount = 0.15; // ~2 months free
 
 // Updated feature categories for Builder/Founder/Startup tiers
 const FEATURE_CATEGORIES = [
@@ -101,7 +99,7 @@ const FeatureCell = ({ value }: { value: boolean | string }) => {
         viewport={{ once: true }}
         className="flex items-center justify-center"
       >
-        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-brand-600 to-brand-500 flex items-center justify-center">
+        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 flex items-center justify-center">
           <Check className="w-4 h-4 text-white" />
         </div>
       </motion.div>
@@ -110,12 +108,12 @@ const FeatureCell = ({ value }: { value: boolean | string }) => {
   if (value === false) {
     return (
       <div className="flex items-center justify-center">
-        <X className="w-5 h-5 text-charcoal/20" />
+        <X className="w-5 h-5 text-text-muted/40" />
       </div>
     );
   }
   return (
-    <span className="text-sm font-medium text-charcoal/70">{value}</span>
+    <span className="text-sm font-medium text-text-secondary">{value}</span>
   );
 };
 
@@ -145,9 +143,9 @@ export const PricingSection = () => {
   ], []);
 
   const tierGradients: Record<string, string> = {
-    free: 'from-charcoal/80 to-charcoal',
-    pro: 'from-brand-600 to-brand-500',
-    team: 'from-navy to-navy-700',
+    free: 'from-gray-600 to-gray-700',
+    pro: 'from-purple-600 to-pink-500',
+    team: 'from-purple-700 to-purple-900',
   };
 
   const tierIcons: Record<string, React.ReactNode> = {
@@ -157,7 +155,7 @@ export const PricingSection = () => {
   };
 
   return (
-    <section id="pricing" className="section-padding bg-gradient-to-b from-white via-brand-50/30 to-white overflow-hidden">
+    <section id="pricing" className="section-padding bg-gradient-to-b from-white to-purple-50/30 overflow-hidden">
       <div className="container-wide">
         <SectionHeader
           badge="Preise"
@@ -176,7 +174,7 @@ export const PricingSection = () => {
           <span
             className={cn(
               'text-sm font-medium transition-colors',
-              billingInterval === 'month' ? 'text-navy' : 'text-charcoal/50'
+              billingInterval === 'month' ? 'text-text-primary' : 'text-text-muted'
             )}
           >
             Monatlich
@@ -185,13 +183,13 @@ export const PricingSection = () => {
             onClick={() =>
               setBillingInterval(billingInterval === 'month' ? 'year' : 'month')
             }
-            className="relative w-14 h-7 bg-brand-100 rounded-full transition-colors hover:bg-brand-200"
+            className="relative w-14 h-7 bg-purple-100 rounded-full transition-colors hover:bg-purple-200"
             aria-label="Abrechnungszeitraum umschalten"
           >
             <motion.div
               layout
               className={cn(
-                'absolute w-5 h-5 bg-gradient-to-r from-brand-600 to-brand-500 rounded-full top-1 shadow-lg',
+                'absolute w-5 h-5 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full top-1 shadow-lg',
                 billingInterval === 'year' ? 'left-8' : 'left-1'
               )}
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
@@ -200,7 +198,7 @@ export const PricingSection = () => {
           <span
             className={cn(
               'text-sm font-medium transition-colors',
-              billingInterval === 'year' ? 'text-navy' : 'text-charcoal/50'
+              billingInterval === 'year' ? 'text-text-primary' : 'text-text-muted'
             )}
           >
             Jährlich
@@ -208,7 +206,7 @@ export const PricingSection = () => {
           <motion.span
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="ml-2 px-3 py-1 bg-gradient-to-r from-sage to-sage-dark text-white text-xs font-bold rounded-full"
+            className="ml-2 px-3 py-1 bg-gradient-to-r from-purple-600 to-pink-500 text-white text-xs font-bold rounded-full"
           >
             2 Monate gratis
           </motion.span>
@@ -237,16 +235,16 @@ export const PricingSection = () => {
                 onHoverStart={() => setHoveredTier(tier.id)}
                 onHoverEnd={() => setHoveredTier(null)}
                 className={cn(
-                  'relative rounded-2xl bg-white flex flex-col transition-all duration-300 overflow-hidden',
+                  'relative rounded-2xl bg-white/80 backdrop-blur-sm flex flex-col transition-all duration-300 overflow-hidden',
                   isPopular
-                    ? 'border-2 border-brand-500 shadow-2xl shadow-brand-500/20 scale-[1.02] z-10'
-                    : 'border border-navy/10 hover:border-brand-200 hover:shadow-xl',
+                    ? 'border-2 border-purple-500 shadow-2xl shadow-purple-500/20 scale-[1.02] z-10'
+                    : 'border-2 border-purple-100 hover:border-purple-300 hover:shadow-xl hover:shadow-purple-500/10',
                   hoveredTier === tier.id && !isPopular && 'scale-[1.02]'
                 )}
               >
                 {/* Popular Badge */}
                 {isPopular && (
-                  <div className="absolute top-0 right-0 bg-brand-500 text-white px-3 py-1 text-xs font-bold rounded-bl-xl">
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-600 to-pink-500 text-white px-3 py-1 text-xs font-bold rounded-bl-xl">
                     Beliebt
                   </div>
                 )}
@@ -255,12 +253,12 @@ export const PricingSection = () => {
                 <div className={cn('p-5 text-white bg-gradient-to-r', gradient)}>
                   <div className="flex items-center gap-2 mb-1">
                     {Icon}
-                    <h3 className="text-lg font-bold">{tier.name}</h3>
+                    <h3 className="text-lg font-display font-bold">{tier.name}</h3>
                   </div>
                 </div>
 
                 {/* Price */}
-                <div className="p-5 border-b border-navy/5">
+                <div className="p-5 border-b border-purple-100">
                   <div className="flex items-baseline gap-1">
                     <AnimatePresence mode="wait">
                       <motion.span
@@ -268,23 +266,23 @@ export const PricingSection = () => {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="text-3xl font-bold text-navy"
+                        className="text-3xl font-bold text-text-primary"
                       >
                         {isFree ? '0' : displayPrice}
                       </motion.span>
                     </AnimatePresence>
                     {!isFree && (
-                      <span className="text-charcoal/50 text-sm">/Monat</span>
+                      <span className="text-text-muted text-sm">/Monat</span>
                     )}
                     {isFree && (
-                      <span className="text-charcoal/50 text-sm">Kostenlos</span>
+                      <span className="text-text-muted text-sm">Kostenlos</span>
                     )}
                   </div>
                   {billingInterval === 'year' && !isFree && (
                     <motion.p
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="text-sm text-brand-600 font-medium mt-1"
+                      className="text-sm text-purple-600 font-medium mt-1"
                     >
                       {formatPrice(yearlyPrice)}/Jahr
                     </motion.p>
@@ -302,10 +300,10 @@ export const PricingSection = () => {
                       transition={{ delay: index * 0.1 + i * 0.03 }}
                       className="flex items-start gap-2"
                     >
-                      <div className="w-4 h-4 rounded-full bg-sage/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <Check className="w-2.5 h-2.5 text-sage" />
+                      <div className="w-4 h-4 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Check className="w-2.5 h-2.5 text-purple-600" />
                       </div>
-                      <span className="text-sm text-charcoal/70">{feature}</span>
+                      <span className="text-sm text-text-secondary">{feature}</span>
                     </motion.li>
                   ))}
                 </ul>
@@ -318,10 +316,10 @@ export const PricingSection = () => {
                     className={cn(
                       'inline-flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-semibold transition-all duration-300 group',
                       isPopular
-                        ? 'bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-500/30 hover:shadow-brand-500/50 hover:scale-[1.02]'
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-[1.02]'
                         : isFree
-                        ? 'bg-navy text-white hover:bg-navy-700'
-                        : 'bg-navy/5 text-navy hover:bg-navy/10'
+                        ? 'bg-text-primary text-white hover:bg-gray-800'
+                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
                     )}
                   >
                     {isFree ? 'Kostenlos starten' : 'Plan wählen'}
@@ -342,7 +340,7 @@ export const PricingSection = () => {
         >
           <button
             onClick={() => setShowFeatures(!showFeatures)}
-            className="inline-flex items-center gap-2 px-6 py-3 text-brand-600 font-semibold hover:text-brand-700 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 text-purple-600 font-semibold hover:text-purple-700 transition-colors"
           >
             <span>{showFeatures ? 'Feature-Vergleich ausblenden' : 'Alle Features vergleichen'}</span>
             <motion.div
@@ -364,10 +362,10 @@ export const PricingSection = () => {
               transition={{ duration: 0.5, ease: 'easeInOut' }}
               className="overflow-hidden max-w-4xl mx-auto"
             >
-              <div className="bg-white rounded-2xl border border-navy/10 shadow-xl overflow-hidden">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl border-2 border-purple-100 shadow-xl overflow-hidden">
                 {/* Header Row */}
-                <div className="grid grid-cols-4 bg-gradient-to-r from-brand-50 to-cream border-b border-navy/10">
-                  <div className="p-4 font-semibold text-navy">Features</div>
+                <div className="grid grid-cols-4 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100">
+                  <div className="p-4 font-display font-semibold text-text-primary">Features</div>
                   {['Builder', 'Founder', 'Startup'].map((name, i) => (
                     <motion.div
                       key={name}
@@ -375,13 +373,13 @@ export const PricingSection = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.1 }}
                       className={cn(
-                        'p-4 text-center font-bold',
-                        name === 'Founder' ? 'text-brand-600' : 'text-navy'
+                        'p-4 text-center font-display font-bold',
+                        name === 'Founder' ? 'text-purple-600' : 'text-text-primary'
                       )}
                     >
                       {name}
                       {name === 'Founder' && (
-                        <span className="ml-2 px-2 py-0.5 bg-brand-100 text-brand-600 text-xs rounded-full">
+                        <span className="ml-2 px-2 py-0.5 bg-purple-100 text-purple-600 text-xs rounded-full">
                           Empfohlen
                         </span>
                       )}
@@ -397,20 +395,20 @@ export const PricingSection = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
                     className={cn(
-                      'grid grid-cols-4 border-b border-navy/5 hover:bg-brand-50/30 transition-colors',
+                      'grid grid-cols-4 border-b border-purple-50 hover:bg-purple-50/50 transition-colors',
                       index === FEATURE_CATEGORIES.length - 1 && 'border-b-0'
                     )}
                   >
                     <div className="p-4 flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-100 to-cream flex items-center justify-center">
-                        <feature.icon className="w-4 h-4 text-brand-600" />
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+                        <feature.icon className="w-4 h-4 text-purple-600" />
                       </div>
-                      <span className="font-medium text-charcoal/80 text-sm">{feature.name}</span>
+                      <span className="font-medium text-text-secondary text-sm">{feature.name}</span>
                     </div>
                     <div className="p-4 flex items-center justify-center">
                       <FeatureCell value={feature.free} />
                     </div>
-                    <div className="p-4 flex items-center justify-center bg-brand-50/30">
+                    <div className="p-4 flex items-center justify-center bg-purple-50/50">
                       <FeatureCell value={feature.pro} />
                     </div>
                     <div className="p-4 flex items-center justify-center">
@@ -430,7 +428,7 @@ export const PricingSection = () => {
           viewport={{ once: true }}
           className="mt-8 text-center"
         >
-          <p className="text-charcoal/50 text-sm">
+          <p className="text-text-muted text-sm">
             Keine Kreditkarte für Builder erforderlich | SSL-verschlüsselt | DSGVO-konform | 14 Tage Geld-zurück
           </p>
         </motion.div>
