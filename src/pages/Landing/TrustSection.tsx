@@ -92,7 +92,7 @@ export const TrustSection = () => {
                   <ShieldCheck className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-display text-xl font-semibold">
+                  <h3 className="font-display text-xl font-semibold text-white">
                     Du entscheidest
                   </h3>
                   <p className="text-white/70 text-sm">wie viel du teilst</p>
