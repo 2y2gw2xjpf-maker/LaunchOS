@@ -3,9 +3,22 @@
  * Verwaltet Startups/Projekte des Nutzers
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/components/auth/AuthProvider';
+
+// Helper to check if error is an AbortError (cleanup-related)
+const isAbortError = (err: unknown): boolean => {
+  if (err instanceof Error) {
+    return err.name === 'AbortError' || err.message.includes('aborted');
+  }
+  if (typeof err === 'object' && err !== null) {
+    const errorObj = err as { message?: string; name?: string };
+    return errorObj.name === 'AbortError' ||
+           (typeof errorObj.message === 'string' && errorObj.message.includes('aborted'));
+  }
+  return false;
+};
 
 // ==================== TYPES ====================
 
@@ -63,10 +76,12 @@ export interface UseVenturesReturn {
 // ==================== HOOK ====================
 
 export function useVentures(): UseVenturesReturn {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [ventures, setVentures] = useState<Venture[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const mountedRef = useRef(true);
+  const loadingRef = useRef(false);
 
   // Map DB row to Venture object
   const mapVenture = (row: Record<string, unknown>): Venture => ({
@@ -99,6 +114,12 @@ export function useVentures(): UseVenturesReturn {
       return;
     }
 
+    // Prevent concurrent loads
+    if (loadingRef.current) {
+      return;
+    }
+
+    loadingRef.current = true;
     setIsLoading(true);
     setError(null);
 
@@ -112,12 +133,25 @@ export function useVentures(): UseVenturesReturn {
 
       if (fetchError) throw fetchError;
 
-      setVentures((data || []).map(mapVenture));
+      // Only update state if still mounted
+      if (mountedRef.current) {
+        setVentures((data || []).map(mapVenture));
+      }
     } catch (err) {
+      // Ignore AbortError - it's from component cleanup
+      if (isAbortError(err)) {
+        console.log('[Ventures] Request aborted (cleanup)');
+        return;
+      }
       console.error('Error loading ventures:', err);
-      setError('Fehler beim Laden der Ventures');
+      if (mountedRef.current) {
+        setError('Fehler beim Laden der Ventures');
+      }
     } finally {
-      setIsLoading(false);
+      loadingRef.current = false;
+      if (mountedRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [user]);
 
@@ -125,13 +159,13 @@ export function useVentures(): UseVenturesReturn {
   const createVenture = useCallback(async (data: Partial<Venture>): Promise<Venture | null> => {
     // Bessere Fehlerbehandlung
     if (!isSupabaseConfigured()) {
-      console.error('Supabase is not configured');
+      console.error('[Ventures] Supabase is not configured');
       setError('Datenbankverbindung nicht konfiguriert');
       return null;
     }
 
     if (!user) {
-      console.error('No user logged in');
+      console.error('[Ventures] No user logged in');
       setError('Bitte melde dich zuerst an');
       return null;
     }
@@ -140,7 +174,7 @@ export function useVentures(): UseVenturesReturn {
       // Wenn erstes Venture, automatisch aktiv setzen
       const isFirstVenture = ventures.length === 0;
 
-      console.log('Creating venture for user:', user.id, 'data:', data);
+      console.log('[Ventures] Creating venture for user:', user.id, 'data:', data);
 
       const { data: newVenture, error } = await supabase
         .from('ventures')
@@ -164,17 +198,35 @@ export function useVentures(): UseVenturesReturn {
         .single();
 
       if (error) {
-        console.error('Supabase error:', error);
+        console.error('[Ventures] Supabase error:', error);
         throw error;
       }
 
-      console.log('Venture created successfully:', newVenture);
-      await loadVentures();
-      return mapVenture(newVenture);
+      console.log('[Ventures] Venture created successfully:', newVenture);
+
+      // Update local state immediately, then refresh
+      const mappedVenture = mapVenture(newVenture);
+      if (mountedRef.current) {
+        setVentures(prev => [mappedVenture, ...prev]);
+      }
+
+      // Refresh in background (don't await to avoid blocking)
+      loadVentures().catch(() => {});
+
+      return mappedVenture;
     } catch (err) {
-      console.error('Error creating venture:', err);
+      // Ignore AbortError
+      if (isAbortError(err)) {
+        console.log('[Ventures] Create request aborted');
+        // Even if aborted, the venture might have been created - reload
+        loadVentures().catch(() => {});
+        return null;
+      }
+      console.error('[Ventures] Error creating venture:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unbekannter Fehler';
-      setError(`Fehler beim Erstellen: ${errorMessage}`);
+      if (mountedRef.current) {
+        setError(`Fehler beim Erstellen: ${errorMessage}`);
+      }
       return null;
     }
   }, [user, ventures.length, loadVentures]);
@@ -269,10 +321,22 @@ export function useVentures(): UseVenturesReturn {
     }
   }, [user, loadVentures]);
 
-  // Load on mount and when user changes
+  // Track mounted state for cleanup
   useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  // Load on mount and when user changes (wait for auth to be ready)
+  useEffect(() => {
+    // Don't load while auth is still loading
+    if (authLoading) {
+      return;
+    }
     loadVentures();
-  }, [loadVentures]);
+  }, [loadVentures, authLoading]);
 
   // Get active venture
   const activeVenture = ventures.find(v => v.isActive) || null;

@@ -2,6 +2,19 @@ import * as React from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase, getProfile, isSupabaseConfigured, type UserProfile } from '@/lib/supabase';
 
+// Helper to check if error is an AbortError (cleanup-related)
+const isAbortError = (err: unknown): boolean => {
+  if (err instanceof Error) {
+    return err.name === 'AbortError' || err.message.includes('aborted');
+  }
+  if (typeof err === 'object' && err !== null) {
+    const errorObj = err as { message?: string; name?: string };
+    return errorObj.name === 'AbortError' ||
+           (typeof errorObj.message === 'string' && errorObj.message.includes('aborted'));
+  }
+  return false;
+};
+
 // ==================== TYPES ====================
 
 interface AuthContextType {
@@ -49,7 +62,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const data = await getProfile(userId);
       setProfile(data);
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      // Ignore AbortError - it's from component cleanup
+      if (isAbortError(error)) {
+        console.log('[Auth] Profile fetch aborted (cleanup)');
+        return;
+      }
+      console.error('[Auth] Error fetching profile:', error);
       setProfile(null);
     }
   }, []);
@@ -104,6 +122,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setLoading(false);
     }).catch((err) => {
       clearTimeout(timeoutId);
+      // Ignore AbortError - it's from component cleanup or React StrictMode
+      if (isAbortError(err)) {
+        console.log('[Auth] Session check aborted (cleanup)');
+        setLoading(false);
+        return;
+      }
       console.error('[Auth] Error getting session:', err);
       setLoading(false);
     });
