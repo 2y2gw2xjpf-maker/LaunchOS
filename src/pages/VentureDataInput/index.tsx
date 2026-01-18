@@ -226,7 +226,7 @@ export const VentureDataInputPage = () => {
     navigate('/dashboard');
   };
 
-  // Wenn kein aktives Venture, zeige Hinweis
+  // Wenn kein aktives Venture, zeige Hinweis mit Link zu /venture/create
   if (!activeVenture) {
     return (
       <div className="min-h-screen bg-cream">
@@ -239,7 +239,7 @@ export const VentureDataInputPage = () => {
             <p className="text-charcoal/60 mb-6">
               Bitte erstelle zuerst ein Venture, bevor du Daten eingeben kannst.
             </p>
-            <Button onClick={() => navigate('/dashboard')}>Zum Dashboard</Button>
+            <Button onClick={() => navigate('/venture/create')}>Venture erstellen</Button>
           </div>
         </PageContainer>
       </div>

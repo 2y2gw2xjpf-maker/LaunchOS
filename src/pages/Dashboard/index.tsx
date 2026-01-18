@@ -89,7 +89,7 @@ export function DashboardPage() {
     {
       title: 'Was tun?',
       description: 'Finde deinen nächsten Schritt',
-      href: '/journey',
+      href: '/whats-next',
       icon: Target,
       gradient: 'from-purple-500 to-pink-500',
     },
@@ -118,7 +118,7 @@ export function DashboardPage() {
 
   const nextSteps = [
     { done: true, text: 'Account erstellen', href: null },
-    { done: !!activeVenture, text: 'Erstes Venture anlegen', href: '/journey' },
+    { done: !!activeVenture, text: 'Erstes Venture anlegen', href: '/venture/create' },
     {
       done: false,
       text: 'MVP-Readiness Checklist starten',
@@ -356,7 +356,7 @@ export function DashboardPage() {
                 </div>
 
                 <Link
-                  to="/journey"
+                  to="/venture/data-input"
                   className="mt-4 w-full py-2 px-4 bg-purple-50 hover:bg-purple-100 rounded-lg text-sm font-medium text-purple-700 transition-colors flex items-center justify-center gap-2"
                 >
                   Venture bearbeiten
@@ -370,7 +370,7 @@ export function DashboardPage() {
                 </div>
                 <p className="text-charcoal/50 mb-4">Noch kein Venture angelegt</p>
                 <Link
-                  to="/journey"
+                  to="/venture/create"
                   className="inline-flex items-center gap-2 py-2 px-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-sm font-medium hover:shadow-lg transition-shadow mx-auto"
                 >
                   Venture starten
