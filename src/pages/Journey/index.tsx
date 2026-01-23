@@ -21,10 +21,12 @@ import {
   DollarSign,
   Filter,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 import { Card, Button } from '@/components/ui';
 import { ChatModal } from '@/components/chat/ChatModal';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { useVentureContext } from '@/contexts/VentureContext';
 import { supabase } from '@/lib/supabase';
 
 // Mapping von Phase zu typischen Stages (für Filter wenn DB keine stage-Daten hat)
@@ -225,7 +227,9 @@ function StepCard({
 // ==================== MAIN PAGE ====================
 
 export function JourneyPage() {
+  const navigate = useNavigate();
   const { user, profile } = useAuth();
+  const { ventures, activeVenture, setActiveVenture, isLoading: venturesLoading } = useVentureContext();
   const [steps, setSteps] = React.useState<JourneyStep[]>([]);
   const [progress, setProgress] = React.useState<Record<string, StepStatus>>({});
   const [expandedPhases, setExpandedPhases] = React.useState<string[]>(['foundation']);
@@ -243,10 +247,14 @@ export function JourneyPage() {
     setChatModalOpen(true);
   };
 
-  // Load journey data
+  // Load journey data when active venture changes
   React.useEffect(() => {
-    loadJourneyData();
-  }, [user]);
+    if (activeVenture) {
+      loadJourneyData();
+    } else if (!venturesLoading) {
+      setLoading(false);
+    }
+  }, [user, activeVenture, venturesLoading]);
 
   const loadJourneyData = async () => {
     // Timeout nach 5 Sekunden - zeige leere Seite statt ewig zu laden
@@ -280,12 +288,13 @@ export function JourneyPage() {
         setSteps(filteredSteps);
       }
 
-      // Load user progress
-      if (user) {
+      // Load user progress for active venture
+      if (user && activeVenture) {
         const { data: progressData, error: progressError } = await supabase
           .from('user_journey_progress')
           .select('step_id, status')
-          .eq('user_id', user.id);
+          .eq('user_id', user.id)
+          .eq('venture_id', activeVenture.id);
 
         if (!progressError && progressData) {
           const progressMap: Record<string, StepStatus> = {};
@@ -293,6 +302,8 @@ export function JourneyPage() {
             progressMap[p.step_id] = p.status as StepStatus;
           });
           setProgress(progressMap);
+        } else {
+          setProgress({});
         }
       }
     } catch (error) {
@@ -340,15 +351,18 @@ export function JourneyPage() {
   };
 
   const updateStepStatus = async (stepId: string, status: StepStatus) => {
-    if (!user) return;
+    if (!user || !activeVenture) return;
 
     try {
       await supabase.from('user_journey_progress').upsert({
         user_id: user.id,
+        venture_id: activeVenture.id,
         step_id: stepId,
         status,
         completed_at: status === 'completed' ? new Date().toISOString() : null,
         updated_at: new Date().toISOString(),
+      }, {
+        onConflict: 'user_id,venture_id,step_id'
       });
 
       setProgress((prev) => ({ ...prev, [stepId]: status }));
@@ -407,10 +421,39 @@ export function JourneyPage() {
   const stepsByPhase = getStepsByPhase();
   const progressStats = calculateProgress(filteredSteps);
 
-  if (loading) {
+  if (loading || venturesLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent" />
+      </div>
+    );
+  }
+
+  // Kein Venture vorhanden - User muss erst eines erstellen
+  if (ventures.length === 0) {
+    return (
+      <div className="min-h-screen bg-cream">
+        <Header />
+        <EnhancedSidebar />
+        <PageContainer withSidebar maxWidth="wide">
+          <Card className="p-12 text-center bg-white/80">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center">
+              <Rocket className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Starte deine Founder Journey</h3>
+            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+              Erstelle zuerst ein Venture, um deine persönliche Founder Journey zu beginnen
+              und deinen Fortschritt zu tracken.
+            </p>
+            <Button
+              variant="primary"
+              onClick={() => navigate('/tier-selection')}
+              className="bg-gradient-to-r from-purple-500 to-pink-500"
+            >
+              Venture erstellen
+            </Button>
+          </Card>
+        </PageContainer>
       </div>
     );
   }
@@ -420,16 +463,37 @@ export function JourneyPage() {
       <Header />
       <EnhancedSidebar />
       <PageContainer withSidebar maxWidth="wide">
-        {/* Header */}
+        {/* Header mit Venture-Auswahl */}
         <div className="mb-6">
           <h1 className="font-display text-display-sm text-charcoal mb-2">
             Deine Founder Journey
           </h1>
-          <p className="text-charcoal/60">
-            {steps.length > 0
-              ? `${filteredSteps.length} ${stageFilter !== 'all' ? `von ${steps.length}` : ''} Schritte${stageFilter !== 'all' ? ` für "${STAGE_CONFIG[stageFilter].label}"` : ''}`
-              : 'Lade Journey Steps...'}
-          </p>
+
+          {/* Venture Selector */}
+          {ventures.length > 1 && (
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-sm text-charcoal/60">Venture:</span>
+              <select
+                value={activeVenture?.id || ''}
+                onChange={(e) => setActiveVenture(e.target.value)}
+                className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-white focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none"
+              >
+                {ventures.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {activeVenture && (
+            <p className="text-charcoal/60">
+              {steps.length > 0
+                ? `${filteredSteps.length} ${stageFilter !== 'all' ? `von ${steps.length}` : ''} Schritte${stageFilter !== 'all' ? ` für "${STAGE_CONFIG[stageFilter].label}"` : ''}`
+                : 'Lade Journey Steps...'}
+            </p>
+          )}
         </div>
 
         {/* KI-Assistent Hinweis - Kompakt */}
@@ -629,15 +693,14 @@ export function JourneyPage() {
               );
             })}
 
-          {steps.length === 0 && !loading && (
+          {steps.length === 0 && !loading && activeVenture && (
             <Card className="p-12 text-center bg-white/80">
-              <div className="w-16 h-16 mx-auto mb-4 bg-purple-100 rounded-2xl flex items-center justify-center">
-                <Rocket className="w-8 h-8 text-purple-500" />
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center">
+                <Rocket className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Journey wird geladen</h3>
-              <p className="text-gray-500 mb-6">
-                Die Journey Steps werden aus der Datenbank geladen. Stelle sicher, dass die
-                Migrations ausgeführt wurden.
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Journey wird eingerichtet</h3>
+              <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                Deine persönliche Founder Journey für <strong>{activeVenture.name}</strong> wird vorbereitet.
               </p>
               <Button variant="primary" onClick={loadJourneyData}>
                 Erneut laden
