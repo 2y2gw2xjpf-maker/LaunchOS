@@ -4,7 +4,6 @@
  */
 
 import * as React from 'react';
-import { motion } from 'framer-motion';
 import {
   CheckCircle,
   Circle,
@@ -123,9 +122,7 @@ function StepCard({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div
       className="border border-gray-100 rounded-xl p-4 hover:border-purple-200 transition-colors bg-white/50"
     >
       <div className="flex items-start gap-4">
@@ -221,7 +218,7 @@ function StepCard({
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -424,11 +421,7 @@ export function JourneyPage() {
       <EnhancedSidebar />
       <PageContainer withSidebar maxWidth="wide">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
-        >
+        <div className="mb-6">
           <h1 className="font-display text-display-sm text-charcoal mb-2">
             Deine Founder Journey
           </h1>
@@ -437,15 +430,10 @@ export function JourneyPage() {
               ? `${filteredSteps.length} ${stageFilter !== 'all' ? `von ${steps.length}` : ''} Schritte${stageFilter !== 'all' ? ` für "${STAGE_CONFIG[stageFilter].label}"` : ''}`
               : 'Lade Journey Steps...'}
           </p>
-        </motion.div>
+        </div>
 
         {/* KI-Assistent Hinweis - Kompakt */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-6 p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100"
-        >
+        <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
               <Sparkles className="w-5 h-5 text-white" />
@@ -462,15 +450,10 @@ export function JourneyPage() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Stage Filter - Reifegrad */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="mb-6"
-        >
+        <div className="mb-6">
           <p className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
             <Filter className="w-4 h-4" />
             Wo stehst du gerade?
@@ -495,7 +478,7 @@ export function JourneyPage() {
               {STAGE_CONFIG[stageFilter].description}
             </p>
           )}
-        </motion.div>
+        </div>
 
         {/* Progress Overview */}
         <Card className="p-6 mb-8 bg-white/80 backdrop-blur-sm border-purple-100">
