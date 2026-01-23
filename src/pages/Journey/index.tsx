@@ -252,6 +252,13 @@ export function JourneyPage() {
   }, [user]);
 
   const loadJourneyData = async () => {
+    // Timeout nach 5 Sekunden - zeige leere Seite statt ewig zu laden
+    const timeoutId = setTimeout(() => {
+      console.warn('Journey data loading timeout - showing empty state');
+      setSteps([]);
+      setLoading(false);
+    }, 5000);
+
     try {
       // Load steps with resources
       const { data: stepsData, error: stepsError } = await supabase
@@ -263,6 +270,8 @@ export function JourneyPage() {
         `
         )
         .order('sort_order');
+
+      clearTimeout(timeoutId);
 
       if (stepsError) {
         console.error('Error loading journey steps:', stepsError);
@@ -290,6 +299,7 @@ export function JourneyPage() {
         }
       }
     } catch (error) {
+      clearTimeout(timeoutId);
       console.error('Error loading journey data:', error);
     } finally {
       setLoading(false);
