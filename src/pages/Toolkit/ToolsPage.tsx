@@ -243,11 +243,13 @@ export default function ToolsPage() {
 
         {/* Empty State */}
         {filteredTools.length === 0 && (
-          <div className="text-center py-12">
+          <div className="text-center py-12 bg-white/80 backdrop-blur-sm rounded-2xl border border-purple-100">
             <Puzzle className="w-12 h-12 text-charcoal/30 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-charcoal mb-2">Keine Tools gefunden</h3>
-            <p className="text-charcoal/60">
-              Versuche eine andere Suchanfrage
+            <p className="text-charcoal/60 max-w-md mx-auto">
+              {searchQuery
+                ? 'Versuche eine andere Suchanfrage'
+                : 'Die Tool-Datenbank muss noch initialisiert werden. Führe die Toolkit-Migrations in Supabase aus.'}
             </p>
           </div>
         )}

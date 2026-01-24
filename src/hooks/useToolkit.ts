@@ -1,9 +1,9 @@
 // src/hooks/useToolkit.ts
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/components/auth';
-import { useVentureContext } from '@/contexts/VentureContext';
+import { useOptionalVentureContext } from '@/contexts/VentureContext';
 
 // ══════════════════════════════════════════════════════════════
 // TYPES
@@ -215,7 +215,8 @@ interface UseToolkitReturn {
 
 export function useToolkit(): UseToolkitReturn {
   const { user } = useAuth();
-  const { activeVenture } = useVentureContext();
+  const ventureContext = useOptionalVentureContext();
+  const activeVenture = ventureContext?.activeVenture;
 
   const [categories, setCategories] = useState<ToolkitCategory[]>([]);
   const [guides, setGuides] = useState<ToolkitGuide[]>([]);
@@ -236,12 +237,14 @@ export function useToolkit(): UseToolkitReturn {
   // ════════════════════════════════════════════════════════════
 
   const loadCategories = useCallback(async () => {
+    console.log('[useToolkit] Loading categories...');
     const { data, error } = await supabase
       .from('toolkit_categories')
       .select('*')
       .eq('is_active', true)
       .order('sort_order');
 
+    console.log('[useToolkit] Categories result:', { count: data?.length, error });
     if (error) throw error;
 
     setCategories((data || []).map(c => ({
@@ -256,12 +259,14 @@ export function useToolkit(): UseToolkitReturn {
   }, []);
 
   const loadGuides = useCallback(async () => {
+    console.log('[useToolkit] Loading guides...');
     const { data, error } = await supabase
       .from('toolkit_guides')
       .select('*')
       .eq('is_published', true)
       .order('published_at', { ascending: false });
 
+    console.log('[useToolkit] Guides result:', { count: data?.length, error });
     if (error) throw error;
 
     setGuides((data || []).map(g => ({
@@ -287,12 +292,14 @@ export function useToolkit(): UseToolkitReturn {
   }, []);
 
   const loadChecklists = useCallback(async () => {
+    console.log('[useToolkit] Loading checklists...');
     const { data, error } = await supabase
       .from('toolkit_checklists')
       .select('*')
       .eq('is_published', true)
       .order('sort_order');
 
+    console.log('[useToolkit] Checklists result:', { count: data?.length, error });
     if (error) throw error;
 
     setChecklists((data || []).map(c => ({
@@ -310,12 +317,14 @@ export function useToolkit(): UseToolkitReturn {
   }, []);
 
   const loadPrompts = useCallback(async () => {
+    console.log('[useToolkit] Loading prompts...');
     const { data, error } = await supabase
       .from('toolkit_prompts')
       .select('*')
       .eq('is_published', true)
       .order('sort_order');
 
+    console.log('[useToolkit] Prompts result:', { count: data?.length, error });
     if (error) throw error;
 
     setPrompts((data || []).map(p => ({
@@ -337,11 +346,13 @@ export function useToolkit(): UseToolkitReturn {
   }, []);
 
   const loadTools = useCallback(async () => {
+    console.log('[useToolkit] Loading tools...');
     const { data, error } = await supabase
       .from('toolkit_tools')
       .select('*')
       .order('sort_order');
 
+    console.log('[useToolkit] Tools result:', { count: data?.length, error });
     if (error) throw error;
 
     setTools((data || []).map(t => ({
@@ -377,12 +388,14 @@ export function useToolkit(): UseToolkitReturn {
   }, []);
 
   const loadPitfalls = useCallback(async () => {
+    console.log('[useToolkit] Loading pitfalls...');
     const { data, error } = await supabase
       .from('toolkit_pitfalls')
       .select('*')
       .eq('is_published', true)
       .order('sort_order');
 
+    console.log('[useToolkit] Pitfalls result:', { count: data?.length, error });
     if (error) throw error;
 
     setPitfalls((data || []).map(p => ({
@@ -762,12 +775,30 @@ export function useToolkit(): UseToolkitReturn {
   // ════════════════════════════════════════════════════════════
 
   const refresh = useCallback(async (force = false) => {
+    console.log('[useToolkit] refresh() called, force:', force);
+
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured()) {
+      console.warn('[useToolkit] Supabase not configured');
+      setIsLoading(false);
+      setError('Supabase ist nicht konfiguriert. Bitte die Toolkit-Migrations in Supabase ausführen.');
+      hasLoadedRef.current = true;
+      return;
+    }
+
+    console.log('[useToolkit] Supabase is configured');
+
     // Prevent concurrent loads
-    if (isLoadingRef.current && !force) return;
+    if (isLoadingRef.current && !force) {
+      console.log('[useToolkit] Already loading, skipping');
+      return;
+    }
 
     isLoadingRef.current = true;
     setIsLoading(true);
     setError(null);
+
+    console.log('[useToolkit] Starting to load toolkit data...');
 
     try {
       await Promise.all([
@@ -780,6 +811,7 @@ export function useToolkit(): UseToolkitReturn {
         loadBookmarks(),
       ]);
       hasLoadedRef.current = true;
+      console.log('[useToolkit] Successfully loaded all toolkit data');
     } catch (err: unknown) {
       // Ignore AbortError - this is expected during cleanup
       if (err instanceof Error && err.name === 'AbortError') {
@@ -790,8 +822,14 @@ export function useToolkit(): UseToolkitReturn {
       if (errObj?.message?.includes('AbortError') || errObj?.message?.includes('aborted')) {
         return;
       }
-      console.error('Error loading toolkit:', err);
-      setError('Fehler beim Laden des Toolkits');
+      console.error('[useToolkit] Error loading toolkit:', err);
+      // Check for missing table error
+      const errorMessage = errObj?.message || '';
+      if (errorMessage.includes('relation') && errorMessage.includes('does not exist')) {
+        setError('Toolkit-Tabellen nicht gefunden. Bitte die Migrations in Supabase ausführen.');
+      } else {
+        setError('Fehler beim Laden des Toolkits. Prüfe ob die Migrations ausgeführt wurden.');
+      }
     } finally {
       isLoadingRef.current = false;
       setIsLoading(false);
@@ -800,9 +838,12 @@ export function useToolkit(): UseToolkitReturn {
 
   useEffect(() => {
     // Only load once on mount
+    console.log('[useToolkit] useEffect triggered, hasLoaded:', hasLoadedRef.current);
     if (!hasLoadedRef.current) {
+      console.log('[useToolkit] Calling refresh()...');
       refresh();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency array - only run once on mount
 
   // Re-load bookmarks when user changes

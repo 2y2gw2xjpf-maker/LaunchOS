@@ -233,11 +233,13 @@ export default function PromptsPage() {
 
         {/* Empty State */}
         {filteredPrompts.length === 0 && (
-          <div className="text-center py-12">
+          <div className="text-center py-12 bg-white/80 backdrop-blur-sm rounded-2xl border border-purple-100">
             <MessageSquare className="w-12 h-12 text-charcoal/30 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-charcoal mb-2">Keine Prompts gefunden</h3>
-            <p className="text-charcoal/60">
-              Versuche andere Filter oder eine andere Suchanfrage
+            <p className="text-charcoal/60 max-w-md mx-auto">
+              {searchQuery || selectedTool
+                ? 'Versuche andere Filter oder eine andere Suchanfrage'
+                : 'Die Prompt-Bibliothek muss noch initialisiert werden. Führe die Toolkit-Migrations in Supabase aus.'}
             </p>
           </div>
         )}

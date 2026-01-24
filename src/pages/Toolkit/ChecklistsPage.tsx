@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CheckSquare, Clock, Search, Star } from 'lucide-react';
@@ -7,8 +7,10 @@ import type { ChecklistProgress } from '@/hooks/useToolkit';
 import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 
 export default function ChecklistsPage() {
-  const { checklists, getChecklistProgress, isLoading } = useToolkit();
+  const { checklists, categories, getChecklistProgress, isLoading } = useToolkit();
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [progressMap, setProgressMap] = useState<Record<string, ChecklistProgress>>({});
 
   useEffect(() => {
@@ -28,10 +30,21 @@ export default function ChecklistsPage() {
     }
   }, [checklists, getChecklistProgress]);
 
-  const filteredChecklists = checklists.filter(checklist =>
-    !searchQuery ||
-    checklist.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    checklist.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredChecklists = useMemo(() => {
+    return checklists.filter(checklist => {
+      const matchesSearch = !searchQuery ||
+        checklist.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        checklist.description?.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesCategory = !selectedCategory || checklist.categoryId === selectedCategory;
+      const matchesDifficulty = !selectedDifficulty || checklist.difficulty === selectedDifficulty;
+
+      return matchesSearch && matchesCategory && matchesDifficulty;
+    });
+  }, [checklists, searchQuery, selectedCategory, selectedDifficulty]);
+
+  const checklistCategories = categories.filter(c =>
+    checklists.some(cl => cl.categoryId === c.id)
   );
 
   if (isLoading) {
@@ -69,25 +82,61 @@ export default function ChecklistsPage() {
           </p>
         </motion.div>
 
-        {/* Search */}
+        {/* Filters */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="bg-white/90 backdrop-blur-sm rounded-2xl border border-purple-100 shadow-card p-4 mb-6"
         >
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/40" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Suche nach Checklisten..."
-              className="w-full pl-10 pr-4 py-2.5 border border-purple-200 rounded-xl
-                       focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none bg-white"
-            />
+          <div className="flex flex-wrap gap-4">
+            {/* Search */}
+            <div className="flex-1 min-w-64">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/40" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Suche nach Checklisten..."
+                  className="w-full pl-10 pr-4 py-2.5 border border-purple-200 rounded-xl
+                           focus:border-purple-400 focus:ring-2 focus:ring-purple-100 outline-none bg-white"
+                />
+              </div>
+            </div>
+
+            {/* Category Filter */}
+            <select
+              value={selectedCategory || ''}
+              onChange={(e) => setSelectedCategory(e.target.value || null)}
+              className="px-4 py-2.5 border border-purple-200 rounded-xl bg-white
+                       focus:border-purple-400 outline-none"
+            >
+              <option value="">Alle Kategorien</option>
+              {checklistCategories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+
+            {/* Difficulty Filter */}
+            <select
+              value={selectedDifficulty || ''}
+              onChange={(e) => setSelectedDifficulty(e.target.value || null)}
+              className="px-4 py-2.5 border border-purple-200 rounded-xl bg-white
+                       focus:border-purple-400 outline-none"
+            >
+              <option value="">Alle Levels</option>
+              <option value="beginner">Anfänger</option>
+              <option value="intermediate">Mittel</option>
+              <option value="advanced">Fortgeschritten</option>
+            </select>
           </div>
         </motion.div>
+
+        {/* Results Count */}
+        <p className="text-sm text-charcoal/60 mb-4">
+          {filteredChecklists.length} {filteredChecklists.length === 1 ? 'Checkliste' : 'Checklisten'} gefunden
+        </p>
 
         {/* Checklists Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -187,11 +236,13 @@ export default function ChecklistsPage() {
 
         {/* Empty State */}
         {filteredChecklists.length === 0 && (
-          <div className="text-center py-12">
+          <div className="text-center py-12 bg-white/80 backdrop-blur-sm rounded-2xl border border-purple-100">
             <CheckSquare className="w-12 h-12 text-charcoal/30 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-charcoal mb-2">Keine Checklisten gefunden</h3>
-            <p className="text-charcoal/60">
-              Versuche eine andere Suchanfrage
+            <p className="text-charcoal/60 max-w-md mx-auto">
+              {searchQuery || selectedCategory || selectedDifficulty
+                ? 'Versuche andere Filter oder eine andere Suchanfrage'
+                : 'Die Checklisten-Datenbank muss noch initialisiert werden. Führe die Toolkit-Migrations in Supabase aus.'}
             </p>
           </div>
         )}

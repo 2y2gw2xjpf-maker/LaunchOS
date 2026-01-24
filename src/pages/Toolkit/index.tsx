@@ -275,7 +275,7 @@ export default function ToolkitPage() {
                   step: 2,
                   title: 'Grundlagen lernen',
                   description: 'Verstehe, was ein echtes Produkt wirklich braucht',
-                  link: '/toolkit/guides/was-braucht-ein-echtes-produkt',
+                  link: '/toolkit/guides',
                   icon: BookOpen,
                 },
                 {
@@ -289,14 +289,14 @@ export default function ToolkitPage() {
                   step: 4,
                   title: 'MVP fertigstellen',
                   description: 'Checke ob dein Produkt wirklich launch-ready ist',
-                  link: '/toolkit/checklists/mvp-readiness',
+                  link: '/toolkit/checklists',
                   icon: CheckSquare,
                 },
                 {
                   step: 5,
                   title: 'Go Live!',
                   description: 'Launch dein Produkt und hole dir Feedback',
-                  link: '/toolkit/checklists/go-live',
+                  link: '/toolkit/checklists',
                   icon: TrendingUp,
                 },
               ].map((item) => (

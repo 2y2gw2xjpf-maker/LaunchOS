@@ -155,11 +155,13 @@ export default function GuidesPage() {
 
         {/* Empty State */}
         {filteredGuides.length === 0 && (
-          <div className="text-center py-12">
+          <div className="text-center py-12 bg-white/80 backdrop-blur-sm rounded-2xl border border-purple-100">
             <BookOpen className="w-12 h-12 text-charcoal/30 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-charcoal mb-2">Keine Guides gefunden</h3>
-            <p className="text-charcoal/60">
-              Versuche andere Filter oder eine andere Suchanfrage
+            <p className="text-charcoal/60 max-w-md mx-auto">
+              {searchQuery || selectedCategory || selectedTool || selectedDifficulty
+                ? 'Versuche andere Filter oder eine andere Suchanfrage'
+                : 'Die Guide-Datenbank muss noch initialisiert werden. Führe die Toolkit-Migrations in Supabase aus.'}
             </p>
           </div>
         )}
