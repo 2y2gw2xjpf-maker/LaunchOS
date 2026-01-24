@@ -244,7 +244,7 @@ export function useToolkit(): UseToolkitReturn {
       .eq('is_active', true)
       .order('sort_order');
 
-    console.log('[useToolkit] Categories result:', { count: data?.length, error: error ? { message: error.message, code: error.code, details: error.details } : null });
+    console.log('[useToolkit] Categories result: count=' + data?.length + ', error=' + (error ? JSON.stringify({ message: error.message, code: error.code }) : 'null'));
     if (error) throw error;
 
     setCategories((data || []).map(c => ({
@@ -266,7 +266,7 @@ export function useToolkit(): UseToolkitReturn {
       .eq('is_published', true)
       .order('published_at', { ascending: false });
 
-    console.log('[useToolkit] Guides result:', { count: data?.length, error: error ? { message: error.message, code: error.code, details: error.details } : null });
+    console.log('[useToolkit] Guides result: count=' + data?.length + ', error=' + (error ? JSON.stringify({ message: error.message, code: error.code }) : 'null'));
     if (error) throw error;
 
     setGuides((data || []).map(g => ({
@@ -299,7 +299,7 @@ export function useToolkit(): UseToolkitReturn {
       .eq('is_published', true)
       .order('sort_order');
 
-    console.log('[useToolkit] Checklists result:', { count: data?.length, error: error ? { message: error.message, code: error.code, details: error.details } : null });
+    console.log('[useToolkit] Checklists result: count=' + data?.length + ', error=' + (error ? JSON.stringify({ message: error.message, code: error.code }) : 'null'));
     if (error) throw error;
 
     setChecklists((data || []).map(c => ({
@@ -324,7 +324,7 @@ export function useToolkit(): UseToolkitReturn {
       .eq('is_published', true)
       .order('sort_order');
 
-    console.log('[useToolkit] Prompts result:', { count: data?.length, error: error ? { message: error.message, code: error.code, details: error.details } : null });
+    console.log('[useToolkit] Prompts result: count=' + data?.length + ', error=' + (error ? JSON.stringify({ message: error.message, code: error.code }) : 'null'));
     if (error) throw error;
 
     setPrompts((data || []).map(p => ({
@@ -352,7 +352,7 @@ export function useToolkit(): UseToolkitReturn {
       .select('*')
       .order('sort_order');
 
-    console.log('[useToolkit] Tools result:', { count: data?.length, error: error ? { message: error.message, code: error.code, details: error.details } : null });
+    console.log('[useToolkit] Tools result: count=' + data?.length + ', error=' + (error ? JSON.stringify({ message: error.message, code: error.code }) : 'null'));
     if (error) throw error;
 
     setTools((data || []).map(t => ({
@@ -395,7 +395,7 @@ export function useToolkit(): UseToolkitReturn {
       .eq('is_published', true)
       .order('sort_order');
 
-    console.log('[useToolkit] Pitfalls result:', { count: data?.length, error: error ? { message: error.message, code: error.code, details: error.details } : null });
+    console.log('[useToolkit] Pitfalls result: count=' + data?.length + ', error=' + (error ? JSON.stringify({ message: error.message, code: error.code }) : 'null'));
     if (error) throw error;
 
     setPitfalls((data || []).map(p => ({
@@ -801,7 +801,7 @@ export function useToolkit(): UseToolkitReturn {
     console.log('[useToolkit] Starting to load toolkit data...');
 
     try {
-      await Promise.all([
+      const results = await Promise.allSettled([
         loadCategories(),
         loadGuides(),
         loadChecklists(),
@@ -810,8 +810,15 @@ export function useToolkit(): UseToolkitReturn {
         loadPitfalls(),
         loadBookmarks(),
       ]);
+
+      // Log any failures
+      const failures = results.filter(r => r.status === 'rejected');
+      if (failures.length > 0) {
+        console.error('[useToolkit] Some loads failed:', failures.map(f => (f as PromiseRejectedResult).reason));
+      }
+
       hasLoadedRef.current = true;
-      console.log('[useToolkit] Successfully loaded all toolkit data');
+      console.log('[useToolkit] Successfully loaded all toolkit data, hasLoaded set to true');
     } catch (err: unknown) {
       // Ignore AbortError - this is expected during cleanup
       if (err instanceof Error && err.name === 'AbortError') {
@@ -830,6 +837,8 @@ export function useToolkit(): UseToolkitReturn {
       } else {
         setError('Fehler beim Laden des Toolkits. Prüfe ob die Migrations ausgeführt wurden.');
       }
+      // Still mark as loaded to prevent infinite retries
+      hasLoadedRef.current = true;
     } finally {
       isLoadingRef.current = false;
       setIsLoading(false);
