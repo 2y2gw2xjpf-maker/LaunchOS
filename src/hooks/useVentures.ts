@@ -256,10 +256,51 @@ export function useVentures(): UseVenturesReturn {
 
       console.log('[Ventures] Venture created successfully:', newVenture);
 
+      // Wenn es ein neues Venture gibt und es NICHT aktiv ist, setze es als aktiv
+      // (deaktiviere dabei das bisherige aktive Venture)
+      if (newVenture && !newVenture.is_active) {
+        console.log('[Ventures] Setting new venture as active...');
+
+        // Erst alle deaktivieren
+        await fetch(
+          `${supabaseUrl}/rest/v1/ventures?user_id=eq.${user.id}`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': supabaseKey,
+              'Authorization': `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({ is_active: false }),
+          }
+        );
+
+        // Dann das neue aktivieren
+        await fetch(
+          `${supabaseUrl}/rest/v1/ventures?id=eq.${newVenture.id}`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': supabaseKey,
+              'Authorization': `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({ is_active: true }),
+          }
+        );
+
+        newVenture.is_active = true;
+        console.log('[Ventures] New venture is now active');
+      }
+
       // Update local state immediately
       const mappedVenture = mapVenture(newVenture);
       if (mountedRef.current) {
-        setVentures(prev => [mappedVenture, ...prev]);
+        // Update alle anderen Ventures auf nicht-aktiv im lokalen State
+        setVentures(prev => [
+          mappedVenture,
+          ...prev.map(v => ({ ...v, isActive: false }))
+        ]);
       }
 
       // Refresh in background (don't await to avoid blocking)
