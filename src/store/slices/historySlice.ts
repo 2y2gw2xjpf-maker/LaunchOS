@@ -1,6 +1,21 @@
 import type { StateCreator } from 'zustand';
-import type { SavedAnalysis, Project, WizardData, DataSharingTier } from '@/types';
+import type { SavedAnalysis, Project, WizardData, DataSharingTier, ValuationMethodResult, RouteResult } from '@/types';
 import * as db from '@/lib/storage';
+
+// Combined store type for cross-slice access
+interface CombinedStoreState {
+  // From TierSlice
+  selectedTier: DataSharingTier | null;
+  acknowledgedPrivacy: boolean;
+  // From WizardSlice
+  wizardData: WizardData;
+  currentStep: number;
+  // From RouteSlice
+  routeResult: RouteResult | null;
+  completedTasks: string[];
+  // From ValuationSlice
+  methodResults: ValuationMethodResult[];
+}
 
 export interface HistorySlice {
   // State
@@ -32,12 +47,14 @@ export interface HistorySlice {
     ventureId?: string | null
   ) => Promise<SavedAnalysis>;
   loadAnalysis: (id: string) => Promise<SavedAnalysis | null>;
+  restoreAnalysisToStore: (id: string) => Promise<boolean>;
   updateAnalysis: (id: string, updates: Partial<SavedAnalysis>) => Promise<void>;
   duplicateAnalysis: (id: string, newName?: string) => Promise<SavedAnalysis | null>;
   deleteAnalysis: (id: string) => Promise<void>;
   moveAnalysisToProject: (analysisId: string, projectId: string | null) => Promise<void>;
   toggleAnalysisFavorite: (id: string) => Promise<void>;
   setActiveAnalysis: (id: string | null) => void;
+  findAnalysisForVenture: (ventureId: string) => SavedAnalysis | null;
 
   // Actions - Projects
   loadProjects: () => Promise<void>;
@@ -68,7 +85,7 @@ const DEFAULT_PROJECT_COLORS = [
   '#3498db',
 ];
 
-export const createHistorySlice: StateCreator<HistorySlice, [], [], HistorySlice> = (set, get) => ({
+export const createHistorySlice: StateCreator<HistorySlice & CombinedStoreState, [], [], HistorySlice> = (set, get) => ({
   // Initial State
   analyses: [],
   projects: [],
@@ -183,13 +200,66 @@ export const createHistorySlice: StateCreator<HistorySlice, [], [], HistorySlice
     return newAnalysis;
   },
 
-  // Load a specific analysis
+  // Load a specific analysis (just fetches data, doesn't restore to store)
   loadAnalysis: async (id) => {
     const analysis = await db.getAnalysis(id);
     if (analysis) {
       set({ activeAnalysisId: id });
     }
     return analysis || null;
+  },
+
+  // Restore analysis state to the store (wizardData, routeResult, etc.)
+  restoreAnalysisToStore: async (id) => {
+    const analysis = await db.getAnalysis(id);
+    if (!analysis) {
+      console.warn('[LaunchOS] Analysis not found for restore:', id);
+      return false;
+    }
+
+    console.log('[LaunchOS] Restoring analysis to store:', analysis.name);
+
+    // Calculate currentStep based on completedSteps
+    const completedSteps = analysis.wizardData?.completedSteps || [];
+    let currentStep = 0;
+    if (analysis.routeResult) {
+      // If we have a result, go to the results step (last step)
+      currentStep = 4; // Results step
+    } else if (completedSteps.length > 0) {
+      // Go to the next incomplete step
+      currentStep = Math.min(completedSteps.length, 4);
+    }
+
+    // Restore all relevant state at once
+    set({
+      // History state
+      activeAnalysisId: id,
+      hasUnsavedChanges: false,
+      // Tier state
+      selectedTier: analysis.tier,
+      acknowledgedPrivacy: true,
+      // Wizard state
+      wizardData: analysis.wizardData,
+      currentStep,
+      // Route state
+      routeResult: analysis.routeResult,
+      completedTasks: analysis.completedTasks || [],
+      // Valuation state (if we have it)
+      methodResults: analysis.valuationResults?.methodResults || [],
+    });
+
+    return true;
+  },
+
+  // Find the most recent analysis for a venture
+  findAnalysisForVenture: (ventureId) => {
+    const { analyses } = get();
+    // Find analyses for this venture, sorted by updatedAt descending
+    const ventureAnalyses = analyses
+      .filter((a) => a.ventureId === ventureId)
+      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+
+    return ventureAnalyses[0] || null;
   },
 
   // Update an existing analysis

@@ -58,7 +58,6 @@ export const EnhancedSidebar = () => {
     initializeHistory,
     setSearchQuery,
     saveCurrentAsAnalysis,
-    setActiveAnalysis,
     startNewAnalysis,
     setHasUnsavedChanges,
     updateAnalysis,
@@ -73,6 +72,8 @@ export const EnhancedSidebar = () => {
     getFilteredAnalyses,
     getUngroupedAnalyses,
     getAnalysesByProject,
+    restoreAnalysisToStore,
+    findAnalysisForVenture,
     // Comparison
     isInComparison,
     toggleInComparison,
@@ -173,9 +174,12 @@ export const EnhancedSidebar = () => {
     doStartNewAnalysis();
   };
 
-  const handleSelectAnalysis = (id: string) => {
-    setActiveAnalysis(id);
-    // TODO: Load analysis data into store
+  const handleSelectAnalysis = async (id: string) => {
+    // Restore analysis data into store and navigate to whats-next
+    const success = await restoreAnalysisToStore(id);
+    if (success) {
+      navigate('/whats-next');
+    }
   };
 
   const handleRenameAnalysis = async (id: string, newName: string) => {
@@ -693,8 +697,19 @@ export const EnhancedSidebar = () => {
                           {ventures.map((venture) => (
                             <button
                               key={venture.id}
-                              onClick={() => {
-                                setActiveVenture(venture.id);
+                              onClick={async () => {
+                                await setActiveVenture(venture.id);
+                                // Check if there's an existing analysis for this venture
+                                const existingAnalysis = findAnalysisForVenture(venture.id);
+                                if (existingAnalysis) {
+                                  // Restore the analysis and go to whats-next
+                                  const success = await restoreAnalysisToStore(existingAnalysis.id);
+                                  if (success) {
+                                    navigate('/whats-next');
+                                    return;
+                                  }
+                                }
+                                // No existing analysis - go to data input
                                 navigate('/venture/data-input');
                               }}
                               className={cn(
