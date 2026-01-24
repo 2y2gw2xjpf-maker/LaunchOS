@@ -523,11 +523,21 @@ export const createHistorySlice: StateCreator<HistorySlice & CombinedStoreState,
   // Create test analyses for development/testing
   createTestAnalyses: async () => {
     try {
+      const { analyses: currentAnalyses } = get();
       const testAnalyses = await db.createTestAnalyses();
-      set((s) => ({
-        analyses: [...testAnalyses, ...s.analyses],
-      }));
-      console.log('[LaunchOS] Test analyses created:', testAnalyses.length);
+
+      // Only add analyses that aren't already in the store
+      const existingIds = new Set(currentAnalyses.map(a => a.id));
+      const newAnalyses = testAnalyses.filter(a => !existingIds.has(a.id));
+
+      if (newAnalyses.length > 0) {
+        set((s) => ({
+          analyses: [...newAnalyses, ...s.analyses],
+        }));
+        console.log('[LaunchOS] Test analyses added to store:', newAnalyses.length);
+      } else {
+        console.log('[LaunchOS] Test analyses already in store, skipping');
+      }
     } catch (error) {
       console.error('[LaunchOS] Failed to create test analyses:', error);
     }

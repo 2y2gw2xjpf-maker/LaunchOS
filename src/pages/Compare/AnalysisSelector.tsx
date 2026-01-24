@@ -14,13 +14,18 @@ export const AnalysisSelector = () => {
   // Auto-create test analyses if none exist with results - only once per session
   const hasAttemptedAutoCreate = React.useRef(false);
 
+  // Check analyses with results
+  const analysesWithResults = React.useMemo(
+    () => analyses.filter((a) => a.routeResult),
+    [analyses]
+  );
+
   React.useEffect(() => {
     // Only attempt auto-create once after loading is complete
     if (isHistoryLoading || hasAttemptedAutoCreate.current) {
       return;
     }
 
-    const analysesWithResults = analyses.filter((a) => a.routeResult);
     console.log('[Compare] Checking for auto-create:', {
       loading: isHistoryLoading,
       totalAnalyses: analyses.length,
@@ -33,7 +38,7 @@ export const AnalysisSelector = () => {
       console.log('[Compare] Auto-creating test analyses because only', analysesWithResults.length, 'exist with results');
       createTestAnalyses();
     }
-  }, [isHistoryLoading]); // Only depend on isHistoryLoading, not analyses
+  }, [isHistoryLoading, analyses.length, analysesWithResults.length, createTestAnalyses]);
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('de-DE', {
@@ -68,9 +73,6 @@ export const AnalysisSelector = () => {
         return 'bg-charcoal/10 text-charcoal/60';
     }
   };
-
-  // Filter analyses that have results
-  const analysesWithResults = analyses.filter((a) => a.routeResult);
 
   // Debug: Log analysis counts in development
   React.useEffect(() => {
