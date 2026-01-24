@@ -32,9 +32,13 @@ export const ComparePage = () => {
   const [saveName, setSaveName] = React.useState('');
   const [saveNotes, setSaveNotes] = React.useState('');
 
-  // Initialize history on mount
+  // Initialize history on mount - only once
+  const hasInitialized = React.useRef(false);
   React.useEffect(() => {
-    initializeHistory();
+    if (!hasInitialized.current) {
+      hasInitialized.current = true;
+      initializeHistory();
+    }
   }, [initializeHistory]);
 
   // Get selected analyses

@@ -88,6 +88,9 @@ const DEFAULT_PROJECT_COLORS = [
   '#3498db',
 ];
 
+// Module-level flag to prevent re-initialization
+let _historyInitialized = false;
+
 export const createHistorySlice: StateCreator<HistorySlice & CombinedStoreState, [], [], HistorySlice> = (set, get) => ({
   // Initial State
   analyses: [],
@@ -100,12 +103,11 @@ export const createHistorySlice: StateCreator<HistorySlice & CombinedStoreState,
 
   // Initialize - load from IndexedDB and run migration
   initializeHistory: async () => {
-    // Prevent multiple concurrent initializations
-    const { isHistoryLoading } = get();
-    if (isHistoryLoading) {
-      console.log('[LaunchOS] History already loading, skipping...');
+    // Prevent multiple initializations using module-level flag
+    if (_historyInitialized) {
       return;
     }
+    _historyInitialized = true;
 
     set({ isHistoryLoading: true });
     try {
