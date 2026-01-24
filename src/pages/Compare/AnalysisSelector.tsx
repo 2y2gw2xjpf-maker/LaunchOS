@@ -119,22 +119,20 @@ export const AnalysisSelector = () => {
             <Button variant="gold" onClick={() => setShowNewAnalysisDialog(true)}>
               Neue Analyse starten
             </Button>
-            {/* Dev button to create test data */}
-            {process.env.NODE_ENV === 'development' && (
-              <Button
-                variant="outline"
-                onClick={async () => {
-                  setIsCreatingTest(true);
-                  await createTestAnalyses();
-                  setIsCreatingTest(false);
-                }}
-                disabled={isCreatingTest}
-                className="flex items-center gap-2"
-              >
-                <FlaskConical className="w-4 h-4" />
-                {isCreatingTest ? 'Erstelle...' : 'Test-Analysen erstellen'}
-              </Button>
-            )}
+            {/* Button to create test data - always visible for now */}
+            <Button
+              variant="outline"
+              onClick={async () => {
+                setIsCreatingTest(true);
+                await createTestAnalyses();
+                setIsCreatingTest(false);
+              }}
+              disabled={isCreatingTest}
+              className="flex items-center gap-2"
+            >
+              <FlaskConical className="w-4 h-4" />
+              {isCreatingTest ? 'Erstelle...' : 'Demo-Vergleich testen'}
+            </Button>
           </div>
         </motion.div>
 
