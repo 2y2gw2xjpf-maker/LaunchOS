@@ -193,14 +193,26 @@ export function useVentures(): UseVenturesReturn {
     }
 
     try {
-      // Wenn erstes Venture, automatisch aktiv setzen
-      const isFirstVenture = ventures.length === 0;
-
       console.log('[Ventures] Creating venture for user:', user.id);
 
       // Use direct fetch to bypass Supabase client's AbortController issues
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      // Prüfe ob bereits ein aktives Venture existiert (in DB, nicht nur lokal)
+      const checkResponse = await fetch(
+        `${supabaseUrl}/rest/v1/ventures?user_id=eq.${user.id}&is_active=eq.true&select=id`,
+        {
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        }
+      );
+      const existingActive = await checkResponse.json();
+      const hasActiveVenture = Array.isArray(existingActive) && existingActive.length > 0;
+
+      console.log('[Ventures] Has active venture:', hasActiveVenture);
 
       const ventureData = {
         user_id: user.id,
@@ -216,7 +228,8 @@ export function useVentures(): UseVenturesReturn {
         team_size: data.teamSize || null,
         logo_url: data.logoUrl || null,
         branding: data.branding || null,
-        is_active: isFirstVenture,
+        // Nur aktiv setzen wenn noch kein aktives Venture existiert
+        is_active: !hasActiveVenture,
       };
 
       console.log('[Ventures] Making direct API call to create venture');
