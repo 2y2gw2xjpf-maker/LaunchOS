@@ -244,7 +244,7 @@ export function useToolkit(): UseToolkitReturn {
       .eq('is_active', true)
       .order('sort_order');
 
-    console.log('[useToolkit] Categories result:', { count: data?.length, error });
+    console.log('[useToolkit] Categories result:', { count: data?.length, error: error ? { message: error.message, code: error.code, details: error.details } : null });
     if (error) throw error;
 
     setCategories((data || []).map(c => ({
@@ -266,7 +266,7 @@ export function useToolkit(): UseToolkitReturn {
       .eq('is_published', true)
       .order('published_at', { ascending: false });
 
-    console.log('[useToolkit] Guides result:', { count: data?.length, error });
+    console.log('[useToolkit] Guides result:', { count: data?.length, error: error ? { message: error.message, code: error.code, details: error.details } : null });
     if (error) throw error;
 
     setGuides((data || []).map(g => ({
@@ -299,7 +299,7 @@ export function useToolkit(): UseToolkitReturn {
       .eq('is_published', true)
       .order('sort_order');
 
-    console.log('[useToolkit] Checklists result:', { count: data?.length, error });
+    console.log('[useToolkit] Checklists result:', { count: data?.length, error: error ? { message: error.message, code: error.code, details: error.details } : null });
     if (error) throw error;
 
     setChecklists((data || []).map(c => ({
@@ -324,7 +324,7 @@ export function useToolkit(): UseToolkitReturn {
       .eq('is_published', true)
       .order('sort_order');
 
-    console.log('[useToolkit] Prompts result:', { count: data?.length, error });
+    console.log('[useToolkit] Prompts result:', { count: data?.length, error: error ? { message: error.message, code: error.code, details: error.details } : null });
     if (error) throw error;
 
     setPrompts((data || []).map(p => ({
@@ -352,7 +352,7 @@ export function useToolkit(): UseToolkitReturn {
       .select('*')
       .order('sort_order');
 
-    console.log('[useToolkit] Tools result:', { count: data?.length, error });
+    console.log('[useToolkit] Tools result:', { count: data?.length, error: error ? { message: error.message, code: error.code, details: error.details } : null });
     if (error) throw error;
 
     setTools((data || []).map(t => ({
@@ -395,7 +395,7 @@ export function useToolkit(): UseToolkitReturn {
       .eq('is_published', true)
       .order('sort_order');
 
-    console.log('[useToolkit] Pitfalls result:', { count: data?.length, error });
+    console.log('[useToolkit] Pitfalls result:', { count: data?.length, error: error ? { message: error.message, code: error.code, details: error.details } : null });
     if (error) throw error;
 
     setPitfalls((data || []).map(p => ({
