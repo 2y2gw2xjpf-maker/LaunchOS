@@ -13,6 +13,23 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
+// Create a separate client for public data queries (not affected by auth lifecycle)
+// This prevents AbortError issues when auth state changes during data fetching
+export const supabasePublic = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+    detectSessionInUrl: false,
+  },
+  global: {
+    fetch: (url, options) => {
+      // Remove any abort signals to prevent cancellation
+      const { signal, ...rest } = options || {};
+      return fetch(url, rest);
+    },
+  },
+});
+
 // ==================== TYPES ====================
 
 export interface UserProfile {

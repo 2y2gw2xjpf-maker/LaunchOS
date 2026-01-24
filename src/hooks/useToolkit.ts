@@ -1,7 +1,7 @@
 // src/hooks/useToolkit.ts
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { supabase, supabasePublic, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/components/auth';
 import { useOptionalVentureContext } from '@/contexts/VentureContext';
 
@@ -238,7 +238,7 @@ export function useToolkit(): UseToolkitReturn {
 
   const loadCategories = useCallback(async () => {
     console.log('[useToolkit] Loading categories...');
-    const { data, error } = await supabase
+    const { data, error } = await supabasePublic
       .from('toolkit_categories')
       .select('*')
       .eq('is_active', true)
@@ -260,7 +260,7 @@ export function useToolkit(): UseToolkitReturn {
 
   const loadGuides = useCallback(async () => {
     console.log('[useToolkit] Loading guides...');
-    const { data, error } = await supabase
+    const { data, error } = await supabasePublic
       .from('toolkit_guides')
       .select('*')
       .eq('is_published', true)
@@ -293,7 +293,7 @@ export function useToolkit(): UseToolkitReturn {
 
   const loadChecklists = useCallback(async () => {
     console.log('[useToolkit] Loading checklists...');
-    const { data, error } = await supabase
+    const { data, error } = await supabasePublic
       .from('toolkit_checklists')
       .select('*')
       .eq('is_published', true)
@@ -318,7 +318,7 @@ export function useToolkit(): UseToolkitReturn {
 
   const loadPrompts = useCallback(async () => {
     console.log('[useToolkit] Loading prompts...');
-    const { data, error } = await supabase
+    const { data, error } = await supabasePublic
       .from('toolkit_prompts')
       .select('*')
       .eq('is_published', true)
@@ -347,7 +347,7 @@ export function useToolkit(): UseToolkitReturn {
 
   const loadTools = useCallback(async () => {
     console.log('[useToolkit] Loading tools...');
-    const { data, error } = await supabase
+    const { data, error } = await supabasePublic
       .from('toolkit_tools')
       .select('*')
       .order('sort_order');
@@ -389,7 +389,7 @@ export function useToolkit(): UseToolkitReturn {
 
   const loadPitfalls = useCallback(async () => {
     console.log('[useToolkit] Loading pitfalls...');
-    const { data, error } = await supabase
+    const { data, error } = await supabasePublic
       .from('toolkit_pitfalls')
       .select('*')
       .eq('is_published', true)
