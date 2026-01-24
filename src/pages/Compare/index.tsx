@@ -31,6 +31,7 @@ export const ComparePage = () => {
   const [showHistoryPanel, setShowHistoryPanel] = React.useState(false);
   const [saveName, setSaveName] = React.useState('');
   const [saveNotes, setSaveNotes] = React.useState('');
+  const [comparisonStarted, setComparisonStarted] = React.useState(false);
 
   // Initialize history on mount - only once
   const hasInitialized = React.useRef(false);
@@ -53,7 +54,20 @@ export const ComparePage = () => {
     [selectedAnalyses]
   );
 
-  const showSelector = !canCompare();
+  // Show selector until user explicitly starts comparison
+  const showSelector = !comparisonStarted;
+
+  // Handle starting comparison
+  const handleStartComparison = () => {
+    if (canCompare()) {
+      setComparisonStarted(true);
+    }
+  };
+
+  // Handle going back to selector
+  const handleBackToSelector = () => {
+    setComparisonStarted(false);
+  };
 
   // Handle saving comparison
   const handleSaveComparison = () => {
@@ -153,7 +167,7 @@ export const ComparePage = () => {
         </motion.div>
 
         {showSelector ? (
-          <AnalysisSelector />
+          <AnalysisSelector onStartComparison={handleStartComparison} />
         ) : (
           <>
             {/* Selected Analyses Header */}
@@ -164,11 +178,16 @@ export const ComparePage = () => {
             >
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-medium text-charcoal/60">
-                  Ausgewahlte Analysen ({selectedAnalyses.length}/4)
+                  Ausgewählte Analysen ({selectedAnalyses.length}/4)
                 </h2>
-                <Button variant="ghost" size="sm" onClick={clearComparison}>
-                  Alle entfernen
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={handleBackToSelector}>
+                    Auswahl ändern
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => { clearComparison(); setComparisonStarted(false); }}>
+                    Alle entfernen
+                  </Button>
+                </div>
               </div>
 
               <div className="flex flex-wrap gap-3">
@@ -183,11 +202,11 @@ export const ComparePage = () => {
 
                 {selectedAnalyses.length < 4 && (
                   <button
-                    onClick={() => setShowNewAnalysisDialog(true)}
+                    onClick={handleBackToSelector}
                     className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-navy/20 rounded-xl text-charcoal/60 hover:border-navy/40 hover:text-navy transition-colors"
                   >
                     <Plus className="w-4 h-4" />
-                    <span className="text-sm">Weitere hinzufugen</span>
+                    <span className="text-sm">Weitere hinzufügen</span>
                   </button>
                 )}
               </div>

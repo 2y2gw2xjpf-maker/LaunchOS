@@ -6,7 +6,11 @@ import { Button } from '@/components/ui';
 import { useStore } from '@/store';
 import { NewAnalysisDialog } from '@/components/dialogs/NewAnalysisDialog';
 
-export const AnalysisSelector = () => {
+interface AnalysisSelectorProps {
+  onStartComparison?: () => void;
+}
+
+export const AnalysisSelector = ({ onStartComparison }: AnalysisSelectorProps) => {
   const [showNewAnalysisDialog, setShowNewAnalysisDialog] = React.useState(false);
   const [isCreatingTest, setIsCreatingTest] = React.useState(false);
   const { analyses, selectedAnalysisIds, toggleInComparison, canCompare, getComparisonCount, isHistoryLoading, createTestAnalyses } = useStore();
@@ -266,8 +270,8 @@ export const AnalysisSelector = () => {
           animate={{ opacity: 1, y: 0 }}
           className="flex justify-center"
         >
-          <Button variant="gold" size="lg">
-            Vergleich starten
+          <Button variant="gold" size="lg" onClick={onStartComparison}>
+            Vergleich starten ({getComparisonCount()} ausgewählt)
           </Button>
         </motion.div>
       )}
