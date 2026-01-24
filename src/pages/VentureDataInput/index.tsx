@@ -83,8 +83,24 @@ interface TierData {
 
 export const VentureDataInputPage = () => {
   const navigate = useNavigate();
-  const { activeVenture, updateVenture, isLoading: ventureLoading } = useVentureContext();
+  const { activeVenture, updateVenture, isLoading: ventureLoading, refresh } = useVentureContext();
   const { selectedTier } = useStore();
+
+  // Retry-Mechanismus: Wenn kein aktives Venture nach dem Laden, versuche erneut zu laden
+  const [retryCount, setRetryCount] = React.useState(0);
+  const maxRetries = 3;
+
+  React.useEffect(() => {
+    // Wenn nicht am Laden, kein aktives Venture, und noch Retries übrig
+    if (!ventureLoading && !activeVenture && retryCount < maxRetries) {
+      const timer = setTimeout(() => {
+        console.log(`[VentureDataInput] Retry ${retryCount + 1}/${maxRetries} - refreshing ventures...`);
+        refresh();
+        setRetryCount(prev => prev + 1);
+      }, 500); // 500ms Wartezeit zwischen Retries
+      return () => clearTimeout(timer);
+    }
+  }, [ventureLoading, activeVenture, retryCount, refresh]);
 
   // Tier-Level basierend auf Store oder Venture
   const tierLevel = React.useMemo(() => {
@@ -227,8 +243,10 @@ export const VentureDataInputPage = () => {
     navigate('/dashboard');
   };
 
-  // Loading-Zustand: Warte auf Venture-Kontext
-  if (ventureLoading) {
+  // Loading-Zustand: Warte auf Venture-Kontext oder Retries
+  const isStillLoading = ventureLoading || (!activeVenture && retryCount < maxRetries);
+
+  if (isStillLoading) {
     return (
       <div className="min-h-screen bg-cream">
         <Header />
@@ -246,7 +264,7 @@ export const VentureDataInputPage = () => {
     );
   }
 
-  // Wenn kein aktives Venture nach dem Laden, zeige Hinweis mit Link zu /venture/create
+  // Wenn kein aktives Venture nach allen Retries, zeige Hinweis mit Link zu /venture/create
   if (!activeVenture) {
     return (
       <div className="min-h-screen bg-cream">
