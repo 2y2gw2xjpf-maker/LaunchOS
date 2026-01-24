@@ -31,6 +31,8 @@ import type { DataSharingTier } from '@/types';
 interface NewAnalysisDialogProps {
   open: boolean;
   onClose: () => void;
+  /** If true, dialog is used for selecting analyses to compare (not creating new ones) */
+  compareMode?: boolean;
 }
 
 type DialogStep = 'venture' | 'tier';
@@ -42,25 +44,92 @@ const TIER_ICONS = {
   full: Lock,
 };
 
-export const NewAnalysisDialog = ({ open, onClose }: NewAnalysisDialogProps) => {
+export const NewAnalysisDialog = ({ open, onClose, compareMode = false }: NewAnalysisDialogProps) => {
   const navigate = useNavigate();
   const { ventures, isLoading, setActiveVenture } = useVentureContext();
-  const { setSelectedTier, setAcknowledgedPrivacy, setWizardData, setCurrentStep } = useStore();
+  const {
+    setSelectedTier,
+    setAcknowledgedPrivacy,
+    setWizardData,
+    setCurrentStep,
+    findAnalysisForVenture,
+    toggleInComparison,
+    isInComparison,
+    restoreAnalysisToStore,
+    initializeHistory,
+    analyses,
+    isHistoryLoading,
+  } = useStore();
 
   const [step, setStep] = React.useState<DialogStep>('venture');
   const [selectedVenture, setSelectedVenture] = React.useState<Venture | null>(null);
+  const [isInitializing, setIsInitializing] = React.useState(false);
+  const [hasInitialized, setHasInitialized] = React.useState(false);
+
+  // Load history when dialog opens - MUST complete before showing ventures
+  React.useEffect(() => {
+    if (open && !hasInitialized) {
+      setIsInitializing(true);
+      initializeHistory().finally(() => {
+        setIsInitializing(false);
+        setHasInitialized(true);
+      });
+    }
+  }, [open, hasInitialized, initializeHistory]);
 
   // Reset state when dialog closes
   React.useEffect(() => {
     if (!open) {
       setStep('venture');
       setSelectedVenture(null);
+      setHasInitialized(false);
     }
   }, [open]);
 
+  // Debug log - shows after history is loaded
+  React.useEffect(() => {
+    if (open && hasInitialized) {
+      console.log('[NewAnalysisDialog] History loaded:', {
+        ventures: ventures.length,
+        analyses: analyses.length,
+        analysesWithVenture: analyses.filter(a => a.ventureId).map(a => ({
+          name: a.name,
+          ventureId: a.ventureId,
+          hasRouteResult: !!a.routeResult,
+        })),
+        compareMode,
+      });
+    }
+  }, [open, hasInitialized, ventures.length, analyses, compareMode]);
+
+  // Show loading until history is ready
+  const isDataLoading = isLoading || isInitializing || isHistoryLoading || !hasInitialized;
+
   const availableVentures = ventures;
 
-  const handleSelectVenture = (venture: Venture) => {
+  const handleSelectVenture = async (venture: Venture) => {
+    // Check if venture has an existing analysis with results
+    const existingAnalysis = findAnalysisForVenture(venture.id);
+    const hasCompletedAnalysis = existingAnalysis && existingAnalysis.routeResult;
+
+    // In compare mode: toggle comparison selection for ventures with completed analyses
+    if (compareMode && hasCompletedAnalysis) {
+      toggleInComparison(existingAnalysis.id);
+      // Don't close - let user select multiple
+      return;
+    }
+
+    // If venture has a completed analysis, offer to load it or start new
+    if (hasCompletedAnalysis && !compareMode) {
+      // Load existing analysis and go to results
+      await setActiveVenture(venture.id);
+      await restoreAnalysisToStore(existingAnalysis.id);
+      onClose();
+      navigate('/whats-next');
+      return;
+    }
+
+    // No completed analysis - go through tier selection for new analysis
     setSelectedVenture(venture);
     setStep('tier');
   };
@@ -141,10 +210,16 @@ export const NewAnalysisDialog = ({ open, onClose }: NewAnalysisDialogProps) => 
                   )}
                   <div>
                     <h2 className="text-xl font-semibold text-charcoal">
-                      {step === 'venture' ? 'Neue Analyse starten' : 'Daten-Level wählen'}
+                      {compareMode
+                        ? 'Analysen vergleichen'
+                        : step === 'venture'
+                        ? 'Neue Analyse starten'
+                        : 'Daten-Level wählen'}
                     </h2>
                     <p className="text-sm text-charcoal/60 mt-1">
-                      {step === 'venture'
+                      {compareMode
+                        ? 'Wähle Ventures zum Vergleichen aus'
+                        : step === 'venture'
                         ? 'Wähle ein Venture oder erstelle ein neues'
                         : `Für: ${selectedVenture?.name}`}
                     </p>
@@ -169,27 +244,29 @@ export const NewAnalysisDialog = ({ open, onClose }: NewAnalysisDialogProps) => 
                       exit={{ opacity: 0, x: -20 }}
                       className="space-y-4"
                     >
-                      {/* Create New Venture Option */}
-                      <button
-                        onClick={handleCreateNew}
-                        className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-purple-200 hover:border-purple-400 hover:bg-purple-50 transition-all group"
-                      >
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                          <Plus className="w-6 h-6 text-white" />
-                        </div>
-                        <div className="flex-1 text-left">
-                          <p className="font-semibold text-charcoal group-hover:text-purple-700">
-                            Neues Venture erstellen
-                          </p>
-                          <p className="text-sm text-charcoal/60">
-                            Starte mit einem neuen Startup-Profil
-                          </p>
-                        </div>
-                        <ChevronRight className="w-5 h-5 text-purple-400 group-hover:translate-x-1 transition-transform" />
-                      </button>
+                      {/* Create New Venture Option - hide in compare mode */}
+                      {!compareMode && (
+                        <button
+                          onClick={handleCreateNew}
+                          className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-purple-200 hover:border-purple-400 hover:bg-purple-50 transition-all group"
+                        >
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                            <Plus className="w-6 h-6 text-white" />
+                          </div>
+                          <div className="flex-1 text-left">
+                            <p className="font-semibold text-charcoal group-hover:text-purple-700">
+                              Neues Venture erstellen
+                            </p>
+                            <p className="text-sm text-charcoal/60">
+                              Starte mit einem neuen Startup-Profil
+                            </p>
+                          </div>
+                          <ChevronRight className="w-5 h-5 text-purple-400 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      )}
 
                       {/* Divider */}
-                      {availableVentures.length > 0 && (
+                      {availableVentures.length > 0 && !compareMode && (
                         <div className="flex items-center gap-4">
                           <div className="flex-1 h-px bg-gray-200" />
                           <span className="text-xs text-charcoal/50 uppercase tracking-wider">
@@ -199,33 +276,75 @@ export const NewAnalysisDialog = ({ open, onClose }: NewAnalysisDialogProps) => 
                         </div>
                       )}
 
+                      {/* Compare mode info */}
+                      {compareMode && (
+                        <div className="p-3 bg-blue-50 rounded-xl text-sm text-blue-700">
+                          Wähle Ventures mit abgeschlossenen Analysen zum Vergleichen aus.
+                        </div>
+                      )}
+
                       {/* Loading State */}
-                      {isLoading && (
+                      {isDataLoading && (
                         <div className="flex items-center justify-center py-8">
                           <Loader2 className="w-6 h-6 text-purple-500 animate-spin" />
+                          <span className="ml-2 text-sm text-charcoal/60">Lade Analysen...</span>
                         </div>
                       )}
 
                       {/* Existing Ventures */}
-                      {!isLoading && availableVentures.length > 0 && (
+                      {!isDataLoading && availableVentures.length > 0 && (
                         <div className="space-y-2">
-                          {availableVentures.map((venture) => (
+                          {availableVentures.map((venture) => {
+                            const existingAnalysis = findAnalysisForVenture(venture.id);
+                            const hasCompletedAnalysis = existingAnalysis && existingAnalysis.routeResult;
+                            const isSelectedForComparison = hasCompletedAnalysis && isInComparison(existingAnalysis.id);
+                            const isDisabledInCompareMode = compareMode && !hasCompletedAnalysis;
+
+                            return (
                             <button
                               key={venture.id}
                               onClick={() => handleSelectVenture(venture)}
-                              className="w-full flex items-center gap-4 p-4 rounded-xl border border-gray-200 hover:border-purple-300 hover:bg-purple-50/50 transition-all group"
+                              disabled={isDisabledInCompareMode}
+                              className={cn(
+                                'w-full flex items-center gap-4 p-4 rounded-xl border transition-all group',
+                                isSelectedForComparison
+                                  ? 'border-2 border-navy bg-navy/5'
+                                  : isDisabledInCompareMode
+                                  ? 'border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed'
+                                  : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50/50'
+                              )}
                             >
-                              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                                <Building2 className="w-6 h-6 text-gray-600" />
+                              <div className={cn(
+                                'w-12 h-12 rounded-xl flex items-center justify-center',
+                                isSelectedForComparison
+                                  ? 'bg-navy/20'
+                                  : 'bg-gradient-to-br from-gray-100 to-gray-200'
+                              )}>
+                                <Building2 className={cn('w-6 h-6', isSelectedForComparison ? 'text-navy' : 'text-gray-600')} />
                               </div>
                               <div className="flex-1 text-left">
                                 <div className="flex items-center gap-2">
-                                  <p className="font-semibold text-charcoal">
+                                  <p className={cn('font-semibold', isSelectedForComparison ? 'text-navy' : 'text-charcoal')}>
                                     {venture.name}
                                   </p>
-                                  {venture.isActive && (
+                                  {venture.isActive && !compareMode && (
                                     <span className="px-2 py-0.5 text-xs bg-green-100 text-green-700 rounded-full">
                                       Aktiv
+                                    </span>
+                                  )}
+                                  {isSelectedForComparison && (
+                                    <span className="px-2 py-0.5 text-xs bg-navy text-white rounded-full">
+                                      ✓ Ausgewählt
+                                    </span>
+                                  )}
+                                  {compareMode && !hasCompletedAnalysis && (
+                                    <span className="px-2 py-0.5 text-xs bg-gray-200 text-gray-500 rounded-full">
+                                      Keine Analyse
+                                    </span>
+                                  )}
+                                  {!compareMode && hasCompletedAnalysis && (
+                                    <span className="px-2 py-0.5 text-xs bg-green-100 text-green-700 rounded-full">
+                                      Analyse vorhanden
                                     </span>
                                   )}
                                 </div>
@@ -246,14 +365,17 @@ export const NewAnalysisDialog = ({ open, onClose }: NewAnalysisDialogProps) => 
                                     </div>
                                   )}
                               </div>
-                              <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" />
+                              {!isSelectedForComparison && (
+                                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" />
+                              )}
                             </button>
-                          ))}
+                          );
+                          })}
                         </div>
                       )}
 
                       {/* Empty State */}
-                      {!isLoading && availableVentures.length === 0 && (
+                      {!isDataLoading && availableVentures.length === 0 && (
                         <div className="text-center py-8">
                           <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                           <p className="text-charcoal/60">

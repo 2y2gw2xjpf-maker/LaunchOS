@@ -54,6 +54,8 @@ export const useStore = create<StoreState>()(
         sidebarOpen: state.sidebarOpen,
         activeAnalysisId: state.activeAnalysisId,
         selectedAnalysisIds: state.selectedAnalysisIds,
+        // Saved comparisons
+        savedComparisons: state.savedComparisons,
       }),
     }
   )

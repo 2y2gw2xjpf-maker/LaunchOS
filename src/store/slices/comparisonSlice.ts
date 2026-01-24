@@ -1,10 +1,11 @@
 import type { StateCreator } from 'zustand';
-import type { SavedAnalysis, ComparisonMetric } from '@/types';
+import type { SavedAnalysis, SavedComparison, ComparisonMetric } from '@/types';
 
 export interface ComparisonSlice {
   // State
   selectedAnalysisIds: string[];
   comparisonType: 'full' | 'route' | 'valuation';
+  savedComparisons: SavedComparison[];
 
   // Actions
   addToComparison: (analysisId: string) => void;
@@ -12,6 +13,12 @@ export interface ComparisonSlice {
   clearComparison: () => void;
   setComparisonType: (type: 'full' | 'route' | 'valuation') => void;
   toggleInComparison: (analysisId: string) => void;
+
+  // Comparison History
+  saveComparison: (name: string, notes?: string) => SavedComparison;
+  loadComparison: (id: string) => void;
+  deleteComparison: (id: string) => void;
+  getSavedComparisons: () => SavedComparison[];
 
   // Selectors
   canCompare: () => boolean;
@@ -29,6 +36,7 @@ export const createComparisonSlice: StateCreator<ComparisonSlice, [], [], Compar
   // Initial State
   selectedAnalysisIds: [],
   comparisonType: 'full',
+  savedComparisons: [],
 
   // Add analysis to comparison
   addToComparison: (analysisId) => {
@@ -88,6 +96,48 @@ export const createComparisonSlice: StateCreator<ComparisonSlice, [], [], Compar
   // Get count of analyses in comparison
   getComparisonCount: () => {
     return get().selectedAnalysisIds.length;
+  },
+
+  // Save current comparison to history
+  saveComparison: (name, notes) => {
+    const { selectedAnalysisIds, savedComparisons } = get();
+
+    if (selectedAnalysisIds.length < MIN_COMPARISON_COUNT) {
+      throw new Error('Mindestens 2 Analysen für Vergleich erforderlich');
+    }
+
+    const newComparison: SavedComparison = {
+      id: `comp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      name,
+      createdAt: new Date().toISOString(),
+      analysisIds: [...selectedAnalysisIds],
+      notes,
+    };
+
+    set({ savedComparisons: [newComparison, ...savedComparisons] });
+    return newComparison;
+  },
+
+  // Load a saved comparison
+  loadComparison: (id) => {
+    const { savedComparisons } = get();
+    const comparison = savedComparisons.find((c) => c.id === id);
+
+    if (comparison) {
+      set({ selectedAnalysisIds: [...comparison.analysisIds] });
+    }
+  },
+
+  // Delete a saved comparison
+  deleteComparison: (id) => {
+    set((s) => ({
+      savedComparisons: s.savedComparisons.filter((c) => c.id !== id),
+    }));
+  },
+
+  // Get all saved comparisons
+  getSavedComparisons: () => {
+    return get().savedComparisons;
   },
 });
 

@@ -443,6 +443,15 @@ export const COMPARISON_COLORS = [
   '#e74c3c', // red
 ];
 
+// Saved Comparison for history
+export interface SavedComparison {
+  id: string;
+  name: string;
+  createdAt: string;
+  analysisIds: string[];
+  notes?: string;
+}
+
 // ==================== TASK ASSISTANCE SYSTEM ====================
 
 // Info Field wrapper for each data field with metadata

@@ -8,7 +8,7 @@ import { NewAnalysisDialog } from '@/components/dialogs/NewAnalysisDialog';
 
 export const AnalysisSelector = () => {
   const [showNewAnalysisDialog, setShowNewAnalysisDialog] = React.useState(false);
-  const { analyses, selectedAnalysisIds, toggleInComparison, canCompare, getComparisonCount } = useStore();
+  const { analyses, selectedAnalysisIds, toggleInComparison, canCompare, getComparisonCount, isHistoryLoading } = useStore();
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('de-DE', {
@@ -47,7 +47,45 @@ export const AnalysisSelector = () => {
   // Filter analyses that have results
   const analysesWithResults = analyses.filter((a) => a.routeResult);
 
+  // Debug: Log analysis counts in development
+  React.useEffect(() => {
+    console.log('[Compare] Analyses loaded:', {
+      total: analyses.length,
+      withResults: analysesWithResults.length,
+      loading: isHistoryLoading,
+      analyses: analyses.map(a => ({
+        name: a.name,
+        hasRouteResult: !!a.routeResult,
+        ventureId: a.ventureId
+      })),
+    });
+  }, [analyses, analysesWithResults.length, isHistoryLoading]);
+
+  // Show loading state while history is being loaded
+  if (isHistoryLoading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-2xl p-8 shadow-soft text-center"
+      >
+        <div className="w-16 h-16 rounded-full bg-navy/5 flex items-center justify-center mx-auto mb-4 animate-pulse">
+          <Calendar className="w-8 h-8 text-navy/40" />
+        </div>
+        <h2 className="font-display text-xl text-navy mb-2">
+          Analysen werden geladen...
+        </h2>
+        <p className="text-charcoal/60">
+          Bitte warte einen Moment.
+        </p>
+      </motion.div>
+    );
+  }
+
   if (analysesWithResults.length < 2) {
+    // Check if there are incomplete analyses
+    const incompleteCount = analyses.length - analysesWithResults.length;
+
     return (
       <>
         <motion.div
@@ -62,9 +100,19 @@ export const AnalysisSelector = () => {
             Nicht genug Analysen zum Vergleichen
           </h2>
           <p className="text-charcoal/60 mb-6 max-w-md mx-auto">
-            Du benötigst mindestens 2 abgeschlossene Analysen, um einen Vergleich
-            durchführen zu können. Erstelle weitere Analysen, um verschiedene
-            Szenarien zu vergleichen.
+            {incompleteCount > 0 ? (
+              <>
+                Du hast {incompleteCount} Analyse{incompleteCount > 1 ? 'n' : ''}, aber{' '}
+                {incompleteCount > 1 ? 'diese sind' : 'diese ist'} noch nicht abgeschlossen.
+                Schliesse mindestens 2 Analysen ab (bis zur Route-Empfehlung), um sie vergleichen zu konnen.
+              </>
+            ) : (
+              <>
+                Du benotigst mindestens 2 abgeschlossene Analysen, um einen Vergleich
+                durchfuhren zu konnen. Erstelle weitere Analysen, um verschiedene
+                Szenarien zu vergleichen.
+              </>
+            )}
           </p>
           <Button variant="gold" onClick={() => setShowNewAnalysisDialog(true)}>
             Neue Analyse starten
@@ -74,6 +122,7 @@ export const AnalysisSelector = () => {
         <NewAnalysisDialog
           open={showNewAnalysisDialog}
           onClose={() => setShowNewAnalysisDialog(false)}
+          compareMode={true}
         />
       </>
     );

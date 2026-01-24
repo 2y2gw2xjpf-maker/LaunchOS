@@ -694,10 +694,22 @@ export const EnhancedSidebar = () => {
                         className="overflow-visible"
                       >
                         <div className="px-2 space-y-1 pb-2">
-                          {ventures.map((venture) => (
+                          {ventures.map((venture) => {
+                            // Find analysis for this venture
+                            const ventureAnalysis = findAnalysisForVenture(venture.id);
+                            const hasCompletedAnalysis = ventureAnalysis && ventureAnalysis.routeResult;
+                            const isOnComparePage = location.pathname === '/compare';
+
+                            return (
                             <button
                               key={venture.id}
                               onClick={async () => {
+                                // On compare page: toggle comparison selection instead of navigation
+                                if (isOnComparePage && hasCompletedAnalysis) {
+                                  toggleInComparison(ventureAnalysis.id);
+                                  return;
+                                }
+
                                 await setActiveVenture(venture.id);
                                 // Check if there's an existing analysis for this venture
                                 const existingAnalysis = findAnalysisForVenture(venture.id);
@@ -714,14 +726,23 @@ export const EnhancedSidebar = () => {
                               }}
                               className={cn(
                                 'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-left',
-                                activeVenture?.id === venture.id
+                                // On compare page: highlight if selected for comparison
+                                isOnComparePage && hasCompletedAnalysis && isInComparison(ventureAnalysis.id)
+                                  ? 'bg-navy/10 text-navy ring-2 ring-navy/30'
+                                  : activeVenture?.id === venture.id
                                   ? 'bg-purple-100 text-purple-700'
-                                  : 'text-charcoal/70 hover:bg-purple-50'
+                                  : 'text-charcoal/70 hover:bg-purple-50',
+                                // Show as disabled if on compare page but no completed analysis
+                                isOnComparePage && !hasCompletedAnalysis && 'opacity-50 cursor-not-allowed'
                               )}
+                              disabled={isOnComparePage && !hasCompletedAnalysis}
+                              title={isOnComparePage && !hasCompletedAnalysis ? 'Keine abgeschlossene Analyse vorhanden' : undefined}
                             >
                               <div className={cn(
                                 'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
-                                activeVenture?.id === venture.id
+                                isOnComparePage && hasCompletedAnalysis && isInComparison(ventureAnalysis.id)
+                                  ? 'bg-navy/20'
+                                  : activeVenture?.id === venture.id
                                   ? 'bg-purple-200'
                                   : 'bg-gray-100'
                               )}>
@@ -737,13 +758,27 @@ export const EnhancedSidebar = () => {
                                   </p>
                                 </div>
                               )}
-                              {sidebarOpen && activeVenture?.id === venture.id && (
+                              {/* Show comparison checkmark on compare page */}
+                              {sidebarOpen && isOnComparePage && hasCompletedAnalysis && isInComparison(ventureAnalysis.id) && (
+                                <span className="px-1.5 py-0.5 text-[10px] bg-navy text-white rounded-full">
+                                  ✓
+                                </span>
+                              )}
+                              {/* Show active badge when not on compare page */}
+                              {sidebarOpen && !isOnComparePage && activeVenture?.id === venture.id && (
                                 <span className="px-1.5 py-0.5 text-[10px] bg-green-100 text-green-700 rounded-full">
                                   Aktiv
                                 </span>
                               )}
+                              {/* Show warning if on compare page but no analysis */}
+                              {sidebarOpen && isOnComparePage && !hasCompletedAnalysis && (
+                                <span className="px-1.5 py-0.5 text-[10px] bg-gray-100 text-gray-500 rounded-full">
+                                  Keine Analyse
+                                </span>
+                              )}
                             </button>
-                          ))}
+                          );
+                          })}
                           {/* Button to create new venture */}
                           <button
                             onClick={() => navigate('/venture/create')}
