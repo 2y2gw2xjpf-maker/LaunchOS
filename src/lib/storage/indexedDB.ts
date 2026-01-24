@@ -180,8 +180,20 @@ export const getProjectCount = async (): Promise<number> => {
 
 /**
  * Create test analyses for development/testing
+ * Will skip creation if test analyses already exist
  */
 export const createTestAnalyses = async (): Promise<SavedAnalysis[]> => {
+  // Check if test analyses already exist
+  const existingAnalyses = await getAllAnalyses();
+  const existingTestAnalyses = existingAnalyses.filter(a =>
+    a.id.startsWith('test-') || a.tags?.includes('test')
+  );
+
+  if (existingTestAnalyses.length >= 2) {
+    console.log('[LaunchOS] Test analyses already exist, skipping creation');
+    return existingTestAnalyses;
+  }
+
   const now = new Date().toISOString();
   const yesterday = new Date(Date.now() - 86400000).toISOString();
 

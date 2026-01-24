@@ -11,6 +11,30 @@ export const AnalysisSelector = () => {
   const [isCreatingTest, setIsCreatingTest] = React.useState(false);
   const { analyses, selectedAnalysisIds, toggleInComparison, canCompare, getComparisonCount, isHistoryLoading, createTestAnalyses } = useStore();
 
+  // Auto-create test analyses if none exist with results - only once per session
+  const hasAttemptedAutoCreate = React.useRef(false);
+
+  React.useEffect(() => {
+    // Only attempt auto-create once after loading is complete
+    if (isHistoryLoading || hasAttemptedAutoCreate.current) {
+      return;
+    }
+
+    const analysesWithResults = analyses.filter((a) => a.routeResult);
+    console.log('[Compare] Checking for auto-create:', {
+      loading: isHistoryLoading,
+      totalAnalyses: analyses.length,
+      withResults: analysesWithResults.length,
+      attempted: hasAttemptedAutoCreate.current
+    });
+
+    if (analysesWithResults.length < 2) {
+      hasAttemptedAutoCreate.current = true;
+      console.log('[Compare] Auto-creating test analyses because only', analysesWithResults.length, 'exist with results');
+      createTestAnalyses();
+    }
+  }, [isHistoryLoading]); // Only depend on isHistoryLoading, not analyses
+
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('de-DE', {
       day: 'numeric',
