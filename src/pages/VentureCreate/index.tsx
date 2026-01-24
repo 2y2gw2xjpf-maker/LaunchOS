@@ -61,7 +61,7 @@ export function VentureCreatePage() {
     setError(null);
 
     try {
-      console.log('Creating venture with data:', formData);
+      console.log('[VentureCreate] Creating venture with data:', formData);
 
       const venture = await createVenture({
         name: formData.name.trim(),
@@ -69,19 +69,27 @@ export function VentureCreatePage() {
         stage: formData.stage,
       });
 
-      console.log('Venture created:', venture);
+      console.log('[VentureCreate] Result:', venture);
 
       if (venture) {
         // Erfolg: Weiterleitung zur Tier-Daten-Eingabe
         navigate('/venture/data-input');
-      } else {
-        // Context-Fehler anzeigen falls vorhanden
-        setError(contextError || 'Venture konnte nicht erstellt werden. Bitte versuche es erneut.');
       }
     } catch (err) {
-      console.error('Error creating venture:', err);
+      console.error('[VentureCreate] Error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Ein Fehler ist aufgetreten';
-      setError(errorMessage);
+      // Benutzerfreundliche Fehlerübersetzung
+      let displayError = errorMessage;
+      if (errorMessage.includes('401')) {
+        displayError = 'Sitzung abgelaufen. Bitte lade die Seite neu und melde dich erneut an.';
+      } else if (errorMessage.includes('403') || errorMessage.includes('permission')) {
+        displayError = 'Keine Berechtigung. Bitte melde dich erneut an.';
+      } else if (errorMessage.includes('400')) {
+        displayError = 'Ungültige Daten. Bitte überprüfe deine Eingaben.';
+      } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+        displayError = 'Netzwerkfehler. Bitte überprüfe deine Internetverbindung.';
+      }
+      setError(displayError);
     } finally {
       setIsSubmitting(false);
     }

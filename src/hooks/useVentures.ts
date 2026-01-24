@@ -259,7 +259,8 @@ export function useVentures(): UseVenturesReturn {
       if (mountedRef.current) {
         setError(`Fehler beim Erstellen: ${errorMessage}`);
       }
-      return null;
+      // Re-throw the error so callers can catch it with the detailed message
+      throw new Error(errorMessage);
     }
   }, [user, session, ventures.length, loadVentures]);
 
