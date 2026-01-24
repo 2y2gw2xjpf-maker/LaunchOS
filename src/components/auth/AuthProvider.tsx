@@ -2,19 +2,6 @@ import * as React from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase, getProfile, isSupabaseConfigured, type UserProfile } from '@/lib/supabase';
 
-// Helper to check if error is an AbortError (cleanup-related)
-const isAbortError = (err: unknown): boolean => {
-  if (err instanceof Error) {
-    return err.name === 'AbortError' || err.message.includes('aborted');
-  }
-  if (typeof err === 'object' && err !== null) {
-    const errorObj = err as { message?: string; name?: string };
-    return errorObj.name === 'AbortError' ||
-           (typeof errorObj.message === 'string' && errorObj.message.includes('aborted'));
-  }
-  return false;
-};
-
 // ==================== TYPES ====================
 
 interface AuthContextType {
@@ -53,195 +40,79 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = React.useState<User | null>(null);
   const [profile, setProfile] = React.useState<UserProfile | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const [initialized, setInitialized] = React.useState(false);
 
   const isConfigured = isSupabaseConfigured();
 
-  // Fetch user profile
+  // Fetch user profile - simplified, no abort handling needed with singleton
   const fetchProfile = React.useCallback(async (userId: string) => {
     try {
       const data = await getProfile(userId);
       setProfile(data);
     } catch (error) {
-      // Ignore AbortError - it's from component cleanup
-      if (isAbortError(error)) {
-        console.log('[Auth] Profile fetch aborted (cleanup)');
-        return;
-      }
       console.error('[Auth] Error fetching profile:', error);
       setProfile(null);
     }
   }, []);
 
-  // Handle temporary session cleanup on browser/tab close
-  // Note: We use the "pagehide" event with persisted check instead of "beforeunload"
-  // because beforeunload fires on EVERY navigation/refresh, not just tab close.
-  // The pagehide event with persisted=false indicates actual tab/browser close.
+  // Initialize auth state - runs once
   React.useEffect(() => {
-    const handlePageHide = (event: PageTransitionEvent) => {
-      // Only sign out on actual browser/tab close, not on refresh
-      // persisted=true means the page is being kept in bfcache (refresh/navigation)
-      // persisted=false means the page is being discarded (tab close)
-      if (!event.persisted) {
-        const isTemporarySession = sessionStorage.getItem('launchos-session-temporary');
-        if (isTemporarySession === 'true') {
-          // Mark for signout on next visit
-          localStorage.setItem('launchos-pending-signout', 'true');
-        }
-      }
-    };
+    // Prevent double initialization in StrictMode
+    if (initialized) return;
 
-    window.addEventListener('pagehide', handlePageHide);
-    return () => window.removeEventListener('pagehide', handlePageHide);
-  }, []);
-
-  // Initialize auth state
-  React.useEffect(() => {
     if (!isConfigured) {
       setLoading(false);
+      setInitialized(true);
       return;
     }
 
-    let isMounted = true;
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, currentSession) => {
+        console.log('[Auth] Event:', event);
 
-    // Timeout fallback - ensure loading is set to false after 5 seconds max
-    // Increased from 3s to give Supabase more time to initialize
-    const timeoutId = setTimeout(() => {
-      if (isMounted) {
-        console.warn('[Auth] Session check timeout - setting loading to false');
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+
+        if (currentSession?.user) {
+          // Use setTimeout to avoid potential race conditions
+          setTimeout(() => fetchProfile(currentSession.user.id), 0);
+        } else {
+          setProfile(null);
+        }
+
+        // After first event, we're no longer loading
         setLoading(false);
       }
-    }, 5000);
+    );
 
-    // Check for pending signout from previous session
-    const pendingSignout = localStorage.getItem('launchos-pending-signout');
+    // Then get current session
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      console.log('[Auth] Initial session:', currentSession ? 'Found' : 'None');
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
 
-    // Clean up the pending signout flag regardless
-    localStorage.removeItem('launchos-pending-signout');
-
-    // Only sign out if there's an explicit pending signout flag
-    if (pendingSignout === 'true') {
-      console.log('[Auth] Pending signout detected, signing out...');
-      supabase.auth.signOut();
-    }
-
-    // Get initial session with retry logic
-    const initSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-
-        if (error) {
-          // If it's an AbortError, ignore it
-          if (isAbortError(error)) {
-            console.log('[Auth] Session check aborted (cleanup)');
-            return;
-          }
-          throw error;
-        }
-
-        if (isMounted) {
-          clearTimeout(timeoutId);
-          console.log('[Auth] Initial session check:', session ? 'Found' : 'None');
-          setSession(session);
-          setUser(session?.user ?? null);
-          if (session?.user) {
-            fetchProfile(session.user.id);
-          }
-          setLoading(false);
-        }
-      } catch (err) {
-        if (isMounted) {
-          clearTimeout(timeoutId);
-          // Ignore AbortError - it's from component cleanup or React StrictMode
-          if (isAbortError(err)) {
-            console.log('[Auth] Session check aborted (cleanup)');
-            setLoading(false);
-            return;
-          }
-          console.error('[Auth] Error getting session:', err);
-          setLoading(false);
-        }
+      if (currentSession?.user) {
+        fetchProfile(currentSession.user.id);
       }
-    };
 
-    // Small delay to let Supabase client initialize properly
-    const initDelay = setTimeout(() => {
-      initSession();
-    }, 100);
-
-    // Listen for auth changes - comprehensive event handling
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('[Auth] Event:', event, session?.user?.id ? `User: ${session.user.id.slice(0, 8)}...` : 'No user');
-
-      setSession(session);
-      setUser(session?.user ?? null);
-
-      switch (event) {
-        case 'SIGNED_IN':
-        case 'TOKEN_REFRESHED':
-          // User signed in or token was refreshed - fetch/update profile
-          if (session?.user) {
-            await fetchProfile(session.user.id);
-          }
-          break;
-
-        case 'SIGNED_OUT':
-          // User signed out - clear all state
-          setProfile(null);
-          // Clear any local storage items related to the user session
-          try {
-            localStorage.removeItem('launchos-chat-session');
-            localStorage.removeItem('launchos-active-venture');
-          } catch (e) {
-            // Ignore localStorage errors
-          }
-          break;
-
-        case 'USER_UPDATED':
-          // User data was updated - refresh profile
-          if (session?.user) {
-            await fetchProfile(session.user.id);
-          }
-          break;
-
-        case 'PASSWORD_RECOVERY':
-          // Password recovery initiated - user might need to be redirected
-          console.log('[Auth] Password recovery initiated');
-          break;
-
-        default:
-          // Handle any other events
-          if (session?.user) {
-            await fetchProfile(session.user.id);
-          }
-      }
+      setLoading(false);
+      setInitialized(true);
+    }).catch((err) => {
+      console.error('[Auth] Session error:', err);
+      setLoading(false);
+      setInitialized(true);
     });
 
     return () => {
-      isMounted = false;
-      clearTimeout(timeoutId);
-      clearTimeout(initDelay);
       subscription.unsubscribe();
     };
-  }, [isConfigured, fetchProfile]);
+  }, [isConfigured, fetchProfile, initialized]);
 
   // ==================== AUTH ACTIONS ====================
 
-  const signIn = async (email: string, password: string, rememberMe: boolean = true) => {
-    // Set session persistence based on rememberMe
-    // When rememberMe is false, we'll clear the session on browser close
-    if (!rememberMe) {
-      // Store flag to clear session on page unload
-      sessionStorage.setItem('launchos-session-temporary', 'true');
-    } else {
-      sessionStorage.removeItem('launchos-session-temporary');
-    }
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+  const signIn = async (email: string, password: string, _rememberMe: boolean = true) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
   };
 
@@ -249,11 +120,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          full_name: fullName,
-        },
-      },
+      options: { data: { full_name: fullName } },
     });
     if (error) throw error;
   };
@@ -261,9 +128,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
     if (error) throw error;
   };
@@ -271,14 +136,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signInWithApple = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'apple',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
     if (error) throw error;
   };
 
   const signOut = async () => {
+    setProfile(null);
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   };
@@ -301,15 +165,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const updateProfile = async (updates: Partial<UserProfile>) => {
     if (!user) throw new Error('No user logged in');
 
-    const updateData = {
-      full_name: updates.full_name,
-      company_name: updates.company_name,
-      avatar_url: updates.avatar_url,
-    };
-
     const { error } = await supabase
       .from('profiles')
-      .update(updateData)
+      .update({
+        full_name: updates.full_name,
+        company_name: updates.company_name,
+        avatar_url: updates.avatar_url,
+      })
       .eq('id', user.id);
 
     if (error) throw error;

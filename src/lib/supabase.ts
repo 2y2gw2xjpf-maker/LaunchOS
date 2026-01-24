@@ -1,39 +1,35 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 // Environment variables with fallbacks for development
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-key';
 
-// Single Supabase client - avoid multiple GoTrueClient instances
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-    // Use a stable storage key to avoid conflicts
-    storageKey: 'launchos-auth-token',
-    // Use PKCE flow for better security and reliability
-    flowType: 'pkce',
-  },
-  global: {
-    // Custom fetch that ignores abort signals for data queries
-    // but still allows auth to work properly
-    fetch: async (url, options = {}) => {
-      const { signal, ...rest } = options;
+// Singleton pattern - ensure only ONE Supabase client instance exists
+// This is critical for React 18 StrictMode which double-mounts components
+let supabaseInstance: SupabaseClient | null = null;
 
-      // For auth endpoints, use the signal normally
-      if (typeof url === 'string' && url.includes('/auth/')) {
-        return fetch(url, options);
-      }
+function getSupabaseClient(): SupabaseClient {
+  if (supabaseInstance) {
+    return supabaseInstance;
+  }
 
-      // For data queries, ignore abort signal to prevent cancellation issues
-      return fetch(url, rest);
+  supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+      storageKey: 'launchos-auth-token',
+      flowType: 'pkce',
     },
-  },
-});
+  });
 
-// Re-export supabase as supabasePublic for backwards compatibility
-// This ensures only ONE client instance exists
+  return supabaseInstance;
+}
+
+// Export the singleton instance
+export const supabase = getSupabaseClient();
+
+// Alias for backwards compatibility
 export const supabasePublic = supabase;
 
 // ==================== TYPES ====================
