@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { X, Plus } from 'lucide-react';
 import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
@@ -9,10 +8,10 @@ import { AnalysisSelector } from './AnalysisSelector';
 import { RouteComparison } from './RouteComparison';
 import { ScoreRadarComparison } from './ScoreRadarComparison';
 import { MetricsTable } from './MetricsTable';
+import { NewAnalysisDialog } from '@/components/dialogs/NewAnalysisDialog';
 import type { SavedAnalysis } from '@/types';
 
 export const ComparePage = () => {
-  const navigate = useNavigate();
   const {
     analyses,
     selectedAnalysisIds,
@@ -23,6 +22,7 @@ export const ComparePage = () => {
   } = useStore();
 
   const [activeTab, setActiveTab] = React.useState('route');
+  const [showNewAnalysisDialog, setShowNewAnalysisDialog] = React.useState(false);
 
   // Initialize history on mount
   React.useEffect(() => {
@@ -94,7 +94,7 @@ export const ComparePage = () => {
 
                 {selectedAnalyses.length < 4 && (
                   <button
-                    onClick={() => navigate('/whats-next')}
+                    onClick={() => setShowNewAnalysisDialog(true)}
                     className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-navy/20 rounded-xl text-charcoal/60 hover:border-navy/40 hover:text-navy transition-colors"
                   >
                     <Plus className="w-4 h-4" />
@@ -126,6 +126,11 @@ export const ComparePage = () => {
             </Tabs>
           </>
         )}
+
+        <NewAnalysisDialog
+          open={showNewAnalysisDialog}
+          onClose={() => setShowNewAnalysisDialog(false)}
+        />
       </PageContainer>
     </div>
   );

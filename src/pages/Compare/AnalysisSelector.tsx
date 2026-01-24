@@ -1,20 +1,14 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Check, Star, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { Button } from '@/components/ui';
 import { useStore } from '@/store';
+import { NewAnalysisDialog } from '@/components/dialogs/NewAnalysisDialog';
 
 export const AnalysisSelector = () => {
-  const navigate = useNavigate();
-  const {
-    analyses,
-    selectedAnalysisIds,
-    toggleInComparison,
-    canCompare,
-    getComparisonCount,
-  } = useStore();
+  const [showNewAnalysisDialog, setShowNewAnalysisDialog] = React.useState(false);
+  const { analyses, selectedAnalysisIds, toggleInComparison, canCompare, getComparisonCount } = useStore();
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('de-DE', {
@@ -55,26 +49,33 @@ export const AnalysisSelector = () => {
 
   if (analysesWithResults.length < 2) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl p-8 shadow-soft text-center"
-      >
-        <div className="w-16 h-16 rounded-full bg-navy/5 flex items-center justify-center mx-auto mb-4">
-          <Calendar className="w-8 h-8 text-navy/40" />
-        </div>
-        <h2 className="font-display text-xl text-navy mb-2">
-          Nicht genug Analysen zum Vergleichen
-        </h2>
-        <p className="text-charcoal/60 mb-6 max-w-md mx-auto">
-          Du benötigst mindestens 2 abgeschlossene Analysen, um einen Vergleich
-          durchführen zu können. Erstelle weitere Analysen, um verschiedene
-          Szenarien zu vergleichen.
-        </p>
-        <Button variant="gold" onClick={() => navigate('/whats-next')}>
-          Neue Analyse starten
-        </Button>
-      </motion.div>
+      <>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-2xl p-8 shadow-soft text-center"
+        >
+          <div className="w-16 h-16 rounded-full bg-navy/5 flex items-center justify-center mx-auto mb-4">
+            <Calendar className="w-8 h-8 text-navy/40" />
+          </div>
+          <h2 className="font-display text-xl text-navy mb-2">
+            Nicht genug Analysen zum Vergleichen
+          </h2>
+          <p className="text-charcoal/60 mb-6 max-w-md mx-auto">
+            Du benötigst mindestens 2 abgeschlossene Analysen, um einen Vergleich
+            durchführen zu können. Erstelle weitere Analysen, um verschiedene
+            Szenarien zu vergleichen.
+          </p>
+          <Button variant="gold" onClick={() => setShowNewAnalysisDialog(true)}>
+            Neue Analyse starten
+          </Button>
+        </motion.div>
+
+        <NewAnalysisDialog
+          open={showNewAnalysisDialog}
+          onClose={() => setShowNewAnalysisDialog(false)}
+        />
+      </>
     );
   }
 
