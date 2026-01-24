@@ -251,7 +251,7 @@ export const VentureDataInputPage = () => {
       <div className="min-h-screen bg-cream">
         <Header />
         <EnhancedSidebar />
-        <PageContainer withSidebar maxWidth="narrow">
+        <PageContainer withSidebar maxWidth="wide">
           <div className="text-center py-16">
             <Loader2 className="w-12 h-12 text-purple-500 mx-auto mb-4 animate-spin" />
             <h2 className="text-xl font-semibold text-charcoal mb-2">Lade Venture-Daten...</h2>
@@ -270,7 +270,7 @@ export const VentureDataInputPage = () => {
       <div className="min-h-screen bg-cream">
         <Header />
         <EnhancedSidebar />
-        <PageContainer withSidebar maxWidth="narrow">
+        <PageContainer withSidebar maxWidth="wide">
           <div className="text-center py-16">
             <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-charcoal mb-2">Kein Venture ausgewählt</h2>
@@ -289,11 +289,10 @@ export const VentureDataInputPage = () => {
       <Header />
       <EnhancedSidebar />
 
-      <PageContainer withSidebar maxWidth="narrow">
+      <PageContainer withSidebar maxWidth="wide">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-2xl mx-auto"
         >
           {/* Header */}
           <div className="text-center mb-8">
