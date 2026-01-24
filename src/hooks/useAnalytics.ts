@@ -158,7 +158,7 @@ export function useAnalytics() {
     };
 
     // Get activity count separately
-    let activityQuery = supabase
+    const activityQuery = supabase
       .from('investor_activities')
       .select('id', { count: 'exact' })
       .eq('user_id', user.id)
@@ -344,18 +344,30 @@ export function useAnalytics() {
     if (!data) return;
 
     // Filter by venture if needed
+    type ActivityItemRaw = {
+      id: string;
+      type: string;
+      title: string;
+      description: string | null;
+      activity_date: string;
+      investor_contacts: {
+        name: string;
+        company: string | null;
+        venture_id: string | null;
+      }[] | null;
+    };
     const filteredData = activeVenture
-      ? data.filter((item: any) => item.investor_contacts?.venture_id === activeVenture.id)
-      : data;
+      ? (data as ActivityItemRaw[]).filter((item) => item.investor_contacts?.[0]?.venture_id === activeVenture.id)
+      : (data as ActivityItemRaw[]);
 
-    const activities: RecentActivity[] = filteredData.map((item: any) => ({
+    const activities: RecentActivity[] = filteredData.map((item) => ({
       id: item.id,
       type: item.type,
       title: item.title,
       description: item.description,
       activityDate: item.activity_date,
-      contactName: item.investor_contacts?.name || 'Unbekannt',
-      contactCompany: item.investor_contacts?.company || null,
+      contactName: item.investor_contacts?.[0]?.name || 'Unbekannt',
+      contactCompany: item.investor_contacts?.[0]?.company || null,
     }));
 
     setRecentActivities(activities);

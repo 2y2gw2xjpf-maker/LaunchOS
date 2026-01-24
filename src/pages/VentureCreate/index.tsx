@@ -39,7 +39,7 @@ const STAGES = [
 
 export function VentureCreatePage() {
   const navigate = useNavigate();
-  const { createVenture, isLoading: contextLoading, error: contextError } = useVentureContext();
+  const { createVenture, isLoading: contextLoading } = useVentureContext();
 
   const [formData, setFormData] = React.useState({
     name: '',

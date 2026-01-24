@@ -158,21 +158,21 @@ const FINAL_CHECKLIST: ChecklistItem[] = [
 ];
 
 export function LaunchChecklistPage() {
-  const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [expandedPhases, setExpandedPhases] = useState<Set<string>>(new Set(LAUNCH_CHECKLIST.map(p => p.id)));
 
-  // Load from localStorage
-  useEffect(() => {
+  // Load from localStorage - using useState initializer pattern to avoid effect
+  const [checkedItems, setCheckedItems] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('launchos-launch-checklist');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setCheckedItems(new Set(parsed));
+        return new Set(parsed);
       } catch (e) {
         console.error('Error loading checklist state:', e);
       }
     }
-  }, []);
+    return new Set();
+  });
 
   // Save to localStorage
   useEffect(() => {

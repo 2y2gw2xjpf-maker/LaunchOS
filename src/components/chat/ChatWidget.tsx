@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useLocation } from 'react-router-dom';
-import { useChatUnified, type ChatMessage } from '@/hooks/useChatUnified';
+import { useChatUnified } from '@/hooks/useChatUnified';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useStore } from '@/store';
 
@@ -145,7 +145,7 @@ export function ChatWidget() {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const location = useLocation();
-  const { profile } = useAuth();
+  const { profile: _profile } = useAuth();
 
   // Use store state for open/close
   const isOpen = chatWidgetOpen;

@@ -17,6 +17,17 @@ interface ValuationChartProps {
   className?: string;
 }
 
+interface ChartDataItem {
+  name: string;
+  value: number;
+  confidence: number;
+  color: string;
+}
+
+interface TooltipPayload {
+  payload: ChartDataItem;
+}
+
 const methodLabels: Record<string, string> = {
   berkus: 'Berkus',
   scorecard: 'Scorecard',
@@ -28,39 +39,45 @@ const methodLabels: Record<string, string> = {
 
 const COLORS = ['#8B5CF6', '#EC4899', '#A78BFA', '#F472B6', '#7C3AED'];
 
+const formatCurrency = (value: number) => {
+  if (value >= 1000000) {
+    return `${(value / 1000000).toFixed(1)}M €`;
+  }
+  if (value >= 1000) {
+    return `${(value / 1000).toFixed(0)}K €`;
+  }
+  return `${value} €`;
+};
+
+const CustomTooltip = ({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: TooltipPayload[];
+}) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="bg-white p-4 rounded-xl shadow-medium border border-brand-100">
+        <p className="font-semibold text-charcoal mb-1">{data.name}</p>
+        <p className="font-mono text-lg text-brand-600">{formatCurrency(data.value)}</p>
+        <p className="text-sm text-charcoal/60 mt-1">
+          Confidence: {data.confidence}%
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export const ValuationChart = ({ results, className }: ValuationChartProps) => {
-  const data = results.map((result, index) => ({
+  const data: ChartDataItem[] = results.map((result, index) => ({
     name: methodLabels[result.method] || result.method,
     value: result.value,
     confidence: result.confidence,
     color: COLORS[index % COLORS.length],
   }));
-
-  const formatCurrency = (value: number) => {
-    if (value >= 1000000) {
-      return `${(value / 1000000).toFixed(1)}M €`;
-    }
-    if (value >= 1000) {
-      return `${(value / 1000).toFixed(0)}K €`;
-    }
-    return `${value} €`;
-  };
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-white p-4 rounded-xl shadow-medium border border-brand-100">
-          <p className="font-semibold text-charcoal mb-1">{data.name}</p>
-          <p className="font-mono text-lg text-brand-600">{formatCurrency(data.value)}</p>
-          <p className="text-sm text-charcoal/60 mt-1">
-            Confidence: {data.confidence}%
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className={cn('w-full h-[300px]', className)}>

@@ -53,7 +53,8 @@ function FolderItem({
 
   const hasChildren = folder.children && folder.children.length > 0;
   const isSelected = selectedFolderId === folder.id;
-  const Icon = iconMap[folder.icon] || Folder;
+  // Icon from map is available but currently using folder icons directly
+  const _Icon = iconMap[folder.icon] || Folder;
 
   return (
     <div>

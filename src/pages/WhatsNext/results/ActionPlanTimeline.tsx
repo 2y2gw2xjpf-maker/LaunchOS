@@ -14,11 +14,11 @@ import {
   Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import { Card, Button, Progress } from '@/components/ui';
+import { Button, Progress } from '@/components/ui';
 import { ProgressDashboard } from '@/components/results';
 import { ChatModal } from '@/components/chat';
 import { useStore } from '@/store';
-import type { ActionPlan, ActionPhase, ActionTask } from '@/types';
+import type { ActionPlan, ActionTask } from '@/types';
 
 interface ActionPlanTimelineProps {
   plan: ActionPlan;
@@ -424,12 +424,11 @@ export const ActionPlanTimeline = ({ plan, activeView = 'timeline' }: ActionPlan
 const MilestoneVisualizer = ({
   milestones,
   phaseComplete,
-  phaseIndex,
   onMilestoneClick,
 }: {
   milestones: string[];
   phaseComplete: boolean;
-  phaseIndex: number;
+  phaseIndex: number; // kept for future use
   onMilestoneClick?: (milestone: string) => void;
 }) => {
   return (

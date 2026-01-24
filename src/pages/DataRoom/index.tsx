@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FolderOpen,
@@ -24,20 +24,16 @@ export default function DataRoom() {
     folders,
     files,
     accessLinks,
-    isLoading,
     createFolder,
     updateFolder,
     deleteFolder,
     uploadFile,
-    updateFile,
     deleteFile,
     createAccessLink,
     revokeAccessLink,
     getAccessLog,
     getFolderTree,
-    getFilesInFolder,
     initializeDefaultStructure,
-    refresh,
   } = useDataRoom();
 
   const [activeTab, setActiveTab] = useState<Tab>('files');

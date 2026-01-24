@@ -15,7 +15,7 @@ import type { DeliverableType } from '@/hooks/useDeliverables';
 import { useOptionalVentureContext } from '@/contexts/VentureContext';
 import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 import {
-  Download, Trash2, Eye, Plus,
+  Download, Trash2,
   Calendar, HardDrive, History, Search,
   Filter, Grid, List, FolderOpen, MessageSquare
 } from 'lucide-react';

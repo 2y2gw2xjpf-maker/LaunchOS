@@ -14,13 +14,10 @@ import {
   ArrowRight,
   Sparkles,
   Clock,
-  Users,
-  DollarSign,
   BarChart3,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import { Card, Button } from '@/components/ui';
-import { RecommendationBadge, ComparisonBar, ConfidenceIndicator } from '@/components/results';
+import { ComparisonBar, ConfidenceIndicator } from '@/components/results';
 import type { RouteResult, RecommendedRoute } from '@/types';
 
 interface RouteRecommendationProps {

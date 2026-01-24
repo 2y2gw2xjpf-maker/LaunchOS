@@ -5,7 +5,6 @@
 
 import { useEffect, useState } from 'react';
 import { useProgram } from '@/hooks/useProgram';
-import type { ProgramTemplate } from '@/hooks/useProgram';
 import { useOptionalVentureContext } from '@/contexts/VentureContext';
 import {
   Play, Pause, X, Check, Loader2,

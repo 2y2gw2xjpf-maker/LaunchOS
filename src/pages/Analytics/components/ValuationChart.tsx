@@ -5,8 +5,6 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -15,7 +13,7 @@ import {
   Area,
   AreaChart,
 } from 'recharts';
-import { TrendingUp, Calendar, Info } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 import type { ValuationHistoryEntry } from '@/hooks/useAnalytics';
 
 interface ValuationChartProps {
@@ -67,7 +65,7 @@ function ChartSkeleton() {
       <div className="animate-pulse space-y-4 w-full px-6">
         <div className="flex justify-between">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-32 w-2 bg-gray-200 rounded" style={{ height: `${Math.random() * 80 + 40}px` }} />
+            <div key={i} className="h-32 w-2 bg-gray-200 rounded" style={{ height: `${(i * 15) + 40}px` }} />
           ))}
         </div>
         <div className="h-2 bg-gray-200 rounded w-full" />

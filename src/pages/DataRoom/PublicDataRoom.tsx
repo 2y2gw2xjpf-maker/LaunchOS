@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   FolderOpen,
   FileText,
@@ -8,7 +8,6 @@ import {
   Eye,
   Lock,
   AlertCircle,
-  ChevronRight,
   File,
   FileSpreadsheet,
   FileImage,
@@ -64,11 +63,6 @@ export default function PublicDataRoom() {
   const [files, setFiles] = useState<PublicFile[]>([]);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
-
-  // Validate token and check access
-  useEffect(() => {
-    validateAccess();
-  }, [token]);
 
   const validateAccess = async (enteredPassword?: string) => {
     if (!token) {
@@ -201,6 +195,12 @@ export default function PublicDataRoom() {
     }
   };
 
+  // Validate token and check access
+  useEffect(() => {
+    validateAccess();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
   const handlePasswordSubmit = () => {
     setPasswordError('');
     validateAccess(password);
@@ -251,7 +251,7 @@ export default function PublicDataRoom() {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
-  const toggleFolder = (folderId: string) => {
+  const _toggleFolder = (folderId: string) => {
     const newExpanded = new Set(expandedFolders);
     if (newExpanded.has(folderId)) {
       newExpanded.delete(folderId);

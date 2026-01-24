@@ -19,7 +19,7 @@ interface ChatModalProps {
   initialMessage?: string;
 }
 
-export function ChatModal({ isOpen, onClose, journeyContext, initialMessage }: ChatModalProps) {
+export function ChatModal({ isOpen, onClose, journeyContext, initialMessage: _initialMessage }: ChatModalProps) {
   const [isFullscreen, setIsFullscreen] = React.useState(false);
 
   // Close on escape key

@@ -321,11 +321,12 @@ async function handleToolCall(
         case 'vc_method':
           valuation = { min: 2000000, max: 5000000, method: 'VC Method' };
           break;
-        case 'revenue_multiple':
+        case 'revenue_multiple': {
           const revenue = (inputs.monthly_revenue as number || 10000) * 12;
           const multiple = inputs.multiple as number || 5;
           valuation = { min: revenue * (multiple - 1), max: revenue * (multiple + 1), method: 'Revenue Multiple' };
           break;
+        }
       }
 
       return JSON.stringify({
@@ -346,7 +347,7 @@ async function handleToolCall(
       let probability = 50; // Start neutral
 
       // Income claim patterns
-      const incomeMatch = claim.match(/(\d+[\.,]?\d*)\s*(k|K|€|EUR|Dollar|\$|tausend)?/);
+      const incomeMatch = claim.match(/(\d+[.,]?\d*)\s*(k|K|€|EUR|Dollar|\$|tausend)?/);
       const monthlyIncome = incomeMatch ? parseFloat(incomeMatch[1].replace(',', '.')) * (incomeMatch[2]?.toLowerCase() === 'k' || incomeMatch[2] === 'tausend' ? 1000 : 1) : 0;
 
       // Time frame patterns

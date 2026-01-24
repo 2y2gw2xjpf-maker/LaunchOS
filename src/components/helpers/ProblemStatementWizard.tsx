@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ArrowRight, ArrowLeft, CheckCircle2, Lightbulb } from 'lucide-react';
-import { Button, Input, Textarea } from '@/components/ui';
-import { useStore } from '@/store';
+import { Button, Textarea } from '@/components/ui';
 
 interface ProblemStatementWizardProps {
   open: boolean;

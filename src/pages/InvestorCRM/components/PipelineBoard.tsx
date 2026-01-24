@@ -3,7 +3,7 @@
  */
 
 import * as React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import {
   DndContext,
@@ -25,7 +25,6 @@ import { CSS } from '@dnd-kit/utilities';
 import type { InvestorContact, PipelineStage } from '@/hooks/useInvestorCRM';
 import { PIPELINE_STAGES } from '@/hooks/useInvestorCRM';
 import { ContactCard } from './ContactCard';
-import { cn } from '@/lib/utils/cn';
 
 interface PipelineBoardProps {
   contacts: InvestorContact[];

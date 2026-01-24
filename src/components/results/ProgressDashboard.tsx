@@ -11,9 +11,8 @@ import {
   Award,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import { CircularProgress } from '@/components/charts/CircularProgress';
 import { Progress } from '@/components/ui/progress';
-import type { ActionPlan, TaskProgressSummary, PhaseProgressSummary } from '@/types';
+import type { ActionPlan, PhaseProgressSummary } from '@/types';
 
 interface ProgressDashboardProps {
   actionPlan: ActionPlan;

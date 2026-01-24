@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUp, ArrowDown, Minus } from 'lucide-react';
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import type { SavedAnalysis, ComparisonMetric } from '@/types';
 import { COMPARISON_COLORS } from '@/types';
@@ -61,7 +61,7 @@ interface MetricRowProps {
   analysisCount: number;
 }
 
-const MetricRow = ({ metric, rowIndex, analysisCount }: MetricRowProps) => {
+const MetricRow = ({ metric, rowIndex, analysisCount: _analysisCount }: MetricRowProps) => {
   // Find best value based on direction
   const getBestIndex = () => {
     if (!metric.betterDirection || metric.betterDirection === 'neutral') {
@@ -106,7 +106,6 @@ const MetricRow = ({ metric, rowIndex, analysisCount }: MetricRowProps) => {
 
       {metric.values.map((value, colIndex) => {
         const isBest = colIndex === bestIndex;
-        const isNumeric = typeof value.value === 'number';
 
         return (
           <td key={value.analysisId} className="px-6 py-4 text-center">
@@ -147,7 +146,7 @@ const MetricRow = ({ metric, rowIndex, analysisCount }: MetricRowProps) => {
 // Additional comparison utilities
 export const generateComparisonSummary = (
   metrics: ComparisonMetric[],
-  analyses: SavedAnalysis[]
+  _analyses: SavedAnalysis[]
 ): string[] => {
   const summaries: string[] = [];
 

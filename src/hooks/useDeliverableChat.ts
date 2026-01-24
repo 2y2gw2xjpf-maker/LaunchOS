@@ -11,11 +11,7 @@ import {
   generateInvestorList,
   generateFinancialModel,
   generateValuationReport,
-  type PitchDeckData,
-  type BusinessPlanData,
   type InvestorData,
-  type FinancialModelData,
-  type ValuationReportData,
 } from '@/lib/services/document-generator';
 import type { DeliverableType } from '@/types';
 

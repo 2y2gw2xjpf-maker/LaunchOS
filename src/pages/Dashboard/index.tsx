@@ -15,7 +15,6 @@ import {
   Wrench,
   ArrowRight,
   CheckCircle2,
-  Circle,
   TrendingUp,
   Sparkles,
   ChevronDown,

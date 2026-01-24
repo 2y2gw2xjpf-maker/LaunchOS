@@ -97,7 +97,7 @@ export function ToolRatingsRadar({ ratings }: { ratings: ToolRatingsProps['ratin
         {/* Background rings */}
         {rings.map((ring) => {
           const ringRadius = (ring / 5) * maxRadius;
-          const ringPoints = categories.map(([_, __], index) => {
+          const ringPoints = categories.map(([, ], index) => {
             const angle = (index * 2 * Math.PI) / categories.length - Math.PI / 2;
             return {
               x: centerX + ringRadius * Math.cos(angle),
@@ -116,7 +116,7 @@ export function ToolRatingsRadar({ ratings }: { ratings: ToolRatingsProps['ratin
         })}
 
         {/* Axis lines */}
-        {categories.map(([_, __], index) => {
+        {categories.map(([, ], index) => {
           const angle = (index * 2 * Math.PI) / categories.length - Math.PI / 2;
           const endX = centerX + maxRadius * Math.cos(angle);
           const endY = centerY + maxRadius * Math.sin(angle);
@@ -139,15 +139,15 @@ export function ToolRatingsRadar({ ratings }: { ratings: ToolRatingsProps['ratin
         const x = centerX + labelRadius * Math.cos(angle);
         const y = centerY + labelRadius * Math.sin(angle);
 
-        // Adjust position based on quadrant
-        let textAnchor: 'start' | 'middle' | 'end' = 'middle';
-        let dx = 0;
+        // Adjust position based on quadrant (for potential SVG text rendering)
+        let _textAnchor: 'start' | 'middle' | 'end' = 'middle';
+        let _dx = 0;
         if (x < centerX - 10) {
-          textAnchor = 'end';
-          dx = -5;
+          _textAnchor = 'end';
+          _dx = -5;
         } else if (x > centerX + 10) {
-          textAnchor = 'start';
-          dx = 5;
+          _textAnchor = 'start';
+          _dx = 5;
         }
 
         return (

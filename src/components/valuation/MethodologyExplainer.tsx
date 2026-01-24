@@ -6,7 +6,6 @@
 import * as React from 'react';
 import { ChevronDown, ChevronUp, ExternalLink, Info, Calculator, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import type { ValuationMethodResult } from '@/types';
 
 interface ValuationMethodDisplay {
   id: string;

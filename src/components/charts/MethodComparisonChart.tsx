@@ -8,7 +8,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell,
 } from 'recharts';
 import { cn } from '@/lib/utils/cn';
 import type { ValuationMethodResult } from '@/types';
@@ -16,6 +15,12 @@ import type { ValuationMethodResult } from '@/types';
 interface MethodComparisonChartProps {
   results: ValuationMethodResult[];
   className?: string;
+}
+
+interface ChartDataItem {
+  name: string;
+  value: number;
+  confidence: number;
 }
 
 const methodLabels: Record<string, string> = {
@@ -26,50 +31,59 @@ const methodLabels: Record<string, string> = {
   dcf: 'DCF',
 };
 
+const formatCurrency = (value: number) => {
+  if (value >= 1000000) {
+    return `${(value / 1000000).toFixed(1)}M €`;
+  }
+  if (value >= 1000) {
+    return `${(value / 1000).toFixed(0)}K €`;
+  }
+  return `${value} €`;
+};
+
+interface TooltipPayload {
+  payload: ChartDataItem;
+}
+
+const CustomTooltip = ({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: TooltipPayload[];
+}) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="bg-white p-4 rounded-xl shadow-medium border border-brand-100">
+        <p className="font-semibold text-charcoal mb-2">{data.name}</p>
+        <div className="space-y-1">
+          <p className="text-sm">
+            <span className="text-charcoal/60">Bewertung: </span>
+            <span className="font-mono text-brand-600">
+              {formatCurrency(data.value)}
+            </span>
+          </p>
+          <p className="text-sm">
+            <span className="text-charcoal/60">Confidence: </span>
+            <span className="font-mono text-accent-500">{data.confidence}%</span>
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 export const MethodComparisonChart = ({
   results,
   className,
 }: MethodComparisonChartProps) => {
-  const data = results.map((result) => ({
+  const data: ChartDataItem[] = results.map((result) => ({
     name: methodLabels[result.method] || result.method,
     value: result.value,
     confidence: result.confidence,
   }));
-
-  const averageValue =
-    data.reduce((sum, item) => sum + item.value, 0) / data.length;
-
-  const formatCurrency = (value: number) => {
-    if (value >= 1000000) {
-      return `${(value / 1000000).toFixed(1)}M €`;
-    }
-    if (value >= 1000) {
-      return `${(value / 1000).toFixed(0)}K €`;
-    }
-    return `${value} €`;
-  };
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-white p-4 rounded-xl shadow-medium border border-brand-100">
-          <p className="font-semibold text-charcoal mb-2">{data.name}</p>
-          <div className="space-y-1">
-            <p className="text-sm">
-              <span className="text-charcoal/60">Bewertung: </span>
-              <span className="font-mono text-brand-600">{formatCurrency(data.value)}</span>
-            </p>
-            <p className="text-sm">
-              <span className="text-charcoal/60">Confidence: </span>
-              <span className="font-mono text-accent-500">{data.confidence}%</span>
-            </p>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className={cn('w-full h-[350px]', className)}>

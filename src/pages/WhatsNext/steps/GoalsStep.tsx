@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Heart, Building2, Rocket, HelpCircle, TrendingUp, Zap, Target, Clock } from 'lucide-react';
+import { Heart, Building2, Rocket, HelpCircle, TrendingUp, Zap, Target } from 'lucide-react';
 import { useStore } from '@/store';
 import { QuestionCard, OptionGrid, OptionButton, SliderInput, CurrencyInput } from '@/components/forms';
 import type { ExitGoal, GrowthSpeed, TimeHorizon, DataSharingTier } from '@/types';

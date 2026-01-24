@@ -23,25 +23,35 @@ interface RadarChartProps {
   strokeColor?: string;
 }
 
+interface TooltipPayload {
+  payload: RadarDataPoint;
+}
+
+const CustomTooltip = ({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: TooltipPayload[];
+}) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="bg-white p-3 rounded-xl shadow-medium border border-brand-100">
+        <p className="font-semibold text-charcoal">{data.subject}</p>
+        <p className="font-mono text-lg text-brand-600">{data.value}/100</p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export const RadarChart = ({
   data,
   className,
   fillColor = 'rgba(139, 92, 246, 0.3)',
   strokeColor = '#8B5CF6',
 }: RadarChartProps) => {
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-white p-3 rounded-xl shadow-medium border border-brand-100">
-          <p className="font-semibold text-charcoal">{data.subject}</p>
-          <p className="font-mono text-lg text-brand-600">{data.value}/100</p>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <div className={cn('w-full h-[300px]', className)}>
       <ResponsiveContainer width="100%" height="100%">

@@ -325,7 +325,7 @@ export function useChatStream(options: UseChatStreamOptions = {}): UseChatStream
                   )
                 );
               }
-            } catch (parseError) {
+            } catch (_parseError) {
               // Ignore parse errors for incomplete chunks
               if (data !== '' && !data.startsWith('{')) {
                 console.debug('Skipping non-JSON chunk:', data);

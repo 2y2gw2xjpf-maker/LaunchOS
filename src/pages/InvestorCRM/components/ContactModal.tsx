@@ -5,10 +5,10 @@
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X, User, Building2, Mail, Phone, Linkedin, Globe, Tag,
-  Calendar, DollarSign, MapPin, Target, Star, Plus
+  X, User, Building2, Mail, Phone, Linkedin, Globe,
+  Calendar, DollarSign, MapPin, Target, Plus
 } from 'lucide-react';
-import { Button, Input } from '@/components/ui';
+import { Button } from '@/components/ui';
 import {
   type InvestorContact,
   type InvestorTag,

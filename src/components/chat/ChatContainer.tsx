@@ -4,13 +4,12 @@
  */
 
 import * as React from 'react';
-import { MessageSquare, Loader2, RefreshCw, Trash2 } from 'lucide-react';
+import { MessageSquare, Loader2, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { Button } from '@/components/ui/button';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { useChat, type UseChatOptions } from '@/hooks/useChat';
-import type { ChatMessage as ChatMessageType, QuickAction, DeliverableType } from '@/types';
 
 interface ChatContainerProps {
   options?: UseChatOptions;

@@ -351,7 +351,7 @@ export async function generateInvestorList(
   // Real API call would go here
   // For now, we'll use mock data as a fallback
   try {
-    const contextSummary = buildProjectSummary(projectContext);
+    const _contextSummary = buildProjectSummary(projectContext);
 
     // This is where you would make the actual API call
     // const response = await fetch('...', { ... });
@@ -408,7 +408,7 @@ export interface CompetitorAnalysisResult {
 }
 
 export async function generateCompetitorAnalysis(
-  projectContext: ProjectContext
+  _projectContext: ProjectContext
 ): Promise<CompetitorAnalysisResult> {
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -452,7 +452,7 @@ export interface MarketSizeResult {
 }
 
 export async function calculateMarketSize(
-  projectContext: ProjectContext
+  _projectContext: ProjectContext
 ): Promise<MarketSizeResult> {
   await new Promise((resolve) => setTimeout(resolve, 1500));
 

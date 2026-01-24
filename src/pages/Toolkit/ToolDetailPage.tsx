@@ -41,8 +41,9 @@ export default function ToolDetailPage() {
 
   const tool = getTool(slug || '');
   const relatedGuides = getGuidesByTool(slug || '');
-  const relatedPrompts = getPromptsByTool(slug || '');
-  const relatedPitfalls = getPitfallsByTool(slug || '');
+  // Prompts and pitfalls available for future use
+  const _relatedPrompts = getPromptsByTool(slug || '');
+  const _relatedPitfalls = getPitfallsByTool(slug || '');
 
   if (isLoading) {
     return (

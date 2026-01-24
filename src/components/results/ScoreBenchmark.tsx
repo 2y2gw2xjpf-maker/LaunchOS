@@ -27,7 +27,7 @@ export const ScoreBenchmark = ({
   const { average, percentile25, percentile75, description } = benchmark;
 
   // Determine position relative to benchmark
-  const isAboveAverage = score > average;
+  const _isAboveAverage = score > average;
   const isBelowP25 = score < percentile25;
   const isAboveP75 = score > percentile75;
 

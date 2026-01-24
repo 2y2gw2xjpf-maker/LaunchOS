@@ -1,4 +1,4 @@
-import { Check, X, Minus } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import type { ToolkitTool } from '@/hooks/useToolkit';
 

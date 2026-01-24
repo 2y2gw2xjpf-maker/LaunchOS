@@ -1,4 +1,5 @@
-import { useState, useMemo, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useMemo } from 'react';
 import { Copy, Check, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
@@ -18,19 +19,25 @@ interface PromptEditorProps {
 }
 
 export function PromptEditor({ template, variables, onCopy }: PromptEditorProps) {
-  const [values, setValues] = useState<Record<string, string>>({});
-  const [copied, setCopied] = useState(false);
-
-  // Initialize values with defaults
-  useEffect(() => {
+  // Initialize values with defaults using initializer function
+  const getDefaultValues = (vars: PromptVariable[]): Record<string, string> => {
     const defaults: Record<string, string> = {};
-    variables.forEach((v) => {
+    vars.forEach((v) => {
       if (v.defaultValue) {
         defaults[v.name] = v.defaultValue;
       }
     });
-    setValues(defaults);
-  }, [variables]);
+    return defaults;
+  };
+
+  const [values, setValues] = useState<Record<string, string>>(() => getDefaultValues(variables));
+  const [copied, setCopied] = useState(false);
+
+  // Re-initialize when variables change
+  const variablesKey = JSON.stringify(variables.map(v => ({ name: v.name, defaultValue: v.defaultValue })));
+  React.useEffect(() => {
+    setValues(getDefaultValues(variables));
+  }, [variablesKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const filledPrompt = useMemo(() => {
     let result = template;

@@ -7,15 +7,10 @@ import * as React from 'react';
 import {
   AlertTriangle,
   CheckCircle,
-  Clock,
   TrendingUp,
-  Users,
-  DollarSign,
   Target,
   Shield,
   Sparkles,
-  Link as LinkIcon,
-  FileText,
   Loader2,
   XCircle,
   Info,
@@ -357,7 +352,7 @@ function ResultCard({ result }: { result: AnalysisResult }) {
 // ==================== MAIN PAGE ====================
 
 export function RealityCheckPage() {
-  const { user } = useAuth();
+  useAuth(); // Auth hook for context, user not directly needed here
   const [input, setInput] = React.useState('');
   const [isAnalyzing, setIsAnalyzing] = React.useState(false);
   const [result, setResult] = React.useState<AnalysisResult | null>(null);

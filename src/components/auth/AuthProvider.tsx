@@ -111,7 +111,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // ==================== AUTH ACTIONS ====================
 
-  const signIn = async (email: string, password: string, _rememberMe: boolean = true) => {
+   
+  const signIn = async (email: string, password: string, _rememberMe = true) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
   };

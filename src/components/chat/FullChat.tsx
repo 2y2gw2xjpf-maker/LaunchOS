@@ -53,7 +53,7 @@ export function FullChat({ className, journeyContext, onClose }: FullChatProps) 
     toolResults,
     sendMessage,
     stopStreaming,
-    clearMessages,
+    clearMessages: _clearMessages,
   } = useChatStream({
     sessionId,
     journeyContext,

@@ -141,11 +141,6 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
 // ==================== Functional Wrapper ====================
 
-interface ErrorBoundaryWrapperProps {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
-}
-
 export function withErrorBoundary<P extends object>(
   Component: React.ComponentType<P>,
   fallback?: React.ReactNode

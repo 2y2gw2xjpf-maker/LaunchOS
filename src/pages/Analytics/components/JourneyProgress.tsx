@@ -53,7 +53,7 @@ export function JourneyProgress({ data, isLoading }: JourneyProgressProps) {
     );
   }
 
-  const { currentPhase, totalPhases, completedTasks, totalTasks, percentComplete, phaseName } = data;
+  const { currentPhase, completedTasks, totalTasks, percentComplete, phaseName } = data;
 
   return (
     <motion.div
@@ -122,7 +122,6 @@ export function JourneyProgress({ data, isLoading }: JourneyProgressProps) {
           {PHASES.map((phase, index) => {
             const isCompleted = index < currentPhase;
             const isCurrent = index === currentPhase;
-            const isFuture = index > currentPhase;
 
             return (
               <div key={phase.id} className="flex flex-col items-center">

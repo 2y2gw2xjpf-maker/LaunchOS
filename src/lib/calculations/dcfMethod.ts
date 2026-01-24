@@ -5,7 +5,7 @@ export function calculateDCF(input: DCFInput): ValuationMethodResult {
     projectedCashFlows,
     discountRate,
     terminalGrowthRate,
-    years,
+    years: _years,
   } = input;
 
   // Discount each cash flow to present value

@@ -61,7 +61,7 @@ function calculateDataCompleteness(data: WizardData): number {
 
   for (const section of sections) {
     if (!section) continue;
-    for (const [key, value] of Object.entries(section)) {
+    for (const [_key, value] of Object.entries(section)) {
       totalFields++;
       if (value !== null && value !== undefined && value !== '') {
         filledFields++;

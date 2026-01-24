@@ -19,5 +19,17 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // Allow unused variables that start with underscore
+      '@typescript-eslint/no-unused-vars': ['error', {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      }],
+      // Allow exports that aren't components (contexts, utilities)
+      'react-refresh/only-export-components': ['warn', {
+        allowExportNames: ['useAuth', 'AuthContext', 'useVentureContext', 'VentureContext', 'useOptionalVentureContext', 'withErrorBoundary', 'useErrorBoundary', 'STARTUP_BENCHMARKS', 'generateComparisonSummary', 'buttonVariants', 'SEO_DEFAULTS'],
+      }],
+    },
   },
 ])

@@ -6,7 +6,7 @@
 import * as React from 'react';
 import { AlertTriangle, Info, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
-import { getConfidenceLevel, type CONFIDENCE_LEVELS } from '@/lib/services/confidence-service';
+import { getConfidenceLevel } from '@/lib/services/confidence-service';
 
 interface ValuationDisclaimerProps {
   confidenceScore: number;
@@ -21,7 +21,7 @@ export function ValuationDisclaimer({
   className,
   compact = false,
 }: ValuationDisclaimerProps) {
-  const level = getConfidenceLevel(confidenceScore);
+  const _level = getConfidenceLevel(confidenceScore);
 
   if (compact) {
     return (

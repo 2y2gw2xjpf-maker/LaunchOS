@@ -1,5 +1,5 @@
 import type { StateCreator } from 'zustand';
-import type { RouteResult, ActionTask } from '@/types';
+import type { RouteResult } from '@/types';
 
 export interface RouteSlice {
   routeResult: RouteResult | null;

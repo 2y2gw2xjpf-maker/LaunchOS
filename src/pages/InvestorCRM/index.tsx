@@ -5,7 +5,7 @@
 
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Users, Building2, Mail, Phone, Trash2, Archive, MoreVertical } from 'lucide-react';
+import { Plus, Users, Mail, Phone, Trash2, Archive, MoreVertical } from 'lucide-react';
 import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 import { Button } from '@/components/ui';
 import {
@@ -17,7 +17,6 @@ import {
 } from '@/hooks/useInvestorCRM';
 import { PipelineBoard } from './components/PipelineBoard';
 import { ContactModal } from './components/ContactModal';
-import { ContactCard } from './components/ContactCard';
 import { ActivityTimeline } from './components/ActivityTimeline';
 import { FilterBar } from './components/FilterBar';
 import { PipelineStats } from './components/PipelineStats';
@@ -39,7 +38,6 @@ export default function InvestorCRMPage() {
     addActivity,
     getActivities,
     createTag,
-    getContactsByStage,
     getUpcomingFollowUps,
     getPipelineStats,
     refresh,

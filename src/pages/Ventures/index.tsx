@@ -13,7 +13,6 @@ import {
   Trash2,
   Edit,
   CheckCircle2,
-  Circle,
   TrendingUp,
   Calendar,
   BarChart3,

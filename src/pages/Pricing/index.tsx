@@ -15,8 +15,8 @@ import {
 import { cn } from '@/lib/utils/cn';
 
 export function PricingPage() {
-  const { user, profile, isConfigured: isAuthConfigured } = useAuth();
-  const { subscription, tiers: dbTiers, isLoading: tiersLoading } = useSubscription();
+  const { user, profile } = useAuth();
+  const { subscription, tiers: dbTiers } = useSubscription();
   const [loading, setLoading] = React.useState<string | null>(null);
   const [billingInterval, setBillingInterval] = React.useState<'month' | 'year'>('month');
 

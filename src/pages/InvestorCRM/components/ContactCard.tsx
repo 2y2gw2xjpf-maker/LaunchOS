@@ -5,10 +5,10 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
 import {
-  Building2, Mail, Phone, Linkedin, Calendar, Star,
-  MoreVertical, Trash2, Archive, Edit2, ExternalLink
+  Building2, Mail, Phone, Linkedin, Calendar,
+  MoreVertical, Trash2, Archive, Edit2
 } from 'lucide-react';
-import type { InvestorContact, InvestorTag } from '@/hooks/useInvestorCRM';
+import type { InvestorContact } from '@/hooks/useInvestorCRM';
 import { cn } from '@/lib/utils/cn';
 
 interface ContactCardProps {

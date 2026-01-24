@@ -18,7 +18,8 @@ const RATING_LABELS = {
 };
 
 function RatingComparison({ value1, value2, label }: { value1: number; value2: number; label: string }) {
-  const maxValue = Math.max(value1, value2);
+  // Max value calculation available for future styling needs
+  const _maxValue = Math.max(value1, value2);
 
   return (
     <div className="grid grid-cols-3 gap-4 items-center py-3 border-b border-gray-100">
@@ -53,7 +54,7 @@ function RatingComparison({ value1, value2, label }: { value1: number; value2: n
 
 export default function ToolComparePage() {
   const [searchParams] = useSearchParams();
-  const { compareTwoTools, tools, isLoading } = useToolkit();
+  const { compareTwoTools, isLoading } = useToolkit();
 
   const toolSlugs = searchParams.get('tools')?.split(',') || [];
 

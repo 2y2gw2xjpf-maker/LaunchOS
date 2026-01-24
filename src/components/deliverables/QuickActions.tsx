@@ -19,7 +19,7 @@ interface QuickActionsProps {
 }
 
 export function QuickActions({
-  deliverableId,
+  deliverableId: _deliverableId,
   deliverableType,
   onAction,
   onCustomAction,

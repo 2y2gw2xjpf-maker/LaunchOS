@@ -9,7 +9,7 @@ import type {
   WizardData,
   ProjectStage,
 } from '@/types';
-import { calculateConfidence, getImprovementSuggestions } from './confidence-service';
+import { calculateConfidence } from './confidence-service';
 
 // ==================== CONSTANTS ====================
 
@@ -381,7 +381,7 @@ function calculateWeightedAverage(
  */
 function generateImprovements(
   inputs: ValuationInput,
-  valuation: { low: number; mid: number; high: number }
+  _valuation: { low: number; mid: number; high: number }
 ): string[] {
   const improvements: string[] = [];
 

@@ -4,39 +4,12 @@
 
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from 'recharts';
 import { Target, Users } from 'lucide-react';
 import type { PipelineFunnelData } from '@/hooks/useAnalytics';
 
 interface PipelineFunnelProps {
   data: PipelineFunnelData[];
   isLoading?: boolean;
-}
-
-interface TooltipPayload {
-  value: number;
-  payload: PipelineFunnelData;
-}
-
-function CustomTooltip({ active, payload }: { active?: boolean; payload?: TooltipPayload[] }) {
-  if (!active || !payload || !payload.length) return null;
-
-  const data = payload[0].payload;
-
-  return (
-    <div className="bg-white rounded-lg shadow-lg border border-gray-100 p-3">
-      <p className="font-medium text-gray-900">{data.label}</p>
-      <p className="text-sm text-gray-500">{data.count} Kontakte</p>
-    </div>
-  );
 }
 
 function EmptyState() {
@@ -59,7 +32,7 @@ function ChartSkeleton() {
       {[...Array(6)].map((_, i) => (
         <div key={i} className="flex items-center gap-4 animate-pulse">
           <div className="w-24 h-4 bg-gray-200 rounded" />
-          <div className="flex-1 h-8 bg-gray-200 rounded" style={{ width: `${Math.random() * 50 + 20}%` }} />
+          <div className="flex-1 h-8 bg-gray-200 rounded" style={{ width: `${((i + 1) * 15) + 20}%` }} />
         </div>
       ))}
     </div>

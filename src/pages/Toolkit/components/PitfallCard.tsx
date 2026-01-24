@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, AlertCircle, Info, ChevronDown, Lightbulb, Check } from 'lucide-react';
+import { AlertTriangle, AlertCircle, Info, ChevronDown, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 type Severity = 'critical' | 'warning' | 'info';

@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calculator, TrendingUp, Briefcase, BarChart3, LineChart, Download, RefreshCw, Building2, AlertCircle } from 'lucide-react';
+import { Calculator, TrendingUp, Briefcase, Download, RefreshCw, Building2, AlertCircle } from 'lucide-react';
 import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
 import { Card, Button, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui';
 import { CurrencyDisplay } from '@/components/common';
 import { ConfidenceIndicator, ValueRange } from '@/components/results';
-import { ValuationChart, MethodComparisonChart } from '@/components/charts';
+import { ValuationChart } from '@/components/charts';
 import { ValuationDisclaimer } from '@/components/disclaimers';
 import { MethodologyExplainer } from '@/components/valuation';
 import { useStore } from '@/store';
@@ -26,7 +26,7 @@ export const ValuationPage = () => {
   const navigate = useNavigate();
   const { activeVenture } = useVentureContext();
   const { selectedTier, methodResults, activeMethod, setActiveMethod, resetValuation } = useStore();
-  const [showResults, setShowResults] = React.useState(false);
+  const [_showResults, _setShowResults] = React.useState(false); // Reserved for future use
 
   // Prüfe ob Tier-Daten vorhanden sind
   const hasTierData = activeVenture?.tierData?.completed_at !== null && activeVenture?.tierData?.completed_at !== undefined;

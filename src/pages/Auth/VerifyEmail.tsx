@@ -15,7 +15,6 @@ export default function VerifyEmailPage() {
 
   // Check for verification token in URL
   React.useEffect(() => {
-    const token = searchParams.get('token');
     const type = searchParams.get('type');
     const emailParam = searchParams.get('email');
 

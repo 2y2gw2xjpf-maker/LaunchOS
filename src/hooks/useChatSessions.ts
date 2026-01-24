@@ -80,7 +80,8 @@ export function useChatSessions(): UseChatSessionsReturn {
         const stored = localStorage.getItem(`launchos-chat-sessions-${user.id}`);
         if (stored) {
           const parsed = JSON.parse(stored);
-          setSessions(parsed.map((s: any) => ({
+          type StoredSession = { id: string; title: string; ventureId?: string; createdAt: string; updatedAt: string; messageCount: number };
+          setSessions(parsed.map((s: StoredSession) => ({
             ...s,
             createdAt: new Date(s.createdAt),
             updatedAt: new Date(s.updatedAt),
@@ -212,9 +213,10 @@ export function useChatSessions(): UseChatSessionsReturn {
       const stored = localStorage.getItem(`launchos-chat-sessions-${user.id}`);
       if (stored) {
         const existing = JSON.parse(stored);
+        type StoredSession = { id: string; title: string };
         localStorage.setItem(
           `launchos-chat-sessions-${user.id}`,
-          JSON.stringify(existing.filter((s: any) => s.id !== sessionId))
+          JSON.stringify(existing.filter((s: StoredSession) => s.id !== sessionId))
         );
       }
       setSessions(prev => prev.filter(s => s.id !== sessionId));
@@ -249,7 +251,8 @@ export function useChatSessions(): UseChatSessionsReturn {
       const stored = localStorage.getItem(`launchos-chat-sessions-${user.id}`);
       if (stored) {
         const existing = JSON.parse(stored);
-        const updated = existing.map((s: any) =>
+        type StoredSession = { id: string; title: string; updatedAt: string };
+        const updated = existing.map((s: StoredSession) =>
           s.id === sessionId ? { ...s, title, updatedAt: new Date().toISOString() } : s
         );
         localStorage.setItem(`launchos-chat-sessions-${user.id}`, JSON.stringify(updated));

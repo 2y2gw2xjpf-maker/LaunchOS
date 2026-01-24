@@ -23,7 +23,7 @@ export const SliderInput = ({
   min = 0,
   max = 100,
   step = 1,
-  label,
+  label: _label,
   leftLabel,
   rightLabel,
   showValue = true,

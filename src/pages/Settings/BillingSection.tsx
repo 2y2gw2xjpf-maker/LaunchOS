@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
 import {
-  CreditCard,
   ExternalLink,
   CheckCircle,
   AlertCircle,
@@ -16,7 +15,7 @@ import { supabase } from '@/lib/supabase';
 
 export default function BillingSection() {
   const { profile } = useAuth();
-  const { tier, status, isActive, isPaid } = useSubscription();
+  const { tier, status, isPaid } = useSubscription();
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 

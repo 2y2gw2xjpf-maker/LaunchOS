@@ -10,7 +10,6 @@ import {
   Legend,
   Tooltip,
 } from 'recharts';
-import { cn } from '@/lib/utils/cn';
 import type { SavedAnalysis } from '@/types';
 import { COMPARISON_COLORS } from '@/types';
 

@@ -5,7 +5,7 @@
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  FileText, Download, Trash2, Eye, Lock, MoreVertical,
+  FileText, Download, Trash2, Eye, Lock,
   Upload, File, FileImage, FileSpreadsheet, Presentation
 } from 'lucide-react';
 import type { DataRoomFile, DataRoomFolder } from '@/hooks/useDataRoom';
@@ -53,7 +53,7 @@ export function FileList({
   onUpload,
   onDeleteFile,
   onViewFile,
-  onEditFile,
+  onEditFile: _onEditFile,
   isUploading,
 }: FileListProps) {
   const [isDragOver, setIsDragOver] = React.useState(false);

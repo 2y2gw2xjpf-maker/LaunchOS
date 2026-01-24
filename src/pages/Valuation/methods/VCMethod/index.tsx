@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { motion } from 'framer-motion';
 import { Info, Calculator } from 'lucide-react';
 import { useStore } from '@/store';
 import { Card, Tooltip } from '@/components/ui';

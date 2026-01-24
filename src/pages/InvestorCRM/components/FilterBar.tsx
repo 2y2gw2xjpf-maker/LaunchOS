@@ -3,7 +3,7 @@
  */
 
 import * as React from 'react';
-import { Search, Filter, X, LayoutGrid, List, Calendar, Bell } from 'lucide-react';
+import { Search, Filter, X, LayoutGrid, List, Bell } from 'lucide-react';
 import { Button } from '@/components/ui';
 import {
   type PipelineStage,

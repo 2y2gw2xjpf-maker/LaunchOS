@@ -15,7 +15,7 @@ import { MarketAnalysisStep } from './steps/MarketAnalysisStep';
 import { RouteRecommendation } from './results/RouteRecommendation';
 import { ActionPlanTimeline } from './results/ActionPlanTimeline';
 import { ProgramRunner } from '@/components/program/ProgramRunner';
-import type { RouteResult } from '@/types';
+// RouteResult type is used by calculateRoute return value
 
 const STEPS = [
   { id: 'project', title: 'Projekt', description: 'Grundlegende Informationen' },

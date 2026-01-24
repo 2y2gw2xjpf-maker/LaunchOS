@@ -91,7 +91,7 @@ export const BerkusMethodPage = () => {
 
                 {/* Scoring Guide */}
                 <div className="mt-4 grid grid-cols-5 gap-1 text-xs">
-                  {Object.entries(definition.scoring).map(([score, desc]) => (
+                  {Object.entries(definition.scoring).map(([score]) => (
                     <div
                       key={score}
                       className={`p-2 rounded text-center ${

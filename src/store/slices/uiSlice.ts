@@ -21,7 +21,7 @@ export interface UISlice {
   closeAllModals: () => void;
 }
 
-export const createUISlice: StateCreator<UISlice> = (set, get) => ({
+export const createUISlice: StateCreator<UISlice> = (set) => ({
   sidebarOpen: true,
   chatWidgetOpen: false,
   activeHelper: null,

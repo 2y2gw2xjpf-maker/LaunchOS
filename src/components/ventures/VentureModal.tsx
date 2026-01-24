@@ -20,19 +20,19 @@ const INDUSTRIES = [
 ];
 
 const STAGES = [
-  { value: 'idea', label: 'Idee', description: 'Noch kein Produkt' },
-  { value: 'pre-seed', label: 'Pre-Seed', description: 'MVP in Entwicklung' },
-  { value: 'seed', label: 'Seed', description: 'Erste Kunden' },
-  { value: 'series-a', label: 'Series A', description: 'Product-Market-Fit' },
-  { value: 'series-b', label: 'Series B', description: 'Skalierung' },
-  { value: 'growth', label: 'Growth', description: 'Profitabel' },
+  { value: 'idea' as const, label: 'Idee', description: 'Noch kein Produkt' },
+  { value: 'pre-seed' as const, label: 'Pre-Seed', description: 'MVP in Entwicklung' },
+  { value: 'seed' as const, label: 'Seed', description: 'Erste Kunden' },
+  { value: 'series-a' as const, label: 'Series A', description: 'Product-Market-Fit' },
+  { value: 'series-b' as const, label: 'Series B', description: 'Skalierung' },
+  { value: 'growth' as const, label: 'Growth', description: 'Profitabel' },
 ];
 
 const FUNDING_PATHS = [
-  { value: 'bootstrap', label: 'Bootstrap', description: 'Ohne externe Investoren' },
-  { value: 'investor', label: 'Investor', description: 'VC/Angel-finanziert' },
-  { value: 'hybrid', label: 'Hybrid', description: 'Mix aus beidem' },
-  { value: 'undecided', label: 'Unentschieden', description: 'Noch offen' },
+  { value: 'bootstrap' as const, label: 'Bootstrap', description: 'Ohne externe Investoren' },
+  { value: 'investor' as const, label: 'Investor', description: 'VC/Angel-finanziert' },
+  { value: 'hybrid' as const, label: 'Hybrid', description: 'Mix aus beidem' },
+  { value: 'undecided' as const, label: 'Unentschieden', description: 'Noch offen' },
 ];
 
 export function VentureModal({ isOpen, onClose, editVenture }: VentureModalProps) {
@@ -40,46 +40,30 @@ export function VentureModal({ isOpen, onClose, editVenture }: VentureModalProps
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const [form, setForm] = useState({
-    name: '',
-    tagline: '',
-    industry: '',
-    stage: 'idea',
-    fundingPath: 'undecided',
-    fundingGoal: '',
-    teamSize: 1,
-    primaryColor: '#9333ea',
-    secondaryColor: '#ec4899',
+  // Initialize form based on editVenture
+  const getInitialForm = () => ({
+    name: editVenture?.name || '',
+    tagline: editVenture?.tagline || '',
+    industry: editVenture?.industry || '',
+    stage: editVenture?.stage || 'idea',
+    fundingPath: editVenture?.fundingPath || 'undecided',
+    fundingGoal: editVenture?.fundingGoal || '',
+    teamSize: editVenture?.teamSize || 1,
+    primaryColor: editVenture?.branding?.primary_color || '#9333ea',
+    secondaryColor: editVenture?.branding?.secondary_color || '#ec4899',
   });
 
+  const [form, setForm] = useState(getInitialForm);
+
+  // Reset form when editVenture or isOpen changes - using key pattern instead
+  // The parent should remount this component or pass a key when editVenture changes
   useEffect(() => {
-    if (editVenture) {
-      setForm({
-        name: editVenture.name,
-        tagline: editVenture.tagline || '',
-        industry: editVenture.industry || '',
-        stage: editVenture.stage || 'idea',
-        fundingPath: editVenture.fundingPath || 'undecided',
-        fundingGoal: editVenture.fundingGoal || '',
-        teamSize: editVenture.teamSize || 1,
-        primaryColor: editVenture.branding?.primary_color || '#9333ea',
-        secondaryColor: editVenture.branding?.secondary_color || '#ec4899',
-      });
-    } else {
-      setForm({
-        name: '',
-        tagline: '',
-        industry: '',
-        stage: 'idea',
-        fundingPath: 'undecided',
-        fundingGoal: '',
-        teamSize: 1,
-        primaryColor: '#9333ea',
-        secondaryColor: '#ec4899',
-      });
+    if (isOpen) {
+      setForm(getInitialForm());
+      setShowDeleteConfirm(false);
     }
-    setShowDeleteConfirm(false);
-  }, [editVenture, isOpen]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editVenture?.id, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

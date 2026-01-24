@@ -4,7 +4,7 @@
  */
 
 import * as React from 'react';
-import { TrendingUp, Info } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 interface FinancialDisclaimerProps {

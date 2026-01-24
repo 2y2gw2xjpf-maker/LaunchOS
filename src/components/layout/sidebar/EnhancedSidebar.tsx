@@ -14,7 +14,6 @@ import {
   FileText,
   Layers,
   Settings,
-  FolderOpen,
   Users,
   Database,
   BarChart3,
@@ -43,6 +42,8 @@ export const EnhancedSidebar = () => {
   const navigate = useNavigate();
   const [showSaveDialog, setShowSaveDialog] = React.useState(false);
   const [showMobileMenu, setShowMobileMenu] = React.useState(false);
+  const [openGroups, setOpenGroups] = React.useState<string[]>([]);
+  const [recentsOpen, setRecentsOpen] = React.useState(false);
 
   const {
     sidebarOpen,
@@ -53,7 +54,7 @@ export const EnhancedSidebar = () => {
     activeAnalysisId,
     searchQuery,
     isHistoryLoading,
-    hasUnsavedChanges,
+    hasUnsavedChanges: _hasUnsavedChanges,
     initializeHistory,
     setSearchQuery,
     saveCurrentAsAnalysis,
@@ -118,8 +119,6 @@ export const EnhancedSidebar = () => {
     location.pathname.startsWith('/venture') ||
     location.pathname.startsWith('/ventures') ||
     location.pathname.startsWith('/reality-check');
-
-  if (!showSidebar) return null;
 
   // Get tier display info
   const tierLabels: Record<string, { name: string; confidence: string }> = {
@@ -248,12 +247,6 @@ export const EnhancedSidebar = () => {
     },
   ];
 
-  // State for open groups - default all collapsed
-  const [openGroups, setOpenGroups] = React.useState<string[]>([]);
-
-  // State for Recents collapsed
-  const [recentsOpen, setRecentsOpen] = React.useState(false);
-
   // Toggle group open/closed
   const toggleGroup = (groupId: string) => {
     setOpenGroups((prev) =>
@@ -291,6 +284,8 @@ export const EnhancedSidebar = () => {
     { name: 'Toolkit', href: '/toolkit', icon: Wrench },
     { name: 'Investoren', href: '/investors', icon: Users },
   ];
+
+  if (!showSidebar) return null;
 
   return (
     <>

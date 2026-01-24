@@ -7,7 +7,7 @@ import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Link2, Plus, Copy, Trash2, ExternalLink, Eye, EyeOff,
-  Calendar, Users, Download, Clock, Check, X
+  Calendar, Users, Download, Check, X
 } from 'lucide-react';
 import type { AccessLink, AccessLogEntry, DataRoomFolder } from '@/hooks/useDataRoom';
 import { Button } from '@/components/ui';

@@ -6,7 +6,6 @@ import type {
   Goals,
   MarketAnalysis,
   DetailedInput,
-  DataSharingTier,
 } from '@/types';
 
 export interface WizardSlice {
