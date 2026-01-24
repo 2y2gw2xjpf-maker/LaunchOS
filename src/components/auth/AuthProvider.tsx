@@ -72,20 +72,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
-  // Handle temporary session cleanup on browser close
+  // Handle temporary session cleanup on browser/tab close
+  // Note: We use the "pagehide" event with persisted check instead of "beforeunload"
+  // because beforeunload fires on EVERY navigation/refresh, not just tab close.
+  // The pagehide event with persisted=false indicates actual tab/browser close.
   React.useEffect(() => {
-    const handleBeforeUnload = () => {
-      // Check if this was a temporary session (rememberMe was false)
-      const isTemporarySession = sessionStorage.getItem('launchos-session-temporary');
-      if (isTemporarySession === 'true') {
-        // Sign out on browser close - this uses synchronous localStorage removal
-        // The actual signOut will happen on next visit if the session is still valid
-        localStorage.setItem('launchos-pending-signout', 'true');
+    const handlePageHide = (event: PageTransitionEvent) => {
+      // Only sign out on actual browser/tab close, not on refresh
+      // persisted=true means the page is being kept in bfcache (refresh/navigation)
+      // persisted=false means the page is being discarded (tab close)
+      if (!event.persisted) {
+        const isTemporarySession = sessionStorage.getItem('launchos-session-temporary');
+        if (isTemporarySession === 'true') {
+          // Mark for signout on next visit
+          localStorage.setItem('launchos-pending-signout', 'true');
+        }
       }
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handlePageHide);
+    return () => window.removeEventListener('pagehide', handlePageHide);
   }, []);
 
   // Initialize auth state
@@ -95,42 +101,72 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return;
     }
 
-    // Timeout fallback - ensure loading is set to false after 3 seconds max
-    // This prevents infinite loading if Supabase connection hangs
+    let isMounted = true;
+
+    // Timeout fallback - ensure loading is set to false after 5 seconds max
+    // Increased from 3s to give Supabase more time to initialize
     const timeoutId = setTimeout(() => {
-      console.warn('[Auth] Session check timeout - setting loading to false');
-      setLoading(false);
-    }, 3000);
+      if (isMounted) {
+        console.warn('[Auth] Session check timeout - setting loading to false');
+        setLoading(false);
+      }
+    }, 5000);
 
     // Check for pending signout from previous session
     const pendingSignout = localStorage.getItem('launchos-pending-signout');
+
+    // Clean up the pending signout flag regardless
+    localStorage.removeItem('launchos-pending-signout');
+
+    // Only sign out if there's an explicit pending signout flag
     if (pendingSignout === 'true') {
-      localStorage.removeItem('launchos-pending-signout');
-      // Sign out but still set up the listener
+      console.log('[Auth] Pending signout detected, signing out...');
       supabase.auth.signOut();
     }
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      clearTimeout(timeoutId);
-      console.log('[Auth] Initial session check:', session ? 'Found' : 'None');
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
+    // Get initial session with retry logic
+    const initSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+
+        if (error) {
+          // If it's an AbortError, ignore it
+          if (isAbortError(error)) {
+            console.log('[Auth] Session check aborted (cleanup)');
+            return;
+          }
+          throw error;
+        }
+
+        if (isMounted) {
+          clearTimeout(timeoutId);
+          console.log('[Auth] Initial session check:', session ? 'Found' : 'None');
+          setSession(session);
+          setUser(session?.user ?? null);
+          if (session?.user) {
+            fetchProfile(session.user.id);
+          }
+          setLoading(false);
+        }
+      } catch (err) {
+        if (isMounted) {
+          clearTimeout(timeoutId);
+          // Ignore AbortError - it's from component cleanup or React StrictMode
+          if (isAbortError(err)) {
+            console.log('[Auth] Session check aborted (cleanup)');
+            setLoading(false);
+            return;
+          }
+          console.error('[Auth] Error getting session:', err);
+          setLoading(false);
+        }
       }
-      setLoading(false);
-    }).catch((err) => {
-      clearTimeout(timeoutId);
-      // Ignore AbortError - it's from component cleanup or React StrictMode
-      if (isAbortError(err)) {
-        console.log('[Auth] Session check aborted (cleanup)');
-        setLoading(false);
-        return;
-      }
-      console.error('[Auth] Error getting session:', err);
-      setLoading(false);
-    });
+    };
+
+    // Small delay to let Supabase client initialize properly
+    const initDelay = setTimeout(() => {
+      initSession();
+    }, 100);
 
     // Listen for auth changes - comprehensive event handling
     const {
@@ -183,7 +219,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     });
 
     return () => {
+      isMounted = false;
       clearTimeout(timeoutId);
+      clearTimeout(initDelay);
       subscription.unsubscribe();
     };
   }, [isConfigured, fetchProfile]);

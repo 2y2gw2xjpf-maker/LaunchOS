@@ -116,6 +116,7 @@ export const EnhancedSidebar = () => {
     location.pathname.startsWith('/toolkit') ||
     location.pathname.startsWith('/launch') ||
     location.pathname.startsWith('/venture') ||
+    location.pathname.startsWith('/ventures') ||
     location.pathname.startsWith('/reality-check');
 
   if (!showSidebar) return null;
@@ -194,17 +195,18 @@ export const EnhancedSidebar = () => {
   const favoriteAnalyses = filteredAnalyses.filter((a) => a.isFavorite);
 
   // Navigation groups for categorized sidebar
+  // Flow: Venture → Datenlevel → Was jetzt → Founders Journey
   const navigationGroups = [
     {
       id: 'start',
       label: 'START',
       icon: Compass,
       items: [
-        { label: 'Reality Check', href: '/reality-check', icon: ShieldAlert },
+        { label: 'Meine Ventures', href: '/ventures', icon: Building2 },
         { label: 'Daten-Level', href: '/tier-selection', icon: Layers },
-        { label: 'Venture-Daten', href: '/venture/data-input', icon: FileText },
-        { label: 'Was tun?', href: '/whats-next', icon: CircleHelp },
+        { label: 'Was jetzt?', href: '/whats-next', icon: CircleHelp },
         { label: 'Founders Journey', href: '/journey', icon: Rocket },
+        { label: 'Reality Check', href: '/reality-check', icon: ShieldAlert },
       ],
     },
     {
@@ -341,9 +343,49 @@ export const EnhancedSidebar = () => {
         {/* SECTION 1: NAVIGATION (nicht scrollbar, oben)               */}
         {/* ═══════════════════════════════════════════════════════════ */}
         <div className="border-b border-purple-100">
-          {/* Tier Status Display */}
-          {currentTierInfo && (
-            <div className="px-3 py-3">
+          {/* Active Venture & Tier Status Display */}
+          <div className="px-3 py-3 space-y-2">
+            {/* Active Venture Display */}
+            {activeVenture && sidebarOpen && (
+              <button
+                onClick={() => navigate('/venture/data-input')}
+                className={cn(
+                  'w-full flex items-center gap-3 p-2 rounded-xl transition-all',
+                  'bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200',
+                  'hover:border-purple-300 hover:shadow-sm'
+                )}
+              >
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center flex-shrink-0">
+                  <Building2 className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex-1 text-left min-w-0">
+                  <p className="text-[10px] text-purple-600 font-medium uppercase tracking-wide">Aktives Venture</p>
+                  <p className="text-sm font-semibold text-charcoal truncate">{activeVenture.name}</p>
+                  {activeVenture.industry && (
+                    <p className="text-[10px] text-charcoal/50 truncate">{activeVenture.industry}</p>
+                  )}
+                </div>
+              </button>
+            )}
+            {/* Collapsed Active Venture Icon */}
+            {activeVenture && !sidebarOpen && (
+              <button
+                onClick={() => navigate('/venture/data-input')}
+                className={cn(
+                  'w-full flex items-center justify-center p-2 rounded-xl transition-all',
+                  'bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200',
+                  'hover:border-purple-300 hover:shadow-sm'
+                )}
+                title={activeVenture.name}
+              >
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-white" />
+                </div>
+              </button>
+            )}
+
+            {/* Tier Status Display */}
+            {currentTierInfo && (
               <button
                 onClick={() => navigate('/tier-selection')}
                 className={cn(
@@ -352,12 +394,14 @@ export const EnhancedSidebar = () => {
                   'hover:border-purple-200 hover:shadow-sm'
                 )}
               >
-                <div className="w-11 h-11 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
                   <Layers className="w-4 h-4 text-white" />
                 </div>
                 {sidebarOpen && (
                   <div className="flex-1 text-left">
-                    <p className="text-xs text-purple-600 font-medium">Daten-Level</p>
+                    <p className="text-xs text-purple-600 font-medium">
+                      {activeVenture ? `Daten-Level für ${activeVenture.name}` : 'Daten-Level'}
+                    </p>
                     <p className="text-sm font-semibold text-charcoal">{currentTierInfo.name}</p>
                     <p className="text-[10px] text-charcoal/50">Confidence: {currentTierInfo.confidence}</p>
                   </div>
@@ -366,8 +410,28 @@ export const EnhancedSidebar = () => {
                   <Settings className="w-4 h-4 text-purple-400" />
                 )}
               </button>
-            </div>
-          )}
+            )}
+
+            {/* No Venture Selected Hint */}
+            {!activeVenture && sidebarOpen && (
+              <button
+                onClick={() => navigate('/venture/create')}
+                className={cn(
+                  'w-full flex items-center gap-3 p-2 rounded-xl transition-all',
+                  'bg-gray-50 border border-dashed border-gray-200',
+                  'hover:border-purple-300 hover:bg-purple-50/50'
+                )}
+              >
+                <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0 border-2 border-dashed border-gray-300">
+                  <Building2 className="w-5 h-5 text-gray-400" />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="text-xs text-gray-500 font-medium">Kein Venture</p>
+                  <p className="text-sm font-medium text-purple-600">Venture erstellen</p>
+                </div>
+              </button>
+            )}
+          </div>
 
           {/* Dashboard Link */}
           <button

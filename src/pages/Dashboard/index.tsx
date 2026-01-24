@@ -321,9 +321,17 @@ export function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Aktives Venture */}
           <div>
-            <h2 className="text-lg font-semibold text-charcoal mb-4">
-              Dein Venture
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-charcoal">
+                Dein Venture
+              </h2>
+              <Link
+                to="/ventures"
+                className="text-sm text-purple-600 hover:text-purple-700 font-medium"
+              >
+                Alle Ventures →
+              </Link>
+            </div>
             {activeVenture ? (
               <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-purple-100 p-5 h-[calc(100%-2rem)]">
                 <div className="flex items-center gap-3 mb-4">
@@ -348,20 +356,28 @@ export function DashboardPage() {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-charcoal/50">Branche</span>
+                    <span className="text-charcoal/50">Datenlevel</span>
                     <span className="font-medium text-charcoal">
-                      {activeVenture.industry || '—'}
+                      Tier {activeVenture.tierLevel || 1}
                     </span>
                   </div>
                 </div>
 
-                <Link
-                  to="/venture/data-input"
-                  className="mt-4 w-full py-2 px-4 bg-purple-50 hover:bg-purple-100 rounded-lg text-sm font-medium text-purple-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  Venture bearbeiten
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+                <div className="mt-4 flex gap-2">
+                  <Link
+                    to="/venture/data-input"
+                    className="flex-1 py-2 px-4 bg-purple-50 hover:bg-purple-100 rounded-lg text-sm font-medium text-purple-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    Daten ergänzen
+                  </Link>
+                  <Link
+                    to="/whats-next"
+                    className="flex-1 py-2 px-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-sm font-medium hover:shadow-lg transition-shadow flex items-center justify-center gap-2"
+                  >
+                    Was jetzt?
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
               </div>
             ) : (
               <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-purple-100 p-5 text-center h-[calc(100%-2rem)] flex flex-col justify-center">

@@ -4,31 +4,37 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-key';
 
-// Create Supabase client (without strict typing for flexibility)
+// Single Supabase client - avoid multiple GoTrueClient instances
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-  },
-});
-
-// Create a separate client for public data queries (not affected by auth lifecycle)
-// This prevents AbortError issues when auth state changes during data fetching
-export const supabasePublic = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-    detectSessionInUrl: false,
+    // Use a stable storage key to avoid conflicts
+    storageKey: 'launchos-auth-token',
+    // Use PKCE flow for better security and reliability
+    flowType: 'pkce',
   },
   global: {
-    fetch: (url, options) => {
-      // Remove any abort signals to prevent cancellation
-      const { signal, ...rest } = options || {};
+    // Custom fetch that ignores abort signals for data queries
+    // but still allows auth to work properly
+    fetch: async (url, options = {}) => {
+      const { signal, ...rest } = options;
+
+      // For auth endpoints, use the signal normally
+      if (typeof url === 'string' && url.includes('/auth/')) {
+        return fetch(url, options);
+      }
+
+      // For data queries, ignore abort signal to prevent cancellation issues
       return fetch(url, rest);
     },
   },
 });
+
+// Re-export supabase as supabasePublic for backwards compatibility
+// This ensures only ONE client instance exists
+export const supabasePublic = supabase;
 
 // ==================== TYPES ====================
 

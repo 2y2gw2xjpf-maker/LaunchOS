@@ -1,6 +1,7 @@
 /**
  * Launch Checklist Page
  * Interactive checklist for pre-launch verification
+ * Design based on RealityCheckPage
  */
 
 import { useState, useEffect } from 'react';
@@ -23,9 +24,11 @@ import {
   CheckCheck,
   Download,
   RefreshCw,
+  Shield,
 } from 'lucide-react';
-import { Header, EnhancedSidebar, PageContainer } from '@/components/layout';
-import { Button } from '@/components/ui/button';
+import { Header, PageContainer } from '@/components/layout';
+import { EnhancedSidebar } from '@/components/layout/sidebar/EnhancedSidebar';
+import { Card, Button } from '@/components/ui';
 import { cn } from '@/lib/utils/cn';
 
 interface ChecklistItem {
@@ -255,121 +258,138 @@ export function LaunchChecklistPage() {
     URL.revokeObjectURL(url);
   };
 
+  // Verdict colors (matching RealityCheck style)
+  const verdictColors = isReadyForLaunch
+    ? 'from-green-500 to-emerald-500'
+    : 'from-orange-500 to-amber-500';
+
+  const verdictBgColors = isReadyForLaunch
+    ? 'bg-green-50 border-green-200'
+    : 'bg-orange-50 border-orange-200';
+
   return (
     <div className="min-h-screen bg-cream">
       <Header />
       <EnhancedSidebar />
-
       <PageContainer withSidebar maxWidth="wide">
-        {/* Page Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-500 to-coral flex items-center justify-center">
-                <Rocket className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="font-display text-display-sm text-charcoal">Launch Checklist</h1>
-                <p className="text-charcoal/60">Finale Überprüfung vor dem Go-Live</p>
-              </div>
-            </div>
+        {/* Header - RealityCheck Style */}
+        <div className="mb-8">
+          <h1 className="font-display text-display-sm md:text-display-md text-text-primary mb-4">
+            Launch Checklist
+          </h1>
+          <p className="text-text-secondary text-lg">
+            Finale Überprüfung vor dem Go-Live. Stelle sicher, dass alle kritischen Punkte
+            abgehakt sind, bevor du launchst.
+          </p>
+        </div>
 
-            <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm" onClick={resetChecklist} className="gap-2">
-                <RefreshCw className="w-4 h-4" />
-                Reset
-              </Button>
-              <Button variant="outline" size="sm" onClick={exportChecklist} className="gap-2">
-                <Download className="w-4 h-4" />
-                Export
-              </Button>
+        {/* Info Banner - RealityCheck Style */}
+        <div className="mb-8 p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+              <Shield className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-purple-900">
+                <span className="font-medium">Wichtig:</span>
+                <span className="text-purple-700/70"> Diese Checklist enthält {criticalItems.length} kritische Punkte, die vor dem Launch unbedingt erledigt sein müssen. Nimm dir die Zeit!</span>
+              </p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Progress Overview */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
-        >
-          {/* Total Progress */}
-          <div className="bg-white rounded-2xl p-6 shadow-card border border-sand/50">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-medium text-charcoal/60">Gesamtfortschritt</span>
-              <span className="text-2xl font-bold text-charcoal">{progress}%</span>
+        {/* Action Buttons */}
+        <div className="flex items-center gap-3 mb-6">
+          <Button variant="outline" size="sm" onClick={resetChecklist} className="gap-2">
+            <RefreshCw className="w-4 h-4" />
+            Reset
+          </Button>
+          <Button variant="outline" size="sm" onClick={exportChecklist} className="gap-2">
+            <Download className="w-4 h-4" />
+            Export
+          </Button>
+        </div>
+
+        {/* Launch Status Banner - RealityCheck Verdict Style */}
+        <div className={`p-6 rounded-2xl border mb-8 ${verdictBgColors}`}>
+          <div className="flex items-start gap-4">
+            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${verdictColors} flex items-center justify-center flex-shrink-0`}>
+              {isReadyForLaunch ? (
+                <Rocket className="w-6 h-6 text-white" />
+              ) : (
+                <AlertTriangle className="w-6 h-6 text-white" />
+              )}
             </div>
-            <div className="h-2 bg-sand/50 rounded-full overflow-hidden">
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                {isReadyForLaunch ? 'Bereit für den Launch!' : 'Noch nicht bereit'}
+              </h3>
+              <p className="text-gray-600">
+                {isReadyForLaunch
+                  ? 'Alle kritischen Punkte sind abgehakt. Du kannst jetzt launchen!'
+                  : `Noch ${criticalItems.length - criticalCompletedCount} kritische Punkte offen. Bitte prüfe alle Punkte vor dem Launch.`}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Progress Cards - RealityCheck Card Style */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          {/* Total Progress */}
+          <Card className="p-6 bg-white/80">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-gray-700">Gesamtfortschritt</span>
+              <span className="text-2xl font-bold text-purple-600">{progress}%</span>
+            </div>
+            <div className="h-3 bg-gray-100 rounded-full overflow-hidden mb-2">
               <div
-                className="h-full bg-brand-500 rounded-full transition-all duration-500"
+                className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-xs text-charcoal/50 mt-2">
-              {completedCount} von {allItems.length} Punkten
-            </p>
-          </div>
+            <p className="text-sm text-gray-500">{completedCount} von {allItems.length} Punkten</p>
+          </Card>
 
           {/* Critical Progress */}
-          <div className="bg-white rounded-2xl p-6 shadow-card border border-sand/50">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-medium text-charcoal/60">Kritische Punkte</span>
+          <Card className="p-6 bg-white/80">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-gray-700">Kritische Punkte</span>
               <span className={cn(
                 "text-2xl font-bold",
-                criticalProgress === 100 ? "text-sage" : "text-coral"
+                criticalProgress === 100 ? "text-green-600" : "text-orange-500"
               )}>
                 {criticalProgress}%
               </span>
             </div>
-            <div className="h-2 bg-sand/50 rounded-full overflow-hidden">
+            <div className="h-3 bg-gray-100 rounded-full overflow-hidden mb-2">
               <div
                 className={cn(
                   "h-full rounded-full transition-all duration-500",
-                  criticalProgress === 100 ? "bg-sage" : "bg-coral"
+                  criticalProgress === 100
+                    ? "bg-gradient-to-r from-green-500 to-emerald-500"
+                    : "bg-gradient-to-r from-orange-500 to-amber-500"
                 )}
                 style={{ width: `${criticalProgress}%` }}
               />
             </div>
-            <p className="text-xs text-charcoal/50 mt-2">
-              {criticalCompletedCount} von {criticalItems.length} kritischen
-            </p>
-          </div>
+            <p className="text-sm text-gray-500">{criticalCompletedCount} von {criticalItems.length} kritischen</p>
+          </Card>
 
-          {/* Launch Status */}
-          <div className={cn(
-            "rounded-2xl p-6 shadow-card border",
-            isReadyForLaunch
-              ? "bg-sage/10 border-sage/30"
-              : "bg-coral/10 border-coral/30"
-          )}>
-            <div className="flex items-center gap-3 mb-2">
-              {isReadyForLaunch ? (
-                <CheckCheck className="w-6 h-6 text-sage" />
-              ) : (
-                <AlertTriangle className="w-6 h-6 text-coral" />
-              )}
-              <span className={cn(
-                "text-lg font-bold",
-                isReadyForLaunch ? "text-sage" : "text-coral"
-              )}>
-                {isReadyForLaunch ? 'GO' : 'NO-GO'}
-              </span>
+          {/* Time Estimate */}
+          <Card className="p-6 bg-white/80">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-gray-700">Geschätzte Zeit</span>
+              <span className="text-2xl font-bold text-purple-600">~2h</span>
             </div>
-            <p className={cn(
-              "text-sm",
-              isReadyForLaunch ? "text-sage/80" : "text-coral/80"
-            )}>
-              {isReadyForLaunch
-                ? 'Alle kritischen Punkte erfüllt!'
-                : `Noch ${criticalItems.length - criticalCompletedCount} kritische Punkte offen`}
-            </p>
-          </div>
-        </motion.div>
+            <div className="h-3 bg-gray-100 rounded-full overflow-hidden mb-2">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500"
+                style={{ width: '100%' }}
+              />
+            </div>
+            <p className="text-sm text-gray-500">Für alle Punkte einplanen</p>
+          </Card>
+        </div>
 
         {/* Checklist Phases */}
         <div className="space-y-4 mb-8">
@@ -384,97 +404,95 @@ export function LaunchChecklistPage() {
                 key={phase.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + index * 0.05 }}
-                className={cn(
-                  "bg-white rounded-2xl shadow-card border overflow-hidden",
-                  phaseComplete ? "border-sage/30" : "border-sand/50"
-                )}
+                transition={{ delay: 0.05 + index * 0.03 }}
               >
-                {/* Phase Header */}
-                <button
-                  onClick={() => togglePhase(phase.id)}
-                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-sand/20 transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center",
-                      phaseComplete ? "bg-sage/20 text-sage" : "bg-brand-100 text-brand-600"
-                    )}>
-                      {phase.icon}
+                <Card className={cn(
+                  "overflow-hidden bg-white/80",
+                  phaseComplete && "border-green-200"
+                )}>
+                  {/* Phase Header */}
+                  <button
+                    onClick={() => togglePhase(phase.id)}
+                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={cn(
+                        "w-10 h-10 rounded-xl flex items-center justify-center",
+                        phaseComplete
+                          ? "bg-green-100 text-green-600"
+                          : "bg-purple-100 text-purple-600"
+                      )}>
+                        {phase.icon}
+                      </div>
+                      <div className="text-left">
+                        <h3 className="font-semibold text-gray-900">{phase.title}</h3>
+                        <p className="text-xs text-gray-500">
+                          {completedPhaseItems}/{phaseItems.length} erledigt · ca. {phase.timeEstimate}
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-left">
-                      <h3 className="font-semibold text-charcoal">{phase.title}</h3>
-                      <p className="text-xs text-charcoal/50">
-                        {completedPhaseItems}/{phaseItems.length} erledigt · ca. {phase.timeEstimate}
-                      </p>
+                    <div className="flex items-center gap-4">
+                      {phaseComplete && (
+                        <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                          Komplett
+                        </span>
+                      )}
+                      {isExpanded ? (
+                        <ChevronDown className="w-5 h-5 text-gray-400" />
+                      ) : (
+                        <ChevronRight className="w-5 h-5 text-gray-400" />
+                      )}
                     </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    {phaseComplete && (
-                      <span className="px-2 py-1 bg-sage/10 text-sage text-xs font-medium rounded-full">
-                        Komplett
-                      </span>
-                    )}
-                    {isExpanded ? (
-                      <ChevronDown className="w-5 h-5 text-charcoal/40" />
-                    ) : (
-                      <ChevronRight className="w-5 h-5 text-charcoal/40" />
-                    )}
-                  </div>
-                </button>
+                  </button>
 
-                {/* Phase Items */}
-                {isExpanded && (
-                  <div className="px-6 pb-4 pt-2 border-t border-sand/30">
-                    <div className="space-y-2">
-                      {phaseItems.map(item => (
-                        <button
-                          key={item.id}
-                          onClick={() => toggleItem(item.id)}
-                          className={cn(
-                            "w-full flex items-start gap-3 p-3 rounded-xl text-left transition-colors",
-                            checkedItems.has(item.id)
-                              ? "bg-sage/10"
-                              : "hover:bg-sand/30"
-                          )}
-                        >
-                          {checkedItems.has(item.id) ? (
-                            <CheckCircle2 className="w-5 h-5 text-sage flex-shrink-0 mt-0.5" />
-                          ) : (
-                            <Circle className="w-5 h-5 text-charcoal/30 flex-shrink-0 mt-0.5" />
-                          )}
-                          <div className="flex-1">
-                            <span className={cn(
-                              "text-sm",
+                  {/* Phase Items */}
+                  {isExpanded && (
+                    <div className="px-6 pb-4 pt-2 border-t border-gray-100">
+                      <div className="space-y-2">
+                        {phaseItems.map(item => (
+                          <button
+                            key={item.id}
+                            onClick={() => toggleItem(item.id)}
+                            className={cn(
+                              "w-full flex items-start gap-3 p-3 rounded-xl text-left transition-colors",
                               checkedItems.has(item.id)
-                                ? "text-charcoal/60 line-through"
-                                : "text-charcoal"
-                            )}>
-                              {item.label}
-                            </span>
-                            {item.critical && !checkedItems.has(item.id) && (
-                              <span className="ml-2 px-1.5 py-0.5 bg-coral/10 text-coral text-xs font-medium rounded">
-                                KRITISCH
-                              </span>
+                                ? "bg-green-50"
+                                : "hover:bg-gray-50"
                             )}
-                          </div>
-                        </button>
-                      ))}
+                          >
+                            {checkedItems.has(item.id) ? (
+                              <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                            ) : (
+                              <Circle className="w-5 h-5 text-gray-300 flex-shrink-0 mt-0.5" />
+                            )}
+                            <div className="flex-1">
+                              <span className={cn(
+                                "text-sm",
+                                checkedItems.has(item.id)
+                                  ? "text-gray-500 line-through"
+                                  : "text-gray-700"
+                              )}>
+                                {item.label}
+                              </span>
+                              {item.critical && !checkedItems.has(item.id) && (
+                                <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded">
+                                  KRITISCH
+                                </span>
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </Card>
               </motion.div>
             );
           })}
         </div>
 
-        {/* Final Checklist */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-gradient-to-r from-brand-600 to-coral rounded-2xl p-6 text-white mb-8"
-        >
+        {/* Final Checklist - RealityCheck Card Style */}
+        <Card className="p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white mb-8">
           <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
             <CheckCheck className="w-5 h-5" />
             Finale Checks
@@ -510,50 +528,35 @@ export function LaunchChecklistPage() {
               </button>
             ))}
           </div>
-        </motion.div>
+        </Card>
 
-        {/* GO / NO-GO Decision */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className={cn(
-            "rounded-2xl p-8 text-center",
-            isReadyForLaunch
-              ? "bg-sage/10 border-2 border-sage"
-              : "bg-coral/10 border-2 border-coral/30"
-          )}
-        >
-          {isReadyForLaunch ? (
-            <>
-              <div className="w-20 h-20 rounded-full bg-sage/20 flex items-center justify-center mx-auto mb-4">
-                <Rocket className="w-10 h-10 text-sage" />
-              </div>
-              <h2 className="text-2xl font-bold text-sage mb-2">Bereit für den Launch!</h2>
-              <p className="text-sage/80 mb-6">
-                Alle kritischen Punkte sind abgehakt. Du kannst jetzt launchen!
-              </p>
-              <a
-                href="/launch/announcement"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-sage text-white font-semibold rounded-xl hover:bg-sage/90 transition-colors"
-              >
-                Zu den Announcement Templates
-                <ChevronRight className="w-4 h-4" />
-              </a>
-            </>
-          ) : (
-            <>
-              <div className="w-20 h-20 rounded-full bg-coral/20 flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle className="w-10 h-10 text-coral" />
-              </div>
-              <h2 className="text-2xl font-bold text-coral mb-2">Noch nicht bereit</h2>
-              <p className="text-coral/80">
-                Es sind noch {criticalItems.length - criticalCompletedCount} kritische Punkte offen.
-                Bitte prüfe alle Punkte vor dem Launch.
-              </p>
-            </>
-          )}
-        </motion.div>
+        {/* GO / NO-GO Decision - Big CTA like RealityCheck */}
+        {isReadyForLaunch && (
+          <Card className="p-8 bg-green-50 border-2 border-green-200 text-center mb-8">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mx-auto mb-4">
+              <Rocket className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-green-700 mb-2">Bereit für den Launch!</h2>
+            <p className="text-green-600 mb-6">
+              Alle kritischen Punkte sind abgehakt. Zeit, dein Produkt live zu schalten!
+            </p>
+            <a
+              href="/launch/announcement"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all"
+            >
+              Zu den Announcement Templates
+              <ChevronRight className="w-4 h-4" />
+            </a>
+          </Card>
+        )}
+
+        {/* Disclaimer - RealityCheck Style */}
+        <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+          <p className="text-xs text-gray-500 text-center">
+            Diese Checklist ist ein Leitfaden. Je nach Projekt können zusätzliche Schritte
+            erforderlich sein. Bei rechtlichen Fragen empfehlen wir professionelle Beratung.
+          </p>
+        </div>
       </PageContainer>
     </div>
   );
