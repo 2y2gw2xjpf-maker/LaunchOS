@@ -128,6 +128,28 @@ const TOOLS: Anthropic.Tool[] = [
       required: ['method'],
     },
   },
+  {
+    name: 'reality_check',
+    description: 'Analysiert einen Social Media Claim oder "Get Rich Quick" Versprechen auf Realismus. Nutze dieses Tool wenn der User nach einer Einschätzung fragt wie "Kann ich wirklich X€ in Y Zeit verdienen?" oder einen Screenshot/Text von einem Guru/Influencer teilt der unrealistische Versprechungen macht.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        claim: {
+          type: 'string',
+          description: 'Der Claim oder das Versprechen das analysiert werden soll (z.B. "50.000€/Monat in 6 Monaten mit einem Coaching Business")'
+        },
+        source: {
+          type: 'string',
+          description: 'Optional: Wo kommt der Claim her (z.B. "TikTok Video", "Instagram Reel", "LinkedIn Post")'
+        },
+        context: {
+          type: 'string',
+          description: 'Optional: Zusätzlicher Kontext (z.B. was wird verkauft, wer ist die Person)'
+        }
+      },
+      required: ['claim'],
+    },
+  },
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -313,6 +335,119 @@ async function handleToolCall(
       });
     }
 
+    case 'reality_check': {
+      const claim = toolInput.claim as string;
+      const source = toolInput.source as string || 'Unbekannte Quelle';
+      const context = toolInput.context as string || '';
+
+      // Analyze the claim for red flags
+      const redFlags: string[] = [];
+      const hiddenFactors: string[] = [];
+      let probability = 50; // Start neutral
+
+      // Income claim patterns
+      const incomeMatch = claim.match(/(\d+[\.,]?\d*)\s*(k|K|€|EUR|Dollar|\$|tausend)?/);
+      const monthlyIncome = incomeMatch ? parseFloat(incomeMatch[1].replace(',', '.')) * (incomeMatch[2]?.toLowerCase() === 'k' || incomeMatch[2] === 'tausend' ? 1000 : 1) : 0;
+
+      // Time frame patterns
+      const timeMatch = claim.match(/(\d+)\s*(Tag|Woche|Monat|Jahr|day|week|month|year)/i);
+      const timeValue = timeMatch ? parseInt(timeMatch[1]) : 12;
+      const timeUnit = timeMatch ? timeMatch[2].toLowerCase() : 'monat';
+
+      // High income claims
+      if (monthlyIncome > 10000) {
+        probability -= 15;
+        redFlags.push('Sehr hohe Einkommensversprechen');
+        hiddenFactors.push(`Top 1% der Selbstständigen verdienen >10k/Monat - das erfordert jahrelange Arbeit`);
+      }
+      if (monthlyIncome > 50000) {
+        probability -= 20;
+        redFlags.push('Extrem hohe Einkommensversprechen (>50k/Monat)');
+        hiddenFactors.push('Nur 0.1% aller Unternehmer erreichen solche Einkommen');
+      }
+
+      // Quick time frames
+      if (timeUnit.includes('tag') || timeUnit.includes('day')) {
+        probability -= 25;
+        redFlags.push('Unrealistisch kurzer Zeitrahmen (Tage)');
+      } else if ((timeUnit.includes('woche') || timeUnit.includes('week')) && timeValue < 8) {
+        probability -= 20;
+        redFlags.push('Sehr kurzer Zeitrahmen (wenige Wochen)');
+      } else if ((timeUnit.includes('monat') || timeUnit.includes('month')) && timeValue <= 3) {
+        probability -= 15;
+        redFlags.push('Kurzer Zeitrahmen (1-3 Monate)');
+        hiddenFactors.push('Erfolgreiche Businesses brauchen typischerweise 12-24 Monate bis zur Profitabilität');
+      }
+
+      // Common scam patterns
+      const scamPatterns = [
+        { pattern: /passiv|passive/i, flag: '"Passives Einkommen" Versprechen', factor: 'Jedes Business erfordert aktive Arbeit, besonders am Anfang' },
+        { pattern: /geheim|secret/i, flag: '"Geheime Methode" Framing', factor: 'Es gibt keine geheimen Abkürzungen - erfolgreiche Strategien sind bekannt' },
+        { pattern: /garantie|garantiert|guaranteed/i, flag: 'Garantierte Ergebnisse', factor: 'Niemand kann Geschäftserfolg garantieren' },
+        { pattern: /ohne (Erfahrung|Vorkenntnisse|Startkapital)/i, flag: '"Ohne Vorkenntnisse/Kapital" Versprechen', factor: 'Erfolgreiche Businesses erfordern Skills und/oder Kapital' },
+        { pattern: /nebenbei|nebenher/i, flag: '"Nebenbei" Versprechen', factor: 'Signifikantes Einkommen erfordert signifikante Zeit' },
+        { pattern: /kurs|coaching|mentoring/i, flag: 'Verkauf eines Kurses/Coachings', factor: 'Der Verkäufer verdient primär am Kurs, nicht an der Methode' },
+        { pattern: /dropshipping|affiliate|network.?marketing|mlm/i, flag: 'Bekanntes High-Failure Modell', factor: '90%+ der Teilnehmer in diesen Modellen verdienen weniger als den Mindestlohn' },
+        { pattern: /schnell reich|get rich quick|reich werden/i, flag: 'Klassisches "Get Rich Quick" Framing', factor: 'Nachhaltige Vermögensbildung braucht Zeit' },
+        { pattern: /jetzt (kaufen|starten)|limited|nur noch/i, flag: 'Künstliche Dringlichkeit', factor: 'Seriöse Angebote brauchen keinen Zeitdruck' },
+      ];
+
+      for (const { pattern, flag, factor } of scamPatterns) {
+        if (pattern.test(claim) || pattern.test(context)) {
+          redFlags.push(flag);
+          hiddenFactors.push(factor);
+          probability -= 10;
+        }
+      }
+
+      // Determine verdict
+      probability = Math.max(5, Math.min(95, probability));
+      let verdict: string;
+      let verdictEmoji: string;
+
+      if (probability >= 70) {
+        verdict = 'Möglicherweise realistisch';
+        verdictEmoji = '🟢';
+      } else if (probability >= 40) {
+        verdict = 'Stark übertrieben';
+        verdictEmoji = '🟡';
+      } else if (probability >= 20) {
+        verdict = 'Wahrscheinlich unrealistisch';
+        verdictEmoji = '🟠';
+      } else {
+        verdict = 'Klassisches Scam-Muster';
+        verdictEmoji = '🔴';
+      }
+
+      // Realistic path suggestion
+      const realisticPath = monthlyIncome > 5000
+        ? `Realistischer Weg zu ${monthlyIncome.toLocaleString('de-DE')}€/Monat:
+           1. Expertise aufbauen (6-12 Monate)
+           2. Erste Kunden gewinnen (3-6 Monate)
+           3. Prozesse optimieren (6-12 Monate)
+           4. Skalieren (12+ Monate)
+           Gesamtdauer: Typischerweise 2-4 Jahre`
+        : `Mit realistischen Erwartungen und harter Arbeit ist dieses Einkommen in 6-18 Monaten erreichbar.`;
+
+      return JSON.stringify({
+        success: true,
+        analysis: {
+          claim,
+          source,
+          verdict: `${verdictEmoji} ${verdict}`,
+          probability: `${probability}%`,
+          redFlags: redFlags.length > 0 ? redFlags : ['Keine offensichtlichen Red Flags gefunden'],
+          hiddenFactors: hiddenFactors.length > 0 ? hiddenFactors : ['Die grundsätzliche Idee könnte funktionieren'],
+          realisticPath,
+          recommendation: probability < 40
+            ? '⚠️ Sei vorsichtig! Investiere kein Geld in Kurse oder Programme ohne gründliche Recherche. Frage nach verifizierbaren Referenzen und sprich mit ehemaligen Teilnehmern.'
+            : '💡 Die Idee hat Potenzial, aber sei realistisch bei Zeitrahmen und Aufwand. Starte klein und validiere bevor du investierst.',
+        },
+        page_link: '/reality-check',
+        disclaimer: '🛡️ Diese Analyse basiert auf Pattern-Matching und Erfahrungswerten. Sie ersetzt keine eigene Due Diligence.',
+      });
+    }
+
     default:
       return JSON.stringify({ error: 'Unknown tool' });
   }
@@ -434,6 +569,12 @@ Du bist LaunchOS, ein KI-Assistent speziell für Gründer in Deutschland.
 
 ### 4. Bewertungen berechnen
 - nutze calculate_valuation Tool
+
+### 5. Reality Check - "Get Rich Quick" Claims prüfen
+- nutze reality_check Tool wenn User nach Einschätzung von Social Media Claims fragt
+- Analysiert Influencer-Versprechen, Guru-Marketing, passive Einkommen Claims
+- Zeigt Red Flags und versteckte Faktoren auf
+- Gibt realistische Alternativen
 
 ## WICHTIGE REGELN
 

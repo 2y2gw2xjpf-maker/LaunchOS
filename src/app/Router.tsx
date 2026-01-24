@@ -28,6 +28,7 @@ const PublicDataRoomPage = React.lazy(() => import('@/pages/DataRoom/PublicDataR
 const AnalyticsPage = React.lazy(() => import('@/pages/Analytics'));
 const VentureDataInputPage = React.lazy(() => import('@/pages/VentureDataInput'));
 const VentureCreatePage = React.lazy(() => import('@/pages/VentureCreate'));
+const RealityCheckPage = React.lazy(() => import('@/pages/RealityCheck'));
 
 // Legal Pages
 const ImpressumPage = React.lazy(() => import('@/pages/Legal/ImpressumPage'));
@@ -104,6 +105,7 @@ export const Router = () => {
               <Route path="/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
               <Route path="/venture/data-input" element={<ProtectedRoute><VentureDataInputPage /></ProtectedRoute>} />
               <Route path="/venture/create" element={<ProtectedRoute><VentureCreatePage /></ProtectedRoute>} />
+              <Route path="/reality-check" element={<ProtectedRoute><RealityCheckPage /></ProtectedRoute>} />
 
               {/* Builder's Toolkit Routes */}
               <Route path="/toolkit" element={<ProtectedRoute><ToolkitPage /></ProtectedRoute>} />

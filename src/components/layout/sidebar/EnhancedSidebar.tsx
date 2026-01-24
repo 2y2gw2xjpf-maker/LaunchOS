@@ -27,6 +27,7 @@ import {
   ClipboardCheck,
   Clock,
   Building2,
+  ShieldAlert,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useStore } from '@/store';
@@ -114,7 +115,8 @@ export const EnhancedSidebar = () => {
     location.pathname.startsWith('/analytics') ||
     location.pathname.startsWith('/toolkit') ||
     location.pathname.startsWith('/launch') ||
-    location.pathname.startsWith('/venture');
+    location.pathname.startsWith('/venture') ||
+    location.pathname.startsWith('/reality-check');
 
   if (!showSidebar) return null;
 
@@ -198,6 +200,7 @@ export const EnhancedSidebar = () => {
       label: 'START',
       icon: Compass,
       items: [
+        { label: 'Reality Check', href: '/reality-check', icon: ShieldAlert },
         { label: 'Daten-Level', href: '/tier-selection', icon: Layers },
         { label: 'Venture-Daten', href: '/venture/data-input', icon: FileText },
         { label: 'Was tun?', href: '/whats-next', icon: CircleHelp },
