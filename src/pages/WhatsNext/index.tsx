@@ -39,6 +39,9 @@ export const WhatsNextPage = () => {
     setIsCalculating,
     isCalculating,
     resetRoute,
+    saveCurrentAsAnalysis,
+    activeAnalysisId,
+    updateAnalysis,
   } = useStore();
 
   const [activeResultTab, setActiveResultTab] = React.useState('recommendation');
@@ -78,17 +81,53 @@ export const WhatsNextPage = () => {
     }
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     setIsCalculating(true);
     completeStep(currentStep);
     // Move to results step
     setCurrentStep(STEPS.length - 1);
 
     // Simulate calculation delay for UX
-    setTimeout(() => {
+    setTimeout(async () => {
       const result = calculateRoute(wizardData);
       setRouteResult(result);
       setIsCalculating(false);
+
+      // Auto-save the analysis after calculation
+      const analysisName = activeVenture?.name
+        ? `${activeVenture.name} - Analyse`
+        : `Analyse ${new Date().toLocaleDateString('de-DE')}`;
+
+      const getCurrentState = () => ({
+        tier: selectedTier || 'minimal' as const,
+        wizardData,
+        routeResult: result,
+        methodResults: [] as import('@/types').ValuationMethodResult[],
+        completedTasks: [] as string[],
+      });
+
+      try {
+        if (activeAnalysisId) {
+          // Update existing analysis
+          await updateAnalysis(activeAnalysisId, {
+            routeResult: result,
+            wizardData,
+            tier: selectedTier || 'minimal',
+          });
+          console.log('[WhatsNext] Analysis updated:', activeAnalysisId);
+        } else {
+          // Save as new analysis
+          const saved = await saveCurrentAsAnalysis(
+            analysisName,
+            null, // projectId
+            getCurrentState,
+            activeVenture?.id || null
+          );
+          console.log('[WhatsNext] Analysis saved:', saved.id);
+        }
+      } catch (error) {
+        console.error('[WhatsNext] Failed to save analysis:', error);
+      }
     }, 1500);
   };
 
