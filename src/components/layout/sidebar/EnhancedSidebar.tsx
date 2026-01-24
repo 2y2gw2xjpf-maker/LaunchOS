@@ -163,7 +163,7 @@ export const EnhancedSidebar = () => {
       routeResult,
       methodResults,
       completedTasks,
-    }));
+    }), activeVenture?.id || null);
     setShowSaveDialog(false);
     doStartNewAnalysis();
   };

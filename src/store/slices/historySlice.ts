@@ -28,7 +28,8 @@ export interface HistorySlice {
       routeResult: SavedAnalysis['routeResult'];
       methodResults: SavedAnalysis['valuationResults']['methodResults'];
       completedTasks: string[];
-    }
+    },
+    ventureId?: string | null
   ) => Promise<SavedAnalysis>;
   loadAnalysis: (id: string) => Promise<SavedAnalysis | null>;
   updateAnalysis: (id: string, updates: Partial<SavedAnalysis>) => Promise<void>;
@@ -133,7 +134,7 @@ export const createHistorySlice: StateCreator<HistorySlice, [], [], HistorySlice
   },
 
   // Save current state as a new analysis
-  saveCurrentAsAnalysis: async (name, projectId = null, getCurrentState) => {
+  saveCurrentAsAnalysis: async (name, projectId = null, getCurrentState, ventureId = null) => {
     const now = new Date().toISOString();
     const state = getCurrentState?.() || {
       tier: 'minimal' as DataSharingTier,
@@ -157,6 +158,7 @@ export const createHistorySlice: StateCreator<HistorySlice, [], [], HistorySlice
       createdAt: now,
       updatedAt: now,
       projectId,
+      ventureId,
       tier: state.tier,
       wizardData: state.wizardData,
       routeResult: state.routeResult,

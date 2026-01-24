@@ -101,6 +101,7 @@ export const migrateFromLocalStorage = async (): Promise<SavedAnalysis | null> =
       createdAt: now,
       updatedAt: now,
       projectId: null,
+      ventureId: null,
       tier,
       wizardData: parsed.wizardData || getInitialWizardData(tier),
       routeResult: parsed.routeResult || null,

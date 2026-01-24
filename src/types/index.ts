@@ -346,6 +346,7 @@ export interface SavedAnalysis {
   createdAt: string;
   updatedAt: string;
   projectId: string | null; // null means "Ungrouped"
+  ventureId: string | null; // Link to venture (optional)
 
   // Snapshot of analysis data
   tier: DataSharingTier;
