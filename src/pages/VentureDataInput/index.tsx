@@ -21,6 +21,7 @@ import {
   ArrowLeft,
   Sparkles,
   AlertCircle,
+  Loader2,
 } from 'lucide-react';
 import { Header, PageContainer } from '@/components/layout';
 import { EnhancedSidebar } from '@/components/layout/sidebar/EnhancedSidebar';
@@ -82,7 +83,7 @@ interface TierData {
 
 export const VentureDataInputPage = () => {
   const navigate = useNavigate();
-  const { activeVenture, updateVenture } = useVentureContext();
+  const { activeVenture, updateVenture, isLoading: ventureLoading } = useVentureContext();
   const { selectedTier } = useStore();
 
   // Tier-Level basierend auf Store oder Venture
@@ -226,7 +227,26 @@ export const VentureDataInputPage = () => {
     navigate('/dashboard');
   };
 
-  // Wenn kein aktives Venture, zeige Hinweis mit Link zu /venture/create
+  // Loading-Zustand: Warte auf Venture-Kontext
+  if (ventureLoading) {
+    return (
+      <div className="min-h-screen bg-cream">
+        <Header />
+        <EnhancedSidebar />
+        <PageContainer withSidebar maxWidth="narrow">
+          <div className="text-center py-16">
+            <Loader2 className="w-12 h-12 text-purple-500 mx-auto mb-4 animate-spin" />
+            <h2 className="text-xl font-semibold text-charcoal mb-2">Lade Venture-Daten...</h2>
+            <p className="text-charcoal/60">
+              Bitte warte einen Moment.
+            </p>
+          </div>
+        </PageContainer>
+      </div>
+    );
+  }
+
+  // Wenn kein aktives Venture nach dem Laden, zeige Hinweis mit Link zu /venture/create
   if (!activeVenture) {
     return (
       <div className="min-h-screen bg-cream">
