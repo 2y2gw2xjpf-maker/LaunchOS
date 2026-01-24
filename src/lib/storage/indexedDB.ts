@@ -175,3 +175,130 @@ export const getProjectCount = async (): Promise<number> => {
   const db = await getDB();
   return db.count('projects');
 };
+
+// ==================== TEST DATA FUNCTIONS ====================
+
+/**
+ * Create test analyses for development/testing
+ */
+export const createTestAnalyses = async (): Promise<SavedAnalysis[]> => {
+  const now = new Date().toISOString();
+  const yesterday = new Date(Date.now() - 86400000).toISOString();
+
+  // Use type assertion to work around strict type checking for test data
+  const testAnalysis1 = {
+    id: `test-${Date.now()}-1`,
+    name: 'Bootstrap Szenario',
+    createdAt: yesterday,
+    updatedAt: yesterday,
+    projectId: null,
+    ventureId: null,
+    tier: 'detailed',
+    wizardData: {
+      tier: 'detailed',
+      projectBasics: {},
+      personalSituation: {},
+      goals: {},
+      marketAnalysis: {},
+      detailedInput: {},
+      completedSteps: [0, 1, 2, 3],
+    },
+    routeResult: {
+      recommendation: 'bootstrap',
+      confidence: 78,
+      scores: { bootstrap: 82, investor: 45, hybrid: 65 },
+      reasons: [],
+      actionPlan: {
+        route: 'bootstrap',
+        phases: [
+          {
+            title: 'Phase 1: Vorbereitung',
+            duration: '2-4 Wochen',
+            tasks: [
+              { id: 'task-1', title: 'Marktforschung', description: 'Markt analysieren', priority: 'high', estimatedHours: 20 },
+              { id: 'task-2', title: 'MVP definieren', description: 'MVP planen', priority: 'high', estimatedHours: 10 },
+            ],
+            budget: { min: 2500, max: 7500, currency: 'EUR' },
+            timePerWeek: { min: 10, max: 20 },
+            milestones: ['MVP Launch'],
+            resources: [],
+          },
+        ],
+        totalBudget: { min: 5000, max: 15000, currency: 'EUR' },
+        totalDuration: '3-6 Monate',
+        criticalPath: ['MVP Launch'],
+        riskFactors: [],
+        successMetrics: [],
+      },
+      alternativeConsiderations: [],
+      warnings: [],
+    },
+    valuationResults: { methodResults: [], finalResult: null },
+    completedTasks: [],
+    taskTimeTracking: [],
+    tags: ['test'],
+    notes: 'Test-Analyse für Bootstrap-Szenario',
+    isFavorite: false,
+  } as SavedAnalysis;
+
+  const testAnalysis2 = {
+    id: `test-${Date.now()}-2`,
+    name: 'Investor Szenario',
+    createdAt: now,
+    updatedAt: now,
+    projectId: null,
+    ventureId: null,
+    tier: 'detailed',
+    wizardData: {
+      tier: 'detailed',
+      projectBasics: {},
+      personalSituation: {},
+      goals: {},
+      marketAnalysis: {},
+      detailedInput: {},
+      completedSteps: [0, 1, 2, 3],
+    },
+    routeResult: {
+      recommendation: 'investor',
+      confidence: 85,
+      scores: { bootstrap: 35, investor: 88, hybrid: 60 },
+      reasons: [],
+      actionPlan: {
+        route: 'investor',
+        phases: [
+          {
+            title: 'Phase 1: Fundraising',
+            duration: '4-8 Wochen',
+            tasks: [
+              { id: 'task-1', title: 'Pitch Deck erstellen', description: 'Pitch vorbereiten', priority: 'high', estimatedHours: 30 },
+              { id: 'task-2', title: 'Investoren recherchieren', description: 'VCs finden', priority: 'high', estimatedHours: 15 },
+            ],
+            budget: { min: 25000, max: 75000, currency: 'EUR' },
+            timePerWeek: { min: 20, max: 40 },
+            milestones: ['Seed Runde'],
+            resources: [],
+          },
+        ],
+        totalBudget: { min: 50000, max: 150000, currency: 'EUR' },
+        totalDuration: '6-12 Monate',
+        criticalPath: ['Seed Runde'],
+        riskFactors: [],
+        successMetrics: [],
+      },
+      alternativeConsiderations: [],
+      warnings: [],
+    },
+    valuationResults: { methodResults: [], finalResult: null },
+    completedTasks: [],
+    taskTimeTracking: [],
+    tags: ['test'],
+    notes: 'Test-Analyse für Investor-Szenario',
+    isFavorite: false,
+  } as SavedAnalysis;
+
+  await saveAnalysis(testAnalysis1);
+  await saveAnalysis(testAnalysis2);
+
+  console.log('[LaunchOS] Created test analyses:', testAnalysis1.id, testAnalysis2.id);
+  return [testAnalysis1, testAnalysis2];
+};

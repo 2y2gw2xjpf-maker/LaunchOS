@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
-import { Check, Star, Calendar } from 'lucide-react';
+import { Check, Star, Calendar, FlaskConical } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { Button } from '@/components/ui';
 import { useStore } from '@/store';
@@ -8,7 +8,8 @@ import { NewAnalysisDialog } from '@/components/dialogs/NewAnalysisDialog';
 
 export const AnalysisSelector = () => {
   const [showNewAnalysisDialog, setShowNewAnalysisDialog] = React.useState(false);
-  const { analyses, selectedAnalysisIds, toggleInComparison, canCompare, getComparisonCount, isHistoryLoading } = useStore();
+  const [isCreatingTest, setIsCreatingTest] = React.useState(false);
+  const { analyses, selectedAnalysisIds, toggleInComparison, canCompare, getComparisonCount, isHistoryLoading, createTestAnalyses } = useStore();
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('de-DE', {
@@ -114,9 +115,27 @@ export const AnalysisSelector = () => {
               </>
             )}
           </p>
-          <Button variant="gold" onClick={() => setShowNewAnalysisDialog(true)}>
-            Neue Analyse starten
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button variant="gold" onClick={() => setShowNewAnalysisDialog(true)}>
+              Neue Analyse starten
+            </Button>
+            {/* Dev button to create test data */}
+            {process.env.NODE_ENV === 'development' && (
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  setIsCreatingTest(true);
+                  await createTestAnalyses();
+                  setIsCreatingTest(false);
+                }}
+                disabled={isCreatingTest}
+                className="flex items-center gap-2"
+              >
+                <FlaskConical className="w-4 h-4" />
+                {isCreatingTest ? 'Erstelle...' : 'Test-Analysen erstellen'}
+              </Button>
+            )}
+          </div>
         </motion.div>
 
         <NewAnalysisDialog

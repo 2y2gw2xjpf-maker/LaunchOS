@@ -74,6 +74,9 @@ export interface HistorySlice {
   getActiveAnalysis: () => SavedAnalysis | null;
   getUngroupedAnalyses: () => SavedAnalysis[];
   getAllTags: () => string[];
+
+  // Dev/Test utilities
+  createTestAnalyses: () => Promise<void>;
 }
 
 const DEFAULT_PROJECT_COLORS = [
@@ -97,6 +100,13 @@ export const createHistorySlice: StateCreator<HistorySlice & CombinedStoreState,
 
   // Initialize - load from IndexedDB and run migration
   initializeHistory: async () => {
+    // Prevent multiple concurrent initializations
+    const { isHistoryLoading } = get();
+    if (isHistoryLoading) {
+      console.log('[LaunchOS] History already loading, skipping...');
+      return;
+    }
+
     set({ isHistoryLoading: true });
     try {
       // Run migration if needed
@@ -104,11 +114,19 @@ export const createHistorySlice: StateCreator<HistorySlice & CombinedStoreState,
         await db.migrateFromLocalStorage();
       }
 
-      // Load data
-      const [analyses, projects] = await Promise.all([
+      // Load data with timeout
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout loading data')), 5000)
+      );
+
+      const dataPromise = Promise.all([
         db.getAllAnalyses(),
         db.getAllProjects(),
       ]);
+
+      const [analyses, projects] = await Promise.race([dataPromise, timeoutPromise]) as [import('@/types').SavedAnalysis[], import('@/types').Project[]];
+
+      console.log('[LaunchOS] History initialized:', { analyses: analyses.length, projects: projects.length });
 
       set({
         analyses: analyses.sort(
@@ -119,7 +137,7 @@ export const createHistorySlice: StateCreator<HistorySlice & CombinedStoreState,
       });
     } catch (error) {
       console.error('[LaunchOS] Failed to initialize history:', error);
-      set({ isHistoryLoading: false });
+      set({ isHistoryLoading: false, analyses: [], projects: [] });
     }
   },
 
@@ -498,5 +516,18 @@ export const createHistorySlice: StateCreator<HistorySlice & CombinedStoreState,
     const tagSet = new Set<string>();
     analyses.forEach((a) => a.tags.forEach((t) => tagSet.add(t)));
     return Array.from(tagSet).sort();
+  },
+
+  // Create test analyses for development/testing
+  createTestAnalyses: async () => {
+    try {
+      const testAnalyses = await db.createTestAnalyses();
+      set((s) => ({
+        analyses: [...testAnalyses, ...s.analyses],
+      }));
+      console.log('[LaunchOS] Test analyses created:', testAnalyses.length);
+    } catch (error) {
+      console.error('[LaunchOS] Failed to create test analyses:', error);
+    }
   },
 });
