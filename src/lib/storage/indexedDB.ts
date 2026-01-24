@@ -189,7 +189,7 @@ export const createTestAnalyses = async (): Promise<SavedAnalysis[]> => {
     a.id.startsWith('test-') || a.tags?.includes('test')
   );
 
-  if (existingTestAnalyses.length >= 2) {
+  if (existingTestAnalyses.length >= 3) {
     console.log('[LaunchOS] Test analyses already exist, skipping creation');
     return existingTestAnalyses;
   }
@@ -308,9 +308,67 @@ export const createTestAnalyses = async (): Promise<SavedAnalysis[]> => {
     isFavorite: false,
   } as SavedAnalysis;
 
+  const twoDaysAgo = new Date(Date.now() - 172800000).toISOString();
+
+  const testAnalysis3 = {
+    id: `test-${Date.now()}-3`,
+    name: 'Hybrid Szenario',
+    createdAt: twoDaysAgo,
+    updatedAt: twoDaysAgo,
+    projectId: null,
+    ventureId: null,
+    tier: 'detailed',
+    wizardData: {
+      tier: 'detailed',
+      projectBasics: {},
+      personalSituation: {},
+      goals: {},
+      marketAnalysis: {},
+      detailedInput: {},
+      completedSteps: [0, 1, 2, 3],
+    },
+    routeResult: {
+      recommendation: 'hybrid',
+      confidence: 72,
+      scores: { bootstrap: 55, investor: 60, hybrid: 75 },
+      reasons: [],
+      actionPlan: {
+        route: 'hybrid',
+        phases: [
+          {
+            title: 'Phase 1: Bootstrap Start',
+            duration: '3-6 Wochen',
+            tasks: [
+              { id: 'task-1', title: 'MVP entwickeln', description: 'Erstes Produkt bauen', priority: 'high', estimatedHours: 40 },
+              { id: 'task-2', title: 'Erste Kunden gewinnen', description: 'Traction aufbauen', priority: 'high', estimatedHours: 25 },
+            ],
+            budget: { min: 10000, max: 30000, currency: 'EUR' },
+            timePerWeek: { min: 15, max: 30 },
+            milestones: ['MVP Launch', 'Erste Kunden'],
+            resources: [],
+          },
+        ],
+        totalBudget: { min: 20000, max: 60000, currency: 'EUR' },
+        totalDuration: '6-9 Monate',
+        criticalPath: ['MVP Launch', 'Erste Kunden'],
+        riskFactors: [],
+        successMetrics: [],
+      },
+      alternativeConsiderations: [],
+      warnings: [],
+    },
+    valuationResults: { methodResults: [], finalResult: null },
+    completedTasks: [],
+    taskTimeTracking: [],
+    tags: ['test'],
+    notes: 'Test-Analyse für Hybrid-Szenario',
+    isFavorite: false,
+  } as SavedAnalysis;
+
   await saveAnalysis(testAnalysis1);
   await saveAnalysis(testAnalysis2);
+  await saveAnalysis(testAnalysis3);
 
-  console.log('[LaunchOS] Created test analyses:', testAnalysis1.id, testAnalysis2.id);
-  return [testAnalysis1, testAnalysis2];
+  console.log('[LaunchOS] Created test analyses:', testAnalysis1.id, testAnalysis2.id, testAnalysis3.id);
+  return [testAnalysis1, testAnalysis2, testAnalysis3];
 };

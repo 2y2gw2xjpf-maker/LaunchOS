@@ -33,7 +33,7 @@ export const AnalysisSelector = () => {
       attempted: hasAttemptedAutoCreate.current
     });
 
-    if (analysesWithResults.length < 2) {
+    if (analysesWithResults.length < 3) {
       hasAttemptedAutoCreate.current = true;
       console.log('[Compare] Auto-creating test analyses because only', analysesWithResults.length, 'exist with results');
       createTestAnalyses();
