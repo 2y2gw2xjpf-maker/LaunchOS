@@ -376,6 +376,70 @@ export const createTestAnalyses = async (): Promise<SavedAnalysis[]> => {
 };
 
 /**
+ * Mapping from demo venture IDs to their analysis names
+ */
+const DEMO_VENTURE_ANALYSIS_MAP: Record<string, string> = {
+  'demo-bootstrap-venture': 'Bootstrap Szenario',
+  'demo-investor-venture': 'Investor Szenario',
+  'demo-hybrid-venture': 'Hybrid Szenario',
+};
+
+/**
+ * Ensure a demo analysis exists and is linked to its venture
+ * Returns the analysis ID if found/created, null otherwise
+ */
+export const ensureDemoAnalysisLinked = async (ventureId: string): Promise<SavedAnalysis | null> => {
+  const analysisName = DEMO_VENTURE_ANALYSIS_MAP[ventureId];
+  if (!analysisName) {
+    console.warn('[LaunchOS] Unknown demo venture ID:', ventureId);
+    return null;
+  }
+
+  const allAnalyses = await getAllAnalyses();
+
+  // First, try to find an analysis already linked to this venture
+  let linkedAnalysis = allAnalyses.find(a => a.ventureId === ventureId);
+  if (linkedAnalysis) {
+    console.log('[LaunchOS] Found linked demo analysis:', linkedAnalysis.name);
+    return linkedAnalysis;
+  }
+
+  // Second, try to find an analysis by name and link it
+  const matchingAnalysis = allAnalyses.find(a => a.name === analysisName);
+  if (matchingAnalysis) {
+    console.log('[LaunchOS] Linking existing analysis to demo venture:', matchingAnalysis.name);
+    const updatedAnalysis: SavedAnalysis = {
+      ...matchingAnalysis,
+      ventureId,
+      updatedAt: new Date().toISOString(),
+    };
+    await saveAnalysis(updatedAnalysis);
+    return updatedAnalysis;
+  }
+
+  // Third, create test analyses if they don't exist
+  console.log('[LaunchOS] Creating test analyses for demo venture:', ventureId);
+  const testAnalyses = await createTestAnalyses();
+
+  // Find the newly created analysis for this venture
+  const newAnalysis = testAnalyses.find(a => a.ventureId === ventureId);
+  if (newAnalysis) {
+    console.log('[LaunchOS] Created and linked demo analysis:', newAnalysis.name);
+    return newAnalysis;
+  }
+
+  // Last resort: check all analyses again after creation
+  const refreshedAnalyses = await getAllAnalyses();
+  const finalAnalysis = refreshedAnalyses.find(a => a.ventureId === ventureId);
+  if (finalAnalysis) {
+    return finalAnalysis;
+  }
+
+  console.warn('[LaunchOS] Could not find or create demo analysis for:', ventureId);
+  return null;
+};
+
+/**
  * Remove duplicate test analyses, keeping only the most recent of each type
  */
 export const cleanupDuplicateTestAnalyses = async (): Promise<number> => {

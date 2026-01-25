@@ -77,6 +77,9 @@ export interface HistorySlice {
 
   // Dev/Test utilities
   createTestAnalyses: () => Promise<void>;
+
+  // Demo utilities
+  loadDemoAnalysis: (ventureId: string) => Promise<boolean>;
 }
 
 const DEFAULT_PROJECT_COLORS = [
@@ -540,6 +543,68 @@ export const createHistorySlice: StateCreator<HistorySlice & CombinedStoreState,
       }
     } catch (error) {
       console.error('[LaunchOS] Failed to create test analyses:', error);
+    }
+  },
+
+  // Load a demo analysis for a demo venture (ensures it exists and is linked)
+  loadDemoAnalysis: async (ventureId: string) => {
+    try {
+      console.log('[LaunchOS] Loading demo analysis for venture:', ventureId);
+
+      // Ensure the demo analysis exists and is linked
+      const demoAnalysis = await db.ensureDemoAnalysisLinked(ventureId);
+
+      if (!demoAnalysis) {
+        console.warn('[LaunchOS] Could not find or create demo analysis for:', ventureId);
+        return false;
+      }
+
+      // Update the analyses in store if needed
+      const { analyses } = get();
+      const existingInStore = analyses.find(a => a.id === demoAnalysis.id);
+
+      if (!existingInStore) {
+        // Add to store
+        set((s) => ({
+          analyses: [demoAnalysis, ...s.analyses.filter(a => a.id !== demoAnalysis.id)],
+        }));
+      } else if (existingInStore.ventureId !== ventureId) {
+        // Update the ventureId in store
+        set((s) => ({
+          analyses: s.analyses.map(a =>
+            a.id === demoAnalysis.id ? { ...a, ventureId } : a
+          ),
+        }));
+      }
+
+      // Calculate currentStep based on completedSteps
+      const completedSteps = demoAnalysis.wizardData?.completedSteps || [];
+      let currentStep = 0;
+      if (demoAnalysis.routeResult) {
+        // If we have a result, go to the results step
+        currentStep = 4;
+      } else if (completedSteps.length > 0) {
+        currentStep = Math.min(completedSteps.length, 4);
+      }
+
+      // Restore the analysis state
+      set({
+        activeAnalysisId: demoAnalysis.id,
+        hasUnsavedChanges: false,
+        selectedTier: demoAnalysis.tier,
+        acknowledgedPrivacy: true,
+        wizardData: demoAnalysis.wizardData,
+        currentStep,
+        routeResult: demoAnalysis.routeResult,
+        completedTasks: demoAnalysis.completedTasks || [],
+        methodResults: demoAnalysis.valuationResults?.methodResults || [],
+      });
+
+      console.log('[LaunchOS] Demo analysis loaded successfully:', demoAnalysis.name);
+      return true;
+    } catch (error) {
+      console.error('[LaunchOS] Failed to load demo analysis:', error);
+      return false;
     }
   },
 });

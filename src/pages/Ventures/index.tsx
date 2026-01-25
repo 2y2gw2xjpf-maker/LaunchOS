@@ -65,7 +65,7 @@ export function VenturesPage() {
     demoVentures,
     enterDemoMode,
   } = useVentureContext();
-  const { findAnalysisForVenture, restoreAnalysisToStore } = useStore();
+  const { loadDemoAnalysis } = useStore();
   const [menuOpenId, setMenuOpenId] = React.useState<string | null>(null);
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
 
@@ -372,17 +372,14 @@ export function VenturesPage() {
                 )}
                 onClick={async () => {
                   enterDemoMode(venture.id);
-                  // Find and load the demo analysis for this venture
-                  const demoAnalysis = findAnalysisForVenture(venture.id);
-                  if (demoAnalysis) {
-                    const success = await restoreAnalysisToStore(demoAnalysis.id);
-                    if (success) {
-                      navigate('/whats-next');
-                      return;
-                    }
+                  // Load the demo analysis (creates/links if needed)
+                  const success = await loadDemoAnalysis(venture.id);
+                  if (success) {
+                    navigate('/whats-next');
+                  } else {
+                    // Fallback: just navigate to whats-next
+                    navigate('/whats-next');
                   }
-                  // Fallback: just navigate to whats-next
-                  navigate('/whats-next');
                 }}
               >
                 {/* Gradient Header */}

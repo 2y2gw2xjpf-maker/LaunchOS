@@ -76,6 +76,7 @@ export const EnhancedSidebar = () => {
     getAnalysesByProject,
     restoreAnalysisToStore,
     findAnalysisForVenture,
+    loadDemoAnalysis,
     // Comparison
     isInComparison,
     toggleInComparison,
@@ -868,17 +869,14 @@ export const EnhancedSidebar = () => {
                               key={venture.id}
                               onClick={async () => {
                                 enterDemoMode(venture.id);
-                                // Find and load the demo analysis for this venture
-                                const demoAnalysis = findAnalysisForVenture(venture.id);
-                                if (demoAnalysis) {
-                                  const success = await restoreAnalysisToStore(demoAnalysis.id);
-                                  if (success) {
-                                    navigate('/whats-next');
-                                    return;
-                                  }
+                                // Load the demo analysis (creates/links if needed)
+                                const success = await loadDemoAnalysis(venture.id);
+                                if (success) {
+                                  navigate('/whats-next');
+                                } else {
+                                  // Fallback: just navigate to whats-next
+                                  navigate('/whats-next');
                                 }
-                                // Fallback: just navigate to whats-next
-                                navigate('/whats-next');
                               }}
                               className={cn(
                                 'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-left',
