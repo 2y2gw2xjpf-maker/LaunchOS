@@ -27,6 +27,7 @@ import {
   Clock,
   Building2,
   ShieldAlert,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useStore } from '@/store';
@@ -36,6 +37,7 @@ import { SidebarHeader } from './SidebarHeader';
 import { ProjectFolder } from './ProjectFolder';
 import { AnalysisItem } from './AnalysisItem';
 import { SaveAnalysisDialog } from './SaveAnalysisDialog';
+import { DemoVentureBadge } from '@/components/ventures/DemoVentureBadge';
 
 export const EnhancedSidebar = () => {
   const location = useLocation();
@@ -90,11 +92,21 @@ export const EnhancedSidebar = () => {
     resetValuation,
   } = useStore();
 
-  // Get ventures from context
-  const { ventures, activeVenture, setActiveVenture } = useVentureContext();
+  // Get ventures from context (including demo ventures)
+  const {
+    ventures,
+    activeVenture,
+    setActiveVenture,
+    demoVentures,
+    activeDemoVenture,
+    isDemoMode,
+    enterDemoMode,
+    exitDemoMode,
+  } = useVentureContext();
 
   // State for Ventures collapsed
   const [venturesOpen, setVenturesOpen] = React.useState(true);
+  const [demoVenturesOpen, setDemoVenturesOpen] = React.useState(false);
 
   // Initialize history on mount
   React.useEffect(() => {
@@ -791,6 +803,103 @@ export const EnhancedSidebar = () => {
                               <span className="text-sm">Neues Venture</span>
                             )}
                           </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {/* Demo Ventures - Collapsible */}
+              {demoVentures.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-amber-100/50">
+                  <button
+                    onClick={() => setDemoVenturesOpen(!demoVenturesOpen)}
+                    className="w-full px-3 py-2 flex items-center justify-between hover:bg-amber-50/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-amber-500" />
+                      {sidebarOpen && (
+                        <span className="text-xs font-medium text-charcoal/60 uppercase tracking-wider">
+                          Demo Ventures
+                        </span>
+                      )}
+                    </div>
+                    {sidebarOpen && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded-full">
+                          {demoVentures.length}
+                        </span>
+                        <ChevronDown
+                          className={cn(
+                            'w-4 h-4 text-charcoal/40 transition-transform',
+                            demoVenturesOpen ? 'rotate-0' : '-rotate-90'
+                          )}
+                        />
+                      </div>
+                    )}
+                  </button>
+                  <AnimatePresence>
+                    {demoVenturesOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="overflow-visible"
+                      >
+                        <div className="px-2 space-y-1 pb-2">
+                          {/* Demo Mode Exit Hint */}
+                          {isDemoMode && sidebarOpen && (
+                            <div className="mx-1 mb-2 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+                              <p className="text-xs text-amber-700">
+                                Demo-Modus aktiv. Änderungen werden nicht gespeichert.
+                              </p>
+                              <button
+                                onClick={exitDemoMode}
+                                className="text-xs text-amber-600 hover:text-amber-800 font-medium mt-1"
+                              >
+                                Demo beenden →
+                              </button>
+                            </div>
+                          )}
+                          {demoVentures.map((venture) => (
+                            <button
+                              key={venture.id}
+                              onClick={() => {
+                                enterDemoMode(venture.id);
+                                navigate('/whats-next');
+                              }}
+                              className={cn(
+                                'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-left',
+                                activeDemoVenture?.id === venture.id
+                                  ? 'bg-amber-100 text-amber-800 ring-1 ring-amber-300'
+                                  : 'text-charcoal/70 hover:bg-amber-50'
+                              )}
+                            >
+                              <div className={cn(
+                                'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
+                                activeDemoVenture?.id === venture.id
+                                  ? 'bg-amber-200'
+                                  : 'bg-amber-50'
+                              )}>
+                                <Sparkles className="w-4 h-4 text-amber-600" />
+                              </div>
+                              {sidebarOpen && (
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <p className="text-sm font-medium truncate">
+                                      {venture.name}
+                                    </p>
+                                    <DemoVentureBadge size="small" />
+                                  </div>
+                                  <p className="text-xs text-charcoal/50 truncate">
+                                    {venture.demoDescription}
+                                  </p>
+                                </div>
+                              )}
+                            </button>
+                          ))}
                         </div>
                       </motion.div>
                     )}

@@ -199,13 +199,14 @@ export const createTestAnalyses = async (): Promise<SavedAnalysis[]> => {
   const yesterday = new Date(Date.now() - 86400000).toISOString();
 
   // Use type assertion to work around strict type checking for test data
+  // Link to demo ventures for full feature exploration
   const testAnalysis1 = {
     id: `test-${Date.now()}-1`,
     name: 'Bootstrap Szenario',
     createdAt: yesterday,
     updatedAt: yesterday,
     projectId: null,
-    ventureId: null,
+    ventureId: 'demo-bootstrap-venture', // Linked to Demo Bootstrap Venture
     tier: 'detailed',
     wizardData: {
       tier: 'detailed',
@@ -260,7 +261,7 @@ export const createTestAnalyses = async (): Promise<SavedAnalysis[]> => {
     createdAt: now,
     updatedAt: now,
     projectId: null,
-    ventureId: null,
+    ventureId: 'demo-investor-venture', // Linked to Demo Investor Venture
     tier: 'detailed',
     wizardData: {
       tier: 'detailed',
@@ -317,7 +318,7 @@ export const createTestAnalyses = async (): Promise<SavedAnalysis[]> => {
     createdAt: twoDaysAgo,
     updatedAt: twoDaysAgo,
     projectId: null,
-    ventureId: null,
+    ventureId: 'demo-hybrid-venture', // Linked to Demo Hybrid Venture
     tier: 'detailed',
     wizardData: {
       tier: 'detailed',

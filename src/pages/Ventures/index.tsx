@@ -20,6 +20,10 @@ import {
   AlertCircle,
   Loader2,
   RefreshCw,
+  Sparkles,
+  ArrowRight,
+  Users,
+  Building2,
 } from 'lucide-react';
 import { Header, PageContainer } from '@/components/layout';
 import { EnhancedSidebar } from '@/components/layout/sidebar/EnhancedSidebar';
@@ -49,7 +53,17 @@ const STAGE_COLORS: Record<string, string> = {
 
 export function VenturesPage() {
   const navigate = useNavigate();
-  const { ventures, activeVenture, isLoading, error, setActiveVenture, deleteVenture, refresh } = useVentureContext();
+  const {
+    ventures,
+    activeVenture,
+    isLoading,
+    error,
+    setActiveVenture,
+    deleteVenture,
+    refresh,
+    demoVentures,
+    enterDemoMode,
+  } = useVentureContext();
   const [menuOpenId, setMenuOpenId] = React.useState<string | null>(null);
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
 
@@ -324,6 +338,129 @@ export function VenturesPage() {
             </motion.div>
           </div>
         )}
+
+        {/* Demo Ventures Section */}
+        <div className="mt-12 pt-8 border-t border-amber-200/50">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <h2 className="font-display text-xl text-text-primary">
+                Demo Ventures erkunden
+              </h2>
+              <p className="text-sm text-text-secondary">
+                Beispiel-Startups zum Ausprobieren aller Features
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {demoVentures.map((venture, index) => (
+              <motion.div
+                key={venture.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -4, scale: 1.01 }}
+                className={cn(
+                  'relative bg-white rounded-2xl border border-amber-200/50 overflow-hidden',
+                  'shadow-sm hover:shadow-lg hover:shadow-amber-100/50',
+                  'transition-shadow cursor-pointer group'
+                )}
+                onClick={() => {
+                  enterDemoMode(venture.id);
+                  navigate('/whats-next');
+                }}
+              >
+                {/* Gradient Header */}
+                <div className={cn(
+                  'h-2 bg-gradient-to-r',
+                  venture.demoScenario === 'bootstrap' && 'from-emerald-500 to-teal-500',
+                  venture.demoScenario === 'investor' && 'from-blue-500 to-indigo-500',
+                  venture.demoScenario === 'hybrid' && 'from-purple-500 to-pink-500'
+                )} />
+
+                <div className="p-5">
+                  {/* Header mit Badge */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold text-gray-900 truncate">
+                          {venture.name}
+                        </h3>
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-amber-100 text-amber-700 border border-amber-200">
+                          <Sparkles className="w-2.5 h-2.5" />
+                          Demo
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-500 truncate">{venture.tagline}</p>
+                    </div>
+                  </div>
+
+                  {/* Szenario Label */}
+                  <div className="mb-4">
+                    <span className={cn(
+                      'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-white',
+                      venture.demoScenario === 'bootstrap' && 'bg-gradient-to-r from-emerald-500 to-teal-500',
+                      venture.demoScenario === 'investor' && 'bg-gradient-to-r from-blue-500 to-indigo-500',
+                      venture.demoScenario === 'hybrid' && 'bg-gradient-to-r from-purple-500 to-pink-500'
+                    )}>
+                      <Sparkles className="w-3 h-3" />
+                      {venture.demoScenario === 'bootstrap' && 'Bootstrap Szenario'}
+                      {venture.demoScenario === 'investor' && 'Investor Szenario'}
+                      {venture.demoScenario === 'hybrid' && 'Hybrid Szenario'}
+                    </span>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    <div className="text-center p-2 bg-gray-50 rounded-lg">
+                      <TrendingUp className="w-4 h-4 text-gray-400 mx-auto mb-1" />
+                      <p className="text-xs text-gray-500">MRR</p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {venture.monthlyRevenue ? new Intl.NumberFormat('de-DE', {
+                          style: 'currency',
+                          currency: 'EUR',
+                          maximumFractionDigits: 0,
+                        }).format(venture.monthlyRevenue) : '-'}
+                      </p>
+                    </div>
+                    <div className="text-center p-2 bg-gray-50 rounded-lg">
+                      <Users className="w-4 h-4 text-gray-400 mx-auto mb-1" />
+                      <p className="text-xs text-gray-500">Team</p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {venture.teamSize || '-'}
+                      </p>
+                    </div>
+                    <div className="text-center p-2 bg-gray-50 rounded-lg">
+                      <Building2 className="w-4 h-4 text-gray-400 mx-auto mb-1" />
+                      <p className="text-xs text-gray-500">Stage</p>
+                      <p className="text-sm font-semibold text-gray-900 capitalize">
+                        {STAGE_LABELS[venture.stage || ''] || venture.stage || '-'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Beschreibung */}
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                    {venture.demoDescription}
+                  </p>
+
+                  {/* CTA */}
+                  <button className={cn(
+                    'w-full flex items-center justify-center gap-2 py-2.5 rounded-xl',
+                    'bg-amber-50 text-amber-700 font-medium text-sm',
+                    'group-hover:bg-amber-100 transition-colors'
+                  )}>
+                    Erkunden
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
 
         {/* Info Box */}
         <div className="mt-8 p-4 bg-gray-50 rounded-xl border border-gray-200">
