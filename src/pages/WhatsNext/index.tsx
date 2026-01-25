@@ -27,7 +27,7 @@ const STEPS = [
 
 export const WhatsNextPage = () => {
   const navigate = useNavigate();
-  const { activeVenture } = useVentureContext();
+  const { activeVenture, isDemoMode } = useVentureContext();
   const {
     selectedTier,
     wizardData,
@@ -47,16 +47,25 @@ export const WhatsNextPage = () => {
   const [activeResultTab, setActiveResultTab] = React.useState('recommendation');
   const [activeAnalysisSubTab, setActiveAnalysisSubTab] = React.useState<'timeline' | 'dashboard'>('timeline');
   const [showProgramRunner, setShowProgramRunner] = React.useState(false);
+  const [isInitializing, setIsInitializing] = React.useState(true);
 
   // Prüfe ob Tier-Daten vorhanden sind
   const hasTierData = activeVenture?.tierData?.completed_at !== null && activeVenture?.tierData?.completed_at !== undefined;
 
-  // Redirect if no tier selected
+  // Wait for initial state to settle (especially for demo mode)
   React.useEffect(() => {
-    if (!selectedTier) {
+    const timer = setTimeout(() => {
+      setIsInitializing(false);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Redirect if no tier selected (but wait for initialization and skip in demo mode)
+  React.useEffect(() => {
+    if (!isInitializing && !selectedTier && !isDemoMode) {
       navigate('/tier-selection');
     }
-  }, [selectedTier, navigate]);
+  }, [selectedTier, navigate, isInitializing, isDemoMode]);
 
   // Scroll to top on mount and when step changes
   React.useEffect(() => {

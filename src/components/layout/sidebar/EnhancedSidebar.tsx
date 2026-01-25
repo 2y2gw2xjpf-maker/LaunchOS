@@ -871,12 +871,9 @@ export const EnhancedSidebar = () => {
                                 enterDemoMode(venture.id);
                                 // Load the demo analysis (creates/links if needed)
                                 const success = await loadDemoAnalysis(venture.id);
-                                if (success) {
-                                  navigate('/whats-next');
-                                } else {
-                                  // Fallback: just navigate to whats-next
-                                  navigate('/whats-next');
-                                }
+                                // Wait for React to propagate the state changes before navigating
+                                await new Promise(resolve => setTimeout(resolve, 50));
+                                navigate('/whats-next');
                               }}
                               className={cn(
                                 'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all text-left',
