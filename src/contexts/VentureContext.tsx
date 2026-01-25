@@ -39,32 +39,63 @@ interface VentureProviderProps {
 export function VentureProvider({ children }: VentureProviderProps) {
   const ventureState = useVentures();
   const demoState = useDemoVentures();
-  const { findAnalysisForVenture, restoreAnalysisToStore, activeAnalysisId } = useStore();
+  const {
+    findAnalysisForVenture,
+    restoreAnalysisToStore,
+    activeAnalysisId,
+    isHistoryLoading,
+    analyses,
+    initializeHistory,
+  } = useStore();
 
   // Track last loaded venture to prevent unnecessary reloads
   const lastLoadedVentureRef = useRef<string | null>(null);
 
-  // Auto-load analysis when active venture changes
+  // Ensure history is initialized
+  useEffect(() => {
+    initializeHistory();
+  }, [initializeHistory]);
+
+  // Auto-load analysis when active venture changes AND history is loaded
   useEffect(() => {
     const loadAnalysisForActiveVenture = async () => {
       const activeVenture = ventureState.activeVenture;
 
-      // Skip if no active venture or already loaded
+      // Wait for history to be loaded first
+      if (isHistoryLoading) {
+        return;
+      }
+
+      // Skip if no active venture or already loaded for this venture
       if (!activeVenture || lastLoadedVentureRef.current === activeVenture.id) {
         return;
       }
 
-      // Find the analysis for this venture
+      // Find the analysis for this venture (now that analyses are loaded)
       const analysis = findAnalysisForVenture(activeVenture.id);
-      if (analysis && analysis.id !== activeAnalysisId) {
-        console.log('[VentureContext] Auto-loading analysis for active venture:', activeVenture.name);
-        await restoreAnalysisToStore(analysis.id);
+      if (analysis) {
+        // Only restore if not already the active analysis
+        if (analysis.id !== activeAnalysisId) {
+          console.log('[VentureContext] Auto-loading analysis for active venture:', activeVenture.name);
+          await restoreAnalysisToStore(analysis.id);
+        }
+        lastLoadedVentureRef.current = activeVenture.id;
+      } else {
+        // No analysis found for this venture - that's okay, user may need to create one
+        console.log('[VentureContext] No analysis found for venture:', activeVenture.name);
         lastLoadedVentureRef.current = activeVenture.id;
       }
     };
 
     loadAnalysisForActiveVenture();
-  }, [ventureState.activeVenture, findAnalysisForVenture, restoreAnalysisToStore, activeAnalysisId]);
+  }, [
+    ventureState.activeVenture,
+    findAnalysisForVenture,
+    restoreAnalysisToStore,
+    activeAnalysisId,
+    isHistoryLoading,
+    analyses, // Re-run when analyses change (after init)
+  ]);
 
   // Kombiniere echte und Demo-Ventures
   const allVentures = useMemo(() => {

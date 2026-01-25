@@ -130,7 +130,7 @@ function renderInlineMarkdown(text: string, isUser: boolean): React.ReactNode {
   });
 }
 
-const SUGGESTIONS = [
+const DEFAULT_SUGGESTIONS = [
   'Welche Rechtsform passt zu meinem Startup?',
   'Wie finde ich passende Investoren?',
   'Was ist mein Startup wert?',
@@ -138,7 +138,7 @@ const SUGGESTIONS = [
 ];
 
 export function ChatWidget() {
-  const { chatWidgetOpen, setChatWidgetOpen } = useStore();
+  const { chatWidgetOpen, setChatWidgetOpen, routeResult } = useStore();
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [showHistory, setShowHistory] = React.useState(false);
   const [inputValue, setInputValue] = React.useState('');
@@ -150,6 +150,32 @@ export function ChatWidget() {
   // Use store state for open/close
   const isOpen = chatWidgetOpen;
   const setIsOpen = setChatWidgetOpen;
+
+  // Build dynamic suggestions based on active analysis
+  const suggestions = React.useMemo(() => {
+    if (!routeResult?.actionPlan?.phases) {
+      return DEFAULT_SUGGESTIONS;
+    }
+
+    // Get first 3 high-priority tasks from action plan
+    const taskSuggestions: string[] = [];
+    for (const phase of routeResult.actionPlan.phases) {
+      if (phase.tasks) {
+        for (const task of phase.tasks) {
+          if (taskSuggestions.length < 3 && (task.priority === 'critical' || task.priority === 'high')) {
+            taskSuggestions.push(`Hilf mir bei: ${task.title}`);
+          }
+        }
+      }
+    }
+
+    // If we found tasks, use them plus one default
+    if (taskSuggestions.length > 0) {
+      return [...taskSuggestions, 'Was sind meine wichtigsten nächsten Schritte?'];
+    }
+
+    return DEFAULT_SUGGESTIONS;
+  }, [routeResult]);
 
   const {
     session,
@@ -410,7 +436,7 @@ export function ChatWidget() {
                     Frag mich alles über Gründung, Investoren, Bewertungen oder Pitch Decks.
                   </p>
                   <div className="space-y-2 w-full">
-                    {SUGGESTIONS.map((suggestion, i) => (
+                    {suggestions.map((suggestion, i) => (
                       <button
                         key={i}
                         onClick={() => handleSuggestionClick(suggestion)}
