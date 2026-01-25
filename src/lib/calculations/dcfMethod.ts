@@ -53,22 +53,22 @@ export function calculateDCF(input: DCFInput): ValuationMethodResult {
 
   const notes: string[] = [];
 
-  notes.push('DCF ist fur Startups weniger zuverlassig als andere Methoden');
+  notes.push('DCF ist für Startups weniger zuverlässig als andere Methoden');
 
   if (pvTerminalValue / enterpriseValue > 0.7) {
     notes.push(
-      'Warnung: Grossteil des Werts stammt aus Terminal Value - hohe Unsicherheit'
+      'Warnung: Großteil des Werts stammt aus Terminal Value - hohe Unsicherheit'
     );
   }
 
   if (discountRate < 25) {
     notes.push(
-      'Niedriger Discount Rate fur Startup - typisch sind 25-40% fur Early Stage'
+      'Niedriger Discount Rate für Startup - typisch sind 25-40% für Early Stage'
     );
   }
 
   if (projectedCashFlows[0] < 0) {
-    notes.push('Negative Cash Flows in fruhen Jahren sind fur Startups normal');
+    notes.push('Negative Cash Flows in frühen Jahren sind für Startups normal');
   }
 
   return {
@@ -94,7 +94,7 @@ export function validateDCFInput(input: DCFInput): string[] {
   const errors: string[] = [];
 
   if (input.projectedCashFlows.length < 3) {
-    errors.push('Mindestens 3 Jahre Cash Flow Projektion benotigt');
+    errors.push('Mindestens 3 Jahre Cash Flow Projektion benötigt');
   }
 
   if (input.discountRate < 10 || input.discountRate > 60) {
@@ -106,7 +106,7 @@ export function validateDCFInput(input: DCFInput): string[] {
   }
 
   if (input.terminalGrowthRate > 10) {
-    errors.push('Terminal Growth Rate uber 10% ist unrealistisch');
+    errors.push('Terminal Growth Rate über 10% ist unrealistisch');
   }
 
   return errors;

@@ -42,7 +42,7 @@ export const BerkusMethodPage = () => {
         <h3 className="font-display font-semibold text-charcoal mb-2">Über die Berkus-Methode</h3>
         <p className="text-charcoal/70">
           Die Berkus-Methode bewertet Pre-Revenue Startups anhand von 5 Risiko-Faktoren.
-          Jeder Faktor kann bis zu 500.000 € zum Wert beitragen, fur eine maximale
+          Jeder Faktor kann bis zu 500.000 € zum Wert beitragen, für eine maximale
           Bewertung von 2,5 Mio. €.
         </p>
       </Card>

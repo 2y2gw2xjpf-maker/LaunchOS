@@ -36,12 +36,12 @@ export const ConfidenceIndicator = ({
 
   const getDefaultExplanation = () => {
     if (level === 'high') {
-      return 'Hohe Datenqualitat: Die Analyse basiert auf umfangreichen Eingaben.';
+      return 'Hohe Datenqualität: Die Analyse basiert auf umfangreichen Eingaben.';
     }
     if (level === 'medium') {
-      return 'Mittlere Datenqualitat: Mehr Details wurden die Genauigkeit erhohen.';
+      return 'Mittlere Datenqualität: Mehr Details würden die Genauigkeit erhöhen.';
     }
-    return 'Niedrige Datenqualitat: Bitte teile mehr Informationen fur genauere Ergebnisse.';
+    return 'Niedrige Datenqualität: Bitte teile mehr Informationen für genauere Ergebnisse.';
   };
 
   return (

@@ -41,35 +41,35 @@ interface QuestionConfig {
 
 const QUESTION_FLOWS: Record<DeliverableType, QuestionConfig[]> = {
   pitch_deck: [
-    { key: 'companyName', prompt: 'Wie heisst dein Startup?' },
+    { key: 'companyName', prompt: 'Wie heißt dein Startup?' },
     {
       key: 'tagline',
-      prompt: 'Hast du einen Slogan oder Tagline? (optional, Enter zum Uberspringen)',
+      prompt: 'Hast du einen Slogan oder Tagline? (optional, Enter zum Überspringen)',
       optional: true,
     },
-    { key: 'problem', prompt: 'Welches Problem lost du? Beschreibe es aus Kundensicht.' },
-    { key: 'solution', prompt: 'Wie lost du das Problem? Was macht dein Produkt/Service?' },
+    { key: 'problem', prompt: 'Welches Problem löst du? Beschreibe es aus Kundensicht.' },
+    { key: 'solution', prompt: 'Wie löst du das Problem? Was macht dein Produkt/Service?' },
     {
       key: 'tam',
-      prompt: 'Wie gross ist der Gesamtmarkt (TAM)? z.B. "€50 Mrd. Gesundheitsmarkt Deutschland"',
+      prompt: 'Wie groß ist der Gesamtmarkt (TAM)? z.B. "€50 Mrd. Gesundheitsmarkt Deutschland"',
     },
-    { key: 'sam', prompt: 'Wie gross ist dein adressierbarer Markt (SAM)?' },
-    { key: 'som', prompt: 'Wie gross ist dein realistisch erreichbarer Markt (SOM)?' },
-    { key: 'businessModel', prompt: 'Wie verdienst du Geld? Beschreibe dein Geschaftsmodell.' },
+    { key: 'sam', prompt: 'Wie groß ist dein adressierbarer Markt (SAM)?' },
+    { key: 'som', prompt: 'Wie groß ist dein realistisch erreichbarer Markt (SOM)?' },
+    { key: 'businessModel', prompt: 'Wie verdienst du Geld? Beschreibe dein Geschäftsmodell.' },
     { key: 'traction', prompt: 'Was hast du schon erreicht? Kunden, Umsatz, User? (optional)', optional: true },
     { key: 'teamInfo', prompt: 'Wer ist im Team? Nenne Namen und Rollen.' },
     { key: 'competition', prompt: 'Wer sind deine Wettbewerber? Was machst du besser?' },
-    { key: 'ask', prompt: 'Wie viel Funding suchst du und wofur?' },
+    { key: 'ask', prompt: 'Wie viel Funding suchst du und wofür?' },
   ],
   business_plan: [
-    { key: 'companyName', prompt: 'Wie heisst dein Unternehmen?' },
+    { key: 'companyName', prompt: 'Wie heißt dein Unternehmen?' },
     {
       key: 'executiveSummary',
-      prompt: 'Beschreibe dein Unternehmen in 3-5 Satzen (Executive Summary).',
+      prompt: 'Beschreibe dein Unternehmen in 3-5 Sätzen (Executive Summary).',
     },
-    { key: 'team', prompt: 'Wer sind die Grunder? Hintergrund und Expertise?' },
+    { key: 'team', prompt: 'Wer sind die Gründer? Hintergrund und Expertise?' },
     { key: 'productService', prompt: 'Was genau bietest du an? Produkt oder Dienstleistung?' },
-    { key: 'marketAnalysis', prompt: 'Wie sieht der Markt aus? Grosse, Wachstum, Wettbewerb?' },
+    { key: 'marketAnalysis', prompt: 'Wie sieht der Markt aus? Größe, Wachstum, Wettbewerb?' },
     { key: 'marketingStrategy', prompt: 'Wie gewinnst du Kunden? Marketing & Vertrieb?' },
     { key: 'operations', prompt: 'Wie ist die Organisation? Personal, Standort, Prozesse?' },
     {
@@ -79,28 +79,28 @@ const QUESTION_FLOWS: Record<DeliverableType, QuestionConfig[]> = {
     { key: 'risks', prompt: 'Welche Risiken gibt es? Wie gehst du damit um?' },
   ],
   investor_list: [
-    { key: 'companyName', prompt: 'Wie heisst dein Startup?' },
+    { key: 'companyName', prompt: 'Wie heißt dein Startup?' },
     { key: 'industry', prompt: 'In welcher Branche/Sektor bist du?' },
     { key: 'stage', prompt: 'Welche Stage? (Pre-Seed, Seed, Series A)' },
     { key: 'ticketSize', prompt: 'Wie viel Funding suchst du?' },
     { key: 'geography', prompt: 'Welche Regionen? (nur DE, DACH, Europa, Global)' },
-    { key: 'preferences', prompt: 'Besondere Praferenzen? (B2B/B2C, Impact, etc.)' },
+    { key: 'preferences', prompt: 'Besondere Präferenzen? (B2B/B2C, Impact, etc.)' },
   ],
   financial_model: [
-    { key: 'companyName', prompt: 'Wie heisst dein Startup?' },
+    { key: 'companyName', prompt: 'Wie heißt dein Startup?' },
     { key: 'revenueModel', prompt: 'Wie verdienst du Geld? (SaaS, Einmalkauf, Provision, etc.)' },
     { key: 'pricing', prompt: 'Was kosten deine Produkte/Services?' },
     { key: 'cac', prompt: 'Was kostet es einen Kunden zu gewinnen (CAC)?' },
-    { key: 'teamSize', prompt: 'Wie gross ist/wird das Team? Durchschnittsgehalt?' },
+    { key: 'teamSize', prompt: 'Wie groß ist/wird das Team? Durchschnittsgehalt?' },
     { key: 'fixedCosts', prompt: 'Welche Fixkosten hast du monatlich?' },
   ],
   valuation_report: [
-    { key: 'companyName', prompt: 'Wie heisst dein Startup?' },
+    { key: 'companyName', prompt: 'Wie heißt dein Startup?' },
     { key: 'stage', prompt: 'In welcher Stage bist du? (Idea, MVP, Revenue)' },
     { key: 'industry', prompt: 'Welche Branche?' },
     { key: 'traction', prompt: 'Was hast du schon erreicht? (Kunden, Umsatz, Growth)', optional: true },
-    { key: 'teamExperience', prompt: 'Erfahrung des Grunderteams?' },
-    { key: 'marketSize', prompt: 'Bekannte Marktgrosse?', optional: true },
+    { key: 'teamExperience', prompt: 'Erfahrung des Gründerteams?' },
+    { key: 'marketSize', prompt: 'Bekannte Marktgröße?', optional: true },
   ],
   legal_docs: [
     { key: 'companyName', prompt: 'Wie heisst dein Unternehmen (inkl. Rechtsform)?' },
@@ -110,15 +110,15 @@ const QUESTION_FLOWS: Record<DeliverableType, QuestionConfig[]> = {
     { key: 'docTypes', prompt: 'Welche Dokumente brauchst du? (Impressum, Datenschutz, AGB)' },
   ],
   data_room: [
-    { key: 'companyName', prompt: 'Wie heisst dein Startup?' },
+    { key: 'companyName', prompt: 'Wie heißt dein Startup?' },
     { key: 'stage', prompt: 'Funding Stage? (Seed, Series A, etc.)' },
     { key: 'companyType', prompt: 'Rechtsform? (GmbH, UG, AG)' },
     { key: 'teamSize', prompt: 'Anzahl Mitarbeiter?' },
     { key: 'hasIP', prompt: 'Hast du IP (Patente, Marken)?', optional: true },
   ],
   outreach_emails: [
-    { key: 'companyName', prompt: 'Wie heisst dein Startup?' },
-    { key: 'startupDescription', prompt: 'Kurze Beschreibung (2-3 Satze)' },
+    { key: 'companyName', prompt: 'Wie heißt dein Startup?' },
+    { key: 'startupDescription', prompt: 'Kurze Beschreibung (2-3 Sätze)' },
     { key: 'traction', prompt: 'Was hast du erreicht?' },
     { key: 'ask', prompt: 'Was brauchst du? (Funding, Intro, Advice)' },
     { key: 'emailType', prompt: 'Welche Art von Email? (Cold, Warm Intro, Follow-Up)' },
@@ -210,16 +210,16 @@ export function useDeliverableChat() {
             'assistant',
             `Ich kann dir bei folgenden Dingen helfen:
 
-- **Pitch Deck erstellen** - 10-12 Slides fur Investoren
-- **Businessplan schreiben** - Strukturierter Plan fur Banken & Fordermittel
+- **Pitch Deck erstellen** - 10-12 Slides für Investoren
+- **Businessplan schreiben** - Strukturierter Plan für Banken & Fördermittel
 - **Investor-Liste recherchieren** - Passende Angels & VCs finden
 - **Finanzmodell bauen** - 3-Jahres-Projektion mit Szenarien
 - **Bewertungsreport** - Detaillierte Startup-Bewertung
 - **Rechtliche Texte** - Impressum, Datenschutz, AGB
-- **Data Room** - Struktur fur Due Diligence
-- **Outreach Emails** - Templates fur Investoren-Kontakt
+- **Data Room** - Struktur für Due Diligence
+- **Outreach Emails** - Templates für Investoren-Kontakt
 
-Was mochtest du machen?`
+Was möchtest du machen?`
           );
         }
         return;
@@ -257,7 +257,7 @@ Was mochtest du machen?`
         const config = DELIVERABLE_CONFIGS[deliverable.type];
         addMessage(
           'assistant',
-          `Perfekt! Ich habe alle Infos fur dein **${config.title}**.\n\nKlicke auf "Jetzt generieren" um das Dokument zu erstellen.`
+          `Perfekt! Ich habe alle Infos für dein **${config.title}**.\n\nKlicke auf "Jetzt generieren" um das Dokument zu erstellen.`
         );
       }
     },
@@ -328,14 +328,14 @@ Was mochtest du machen?`
           // Generate sample investor list based on criteria
           const sampleInvestors: InvestorData[] = [
             {
-              name: 'High-Tech Grunderfonds',
+              name: 'High-Tech Gründerfonds',
               type: 'VC',
               focusAreas: (data.industry as string) || 'Tech',
               ticketSize: '€500k - €3M',
               portfolio: 'Beispiele aus Portfolio',
               contact: 'htgf.de',
               fitScore: 5,
-              notes: 'Offentlicher VC, guter Einstieg',
+              notes: 'Öffentlicher VC, guter Einstieg',
             },
             {
               name: 'Cherry Ventures',
@@ -403,7 +403,7 @@ Was mochtest du machen?`
                 name: 'Scorecard Method',
                 value: 750000,
                 confidence: 70,
-                notes: ['Vergleich mit ahnlichen Startups'],
+                notes: ['Vergleich mit ähnlichen Startups'],
               },
             ],
             finalValuation: {
@@ -417,13 +417,13 @@ Was mochtest du machen?`
               'Team-Bewertung basierend auf Erfahrung',
             ],
             disclaimer:
-              'Diese Bewertung dient nur zur Orientierung und stellt kein Gutachten dar. Fur Investitionsentscheidungen sollte eine professionelle Bewertung eingeholt werden.',
+              'Diese Bewertung dient nur zur Orientierung und stellt kein Gutachten dar. Für Investitionsentscheidungen sollte eine professionelle Bewertung eingeholt werden.',
           });
           break;
         }
 
         default:
-          throw new Error(`Generator fur ${deliverable.type} noch nicht implementiert`);
+          throw new Error(`Generator für ${deliverable.type} noch nicht implementiert`);
       }
 
       const config = DELIVERABLE_CONFIGS[deliverable.type];
@@ -431,12 +431,12 @@ Was mochtest du machen?`
         'assistant',
         `Dein **${config.title}** wurde erstellt und heruntergeladen!
 
-Mochtest du:
-- **Anderungen machen** - "Mach das kurzer" / "Ubersetze auf Englisch"
+Möchtest du:
+- **Änderungen machen** - "Mach das kürzer" / "Übersetze auf Englisch"
 - **Neu starten** - "Neues Pitch Deck"
 - **Etwas anderes** - "Hilf mir bei..."
 
-Was kann ich noch fur dich tun?`
+Was kann ich noch für dich tun?`
       );
 
       // Reset for next deliverable

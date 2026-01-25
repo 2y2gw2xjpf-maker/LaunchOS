@@ -44,7 +44,7 @@ const stageOptions = [
   { value: 'idea', label: 'Idee', description: 'Noch kein Produkt' },
   { value: 'mvp', label: 'MVP', description: 'Minimales Produkt vorhanden' },
   { value: 'beta', label: 'Beta', description: 'Wird von ersten Nutzern getestet' },
-  { value: 'live', label: 'Live', description: 'Am Markt, moglicherweise mit Kunden' },
+  { value: 'live', label: 'Live', description: 'Am Markt, möglicherweise mit Kunden' },
   { value: 'scaling', label: 'Scaling', description: 'Wachstum beschleunigen' },
 ];
 
@@ -52,7 +52,7 @@ const targetOptions = [
   { value: 'b2b', label: 'B2B', description: 'Unternehmen als Kunden' },
   { value: 'b2c', label: 'B2C', description: 'Endverbraucher als Kunden' },
   { value: 'both', label: 'Beides', description: 'B2B und B2C' },
-  { value: 'b2b2c', label: 'B2B2C', description: 'Uber Unternehmen an Endkunden' },
+  { value: 'b2b2c', label: 'B2B2C', description: 'Über Unternehmen an Endkunden' },
 ];
 
 export const ProjectBasicsStep = () => {
@@ -68,7 +68,7 @@ export const ProjectBasicsStep = () => {
       <QuestionCard
         question="In welcher Branche ist dein Startup?"
         required
-        helpText="Wahle die Kategorie, die am besten passt. Dies hilft uns bei der Markteinschatzung."
+        helpText="Wähle die Kategorie, die am besten passt. Dies hilft uns bei der Markteinschätzung."
       >
         <OptionGrid
           options={categoryOptions}
@@ -94,7 +94,7 @@ export const ProjectBasicsStep = () => {
       <QuestionCard
         question="Wer ist deine Zielgruppe?"
         required
-        helpText="Die Zielgruppe bestimmt Vertriebswege und Skalierungsmoglichkeiten."
+        helpText="Die Zielgruppe bestimmt Vertriebswege und Skalierungsmöglichkeiten."
       >
         <OptionGrid
           options={targetOptions}
@@ -109,7 +109,7 @@ export const ProjectBasicsStep = () => {
         <>
           <QuestionCard
             question="Hast du bereits Umsatz?"
-            description="Zahlende Kunden sind ein starkes Signal fur Produkt-Market-Fit."
+            description="Zahlende Kunden sind ein starkes Signal für Produkt-Market-Fit."
           >
             <div className="flex gap-4 mb-4">
               <OptionButton
@@ -147,7 +147,7 @@ export const ProjectBasicsStep = () => {
 
           <QuestionCard
             question="Hast du bereits Nutzer?"
-            description="Auch ohne Umsatz konnen aktive Nutzer ein wichtiges Signal sein."
+            description="Auch ohne Umsatz können aktive Nutzer ein wichtiges Signal sein."
           >
             <div className="flex gap-4 mb-4">
               <OptionButton
@@ -190,7 +190,7 @@ export const ProjectBasicsStep = () => {
         <div className="p-4 bg-purple-50 rounded-xl border border-purple-100 text-sm text-purple-700">
           <p className="font-medium mb-1">Minimale Datenfreigabe aktiv</p>
           <p className="text-purple-600">
-            Du hast die minimale Datenfreigabe gewahlt. Fur detailliertere Empfehlungen
+            Du hast die minimale Datenfreigabe gewählt. Für detailliertere Empfehlungen
             kannst du jederzeit auf der Tier-Auswahl mehr Informationen freigeben.
           </p>
         </div>

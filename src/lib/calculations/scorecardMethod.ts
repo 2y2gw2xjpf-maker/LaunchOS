@@ -4,33 +4,33 @@ const AVERAGE_PRE_SEED_VALUATION = 1500000; // €1.5M
 
 export const SCORECARD_FACTOR_DEFINITIONS = {
   teamStrength: {
-    name: 'Team-Starke',
-    description: 'Qualitat und Erfahrung des Grunderteams',
+    name: 'Team-Stärke',
+    description: 'Qualität und Erfahrung des Gründerteams',
     defaultWeight: 30,
   },
   marketSize: {
-    name: 'Marktgrosse',
-    description: 'Grosse und Attraktivitat des Zielmarkts',
+    name: 'Marktgröße',
+    description: 'Größe und Attraktivität des Zielmarkts',
     defaultWeight: 25,
   },
   productTech: {
     name: 'Produkt/Technologie',
-    description: 'Starke des Produkts oder der Technologie',
+    description: 'Stärke des Produkts oder der Technologie',
     defaultWeight: 15,
   },
   competition: {
     name: 'Wettbewerbsumfeld',
-    description: 'Starke und Dichte der Konkurrenz',
+    description: 'Stärke und Dichte der Konkurrenz',
     defaultWeight: 10,
   },
   marketingSales: {
     name: 'Marketing/Vertrieb',
-    description: 'Fahigkeit, Kunden zu gewinnen',
+    description: 'Fähigkeit, Kunden zu gewinnen',
     defaultWeight: 10,
   },
   needForFunding: {
     name: 'Kapitalbedarf',
-    description: 'Wie viel Kapital wird benotigt?',
+    description: 'Wie viel Kapital wird benötigt?',
     defaultWeight: 5,
   },
   other: {
@@ -81,7 +81,7 @@ export function calculateScorecard(
   }
 
   if (multiplier > 1.2) {
-    notes.push('Uberdurchschnittliche Bewertung im Vergleich zum Markt');
+    notes.push('Überdurchschnittliche Bewertung im Vergleich zum Markt');
   } else if (multiplier < 0.8) {
     notes.push('Unterdurchschnittliche Bewertung - Verbesserungspotenzial vorhanden');
   }

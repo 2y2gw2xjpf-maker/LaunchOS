@@ -14,16 +14,16 @@ const TIER_LEVELS: Record<DataSharingTier, number> = {
 };
 
 const timingOptions = [
-  { value: 'early', label: 'Fruh', description: 'Markt entsteht gerade', icon: <Clock className="w-5 h-5 text-navy" /> },
+  { value: 'early', label: 'Früh', description: 'Markt entsteht gerade', icon: <Clock className="w-5 h-5 text-navy" /> },
   { value: 'growing', label: 'Wachsend', description: 'Starkes Marktwachstum', icon: <TrendingUp className="w-5 h-5 text-navy" /> },
   { value: 'mature', label: 'Reif', description: 'Etablierter Markt', icon: <Shield className="w-5 h-5 text-navy" /> },
-  { value: 'declining', label: 'Rucklaufig', description: 'Markt schrumpft', icon: <Clock className="w-5 h-5 text-navy" /> },
+  { value: 'declining', label: 'Rückläufig', description: 'Markt schrumpft', icon: <Clock className="w-5 h-5 text-navy" /> },
 ];
 
 const marketTypeOptions = [
   { value: 'winner_takes_all', label: 'Winner takes all', description: 'Netzwerkeffekte, ein Gewinner', icon: <Crown className="w-5 h-5 text-navy" /> },
-  { value: 'fragmented', label: 'Fragmentiert', description: 'Viele kleine Player moglich', icon: <Grid className="w-5 h-5 text-navy" /> },
-  { value: 'oligopoly', label: 'Oligopol', description: 'Wenige grosse Anbieter', icon: <Users className="w-5 h-5 text-navy" /> },
+  { value: 'fragmented', label: 'Fragmentiert', description: 'Viele kleine Player möglich', icon: <Grid className="w-5 h-5 text-navy" /> },
+  { value: 'oligopoly', label: 'Oligopol', description: 'Wenige große Anbieter', icon: <Users className="w-5 h-5 text-navy" /> },
 ];
 
 export const MarketAnalysisStep = () => {
@@ -52,10 +52,10 @@ export const MarketAnalysisStep = () => {
     return (
       <div className="space-y-8">
         <div className="p-6 bg-purple-50 rounded-xl border border-purple-100 text-center">
-          <p className="font-medium text-purple-900 mb-2">Marktanalyse ubersprungen</p>
+          <p className="font-medium text-purple-900 mb-2">Marktanalyse übersprungen</p>
           <p className="text-sm text-purple-600">
             Bei minimaler Datenfreigabe wird die Marktanalyse auf Basis allgemeiner Branchendaten erstellt.
-            Fur eine detailliertere Analyse kannst du mehr Informationen freigeben.
+            Für eine detailliertere Analyse kannst du mehr Informationen freigeben.
           </p>
         </div>
       </div>
@@ -67,7 +67,7 @@ export const MarketAnalysisStep = () => {
       {/* TIER 2+ (BASIC+): Market timing */}
       <QuestionCard
         question="Wie ist das Markt-Timing?"
-        helpText="Fruhe Markte bieten mehr Upside aber auch mehr Risiko."
+        helpText="Frühe Märkte bieten mehr Upside aber auch mehr Risiko."
       >
         <OptionGrid
           options={timingOptions}
@@ -80,7 +80,7 @@ export const MarketAnalysisStep = () => {
       <QuestionCard
         question="Welcher Markttyp?"
         description="Die Marktstruktur beeinflusst die optimale Strategie."
-        helpText="Winner-takes-all Markte erfordern schnelles Wachstum und oft Kapital."
+        helpText="Winner-takes-all Märkte erfordern schnelles Wachstum und oft Kapital."
       >
         <OptionGrid
           options={marketTypeOptions}
@@ -96,7 +96,7 @@ export const MarketAnalysisStep = () => {
           <QuestionCard
             question="Wer sind deine Wettbewerber?"
             description="Nenne die wichtigsten direkten und indirekten Konkurrenten."
-            helpText="Auch indirekte Alternativen zahlen - wie losen Kunden das Problem heute?"
+            helpText="Auch indirekte Alternativen zählen - wie lösen Kunden das Problem heute?"
           >
             <div className="flex gap-2 mb-4">
               <Input
@@ -109,7 +109,7 @@ export const MarketAnalysisStep = () => {
                 onClick={addCompetitor}
                 className="px-4 py-2 bg-navy text-white rounded-xl font-medium hover:bg-navy/90 transition-colors"
               >
-                Hinzufugen
+                Hinzufügen
               </button>
             </div>
 
@@ -150,7 +150,7 @@ export const MarketAnalysisStep = () => {
 
           <QuestionCard
             question="Wie komplex ist die Regulierung?"
-            description="Gibt es rechtliche Hurden oder Compliance-Anforderungen?"
+            description="Gibt es rechtliche Hürden oder Compliance-Anforderungen?"
           >
             <SliderInput
               value={marketAnalysis.regulatoryComplexity || 3}
@@ -168,8 +168,8 @@ export const MarketAnalysisStep = () => {
       {/* TIER 4 (FULL): Market size estimates */}
       {tierLevel >= 4 && (
         <QuestionCard
-          question="Marktgrosse (optional)"
-          description="Falls du Schatzungen hast - diese verbessern die Analyse."
+          question="Marktgröße (optional)"
+          description="Falls du Schätzungen hast - diese verbessern die Analyse."
           helpText="TAM = Total, SAM = Serviceable, SOM = Obtainable"
         >
           <div className="grid sm:grid-cols-3 gap-4">

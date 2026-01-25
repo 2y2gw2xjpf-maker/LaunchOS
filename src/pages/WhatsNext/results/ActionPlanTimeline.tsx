@@ -116,9 +116,9 @@ export const ActionPlanTimeline = ({ plan, activeView = 'timeline' }: ActionPlan
           <Sparkles className="w-6 h-6 text-white" />
         </div>
         <div className="flex-1">
-          <p className="font-medium text-purple-900">KI-Assistent verfugbar</p>
+          <p className="font-medium text-purple-900">KI-Assistent verfügbar</p>
           <p className="text-sm text-purple-700/70">
-            Brauchst du Hilfe bei einem Meilenstein? Der KI-Assistent kann dich bei der Umsetzung unterstutzen.
+            Brauchst du Hilfe bei einem Meilenstein? Der KI-Assistent kann dich bei der Umsetzung unterstützen.
           </p>
         </div>
         <Button

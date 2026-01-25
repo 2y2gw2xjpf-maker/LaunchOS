@@ -7,15 +7,15 @@ export const BERKUS_FACTOR_DEFINITIONS = {
     name: 'Grundlegende Idee',
     description: 'Ist die Grundidee solide und das Problem real?',
     questions: [
-      'Lost das Produkt ein echtes Problem?',
+      'Löst das Produkt ein echtes Problem?',
       'Gibt es einen klaren Zielmarkt?',
-      'Ist die Value Proposition verstandlich?',
+      'Ist die Value Proposition verständlich?',
     ],
     scoring: {
       0: 'Keine klare Idee oder kein echtes Problem',
       25: 'Idee vorhanden, Problem unklar',
-      50: 'Solide Idee, Problem validierungsbedurftig',
-      75: 'Gute Idee, Problem durch Research bestatigt',
+      50: 'Solide Idee, Problem validierungsbedürftig',
+      75: 'Gute Idee, Problem durch Research bestätigt',
       100: 'Exzellente Idee, Problem eindeutig validiert',
     },
   },
@@ -24,28 +24,28 @@ export const BERKUS_FACTOR_DEFINITIONS = {
     description: 'Reduziert das Technologie-Risiko',
     questions: [
       'Gibt es einen funktionierenden Prototyp?',
-      'Wurde die Kernfunktionalitat demonstriert?',
+      'Wurde die Kernfunktionalität demonstriert?',
       'Ist die Technologie machbar?',
     ],
     scoring: {
       0: 'Nur Konzept, kein Prototyp',
       25: 'Mockups oder Wireframes',
-      50: 'Funktionaler Prototyp mit Einschrankungen',
+      50: 'Funktionaler Prototyp mit Einschränkungen',
       75: 'MVP mit Kernfunktionen live',
-      100: 'Vollstandiges Produkt, produktionsreif',
+      100: 'Vollständiges Produkt, produktionsreif',
     },
   },
   qualityTeam: {
     name: 'Management-Team',
-    description: 'Reduziert das Ausfuhrungs-Risiko',
+    description: 'Reduziert das Ausführungs-Risiko',
     questions: [
       'Hat das Team relevante Erfahrung?',
-      'Sind die Skills komplementar?',
+      'Sind die Skills komplementär?',
       'Gibt es eine Track-Record von Erfolgen?',
     ],
     scoring: {
       0: 'Kein Team, keine relevante Erfahrung',
-      25: 'Solo-Grunder mit etwas Erfahrung',
+      25: 'Solo-Gründer mit etwas Erfahrung',
       50: 'Kleines Team, gemischte Erfahrung',
       75: 'Starkes Team mit Domain-Expertise',
       100: 'Erfahrenes Team mit Erfolgs-Track-Record',
@@ -76,7 +76,7 @@ export const BERKUS_FACTOR_DEFINITIONS = {
       'Ist der Go-to-Market-Plan klar?',
     ],
     scoring: {
-      0: 'Noch keine Marktaktivitat',
+      0: 'Noch keine Marktaktivität',
       25: 'Beta-Nutzer vorhanden',
       50: 'Erste zahlende Kunden',
       75: 'Wachsender Kundenstamm',
@@ -117,13 +117,13 @@ export function calculateBerkus(factors: BerkusFactors): ValuationMethodResult {
     notes.push('Die Idee sollte weiter validiert werden');
   }
   if (factors.qualityTeam < 50 && factors.prototype > 75) {
-    notes.push('Starkes Produkt, aber Team-Starke erhohen wurde Bewertung verbessern');
+    notes.push('Starkes Produkt, aber Team-Stärke erhöhen würde Bewertung verbessern');
   }
   if (factors.productRollout === 0) {
-    notes.push('Ohne Marktprasenz ist dies eine rein potenzialbasierte Bewertung');
+    notes.push('Ohne Marktpräsenz ist dies eine rein potenzialbasierte Bewertung');
   }
   if (total > 1500000) {
-    notes.push('Bewertung im oberen Bereich fur Pre-Revenue - gute Ausgangsposition');
+    notes.push('Bewertung im oberen Bereich für Pre-Revenue - gute Ausgangsposition');
   }
 
   return {
@@ -151,7 +151,7 @@ export function suggestBerkusImprovements(factors: BerkusFactors): string[] {
         BERKUS_FACTOR_DEFINITIONS[factor as keyof BerkusFactors];
       const potentialIncrease = ((75 - score) / 100) * MAX_PER_FACTOR;
       suggestions.push(
-        `${definition.name} verbessern konnte +€${potentialIncrease.toLocaleString('de-DE')} bringen`
+        `${definition.name} verbessern könnte +€${potentialIncrease.toLocaleString('de-DE')} bringen`
       );
     }
   }

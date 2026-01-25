@@ -89,7 +89,7 @@ export function QuickActions({
             type="text"
             value={customPrompt}
             onChange={(e) => setCustomPrompt(e.target.value)}
-            placeholder="Eigene Anderung beschreiben..."
+            placeholder="Eigene Änderung beschreiben..."
             disabled={isLoading}
             className={cn(
               'flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm',

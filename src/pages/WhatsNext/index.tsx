@@ -19,7 +19,7 @@ import { ProgramRunner } from '@/components/program/ProgramRunner';
 
 const STEPS = [
   { id: 'project', title: 'Projekt', description: 'Grundlegende Informationen' },
-  { id: 'personal', title: 'Situation', description: 'Deine personliche Lage' },
+  { id: 'personal', title: 'Situation', description: 'Deine persönliche Lage' },
   { id: 'goals', title: 'Ziele', description: 'Was willst du erreichen?' },
   { id: 'market', title: 'Markt', description: 'Wettbewerb & Umfeld' },
   { id: 'results', title: 'Ergebnis', description: 'Deine Empfehlung' },
@@ -298,7 +298,7 @@ export const WhatsNextPage = () => {
             className="mb-6"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Zuruck zur Tier-Auswahl
+            Zurück zur Tier-Auswahl
           </Button>
         )}
 

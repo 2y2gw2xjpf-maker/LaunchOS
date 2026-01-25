@@ -154,7 +154,7 @@ export const ValuationPage = () => {
                 Startup-Bewertung
               </h1>
               <p className="text-charcoal/60">
-                Nutze verschiedene Methoden, um den Wert deines Startups zu schatzen.
+                Nutze verschiedene Methoden, um den Wert deines Startups zu schätzen.
               </p>
             </motion.div>
 
@@ -219,7 +219,7 @@ export const ValuationPage = () => {
                   <div className="text-center py-8">
                     <Calculator className="w-12 h-12 text-charcoal/20 mx-auto mb-3" />
                     <p className="text-charcoal/50">
-                      Fullst die Methoden aus, um deine Bewertung zu sehen
+                      Füllst die Methoden aus, um deine Bewertung zu sehen
                     </p>
                   </div>
                 )}
@@ -311,7 +311,7 @@ export const ValuationPage = () => {
                   onClick={resetValuation}
                 >
                   <RefreshCw className="w-4 h-4 mr-2" />
-                  Zurucksetzen
+                  Zurücksetzen
                 </Button>
               </div>
             </div>

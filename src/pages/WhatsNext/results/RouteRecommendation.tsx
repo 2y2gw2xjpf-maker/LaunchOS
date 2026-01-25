@@ -40,43 +40,43 @@ const routeDetails: Record<RecommendedRoute, {
   bootstrap: {
     title: 'Bootstrap',
     subtitle: 'Selbstfinanziert wachsen',
-    description: 'Baue dein Unternehmen mit eigenem Geld und Einnahmen auf. Du behaltst die volle Kontrolle uber alle Entscheidungen und bist niemandem Rechenschaft schuldig.',
+    description: 'Baue dein Unternehmen mit eigenem Geld und Einnahmen auf. Du behältst die volle Kontrolle über alle Entscheidungen und bist niemandem Rechenschaft schuldig.',
     icon: Rocket,
     color: '#9333ea',
     gradient: 'from-purple-500 to-violet-600',
     pros: [
-      { text: 'Volle Kontrolle uber Entscheidungen', detail: 'Du bestimmst Tempo, Richtung und Prioritaten ohne externe Einflussnahme' },
-      { text: 'Keine Verwasserung deiner Anteile', detail: 'Du behaltst 100% deines Unternehmens, auch bei spateren Erfolgen' },
+      { text: 'Volle Kontrolle über Entscheidungen', detail: 'Du bestimmst Tempo, Richtung und Prioritäten ohne externe Einflussnahme' },
+      { text: 'Keine Verwässerung deiner Anteile', detail: 'Du behältst 100% deines Unternehmens, auch bei späteren Erfolgen' },
       { text: 'Profitabel von Anfang an denken', detail: 'Zwingt dich zu nachhaltigem Wirtschaften und echtem Product-Market Fit' },
       { text: 'Kein Druck von Investoren', detail: 'Keine Reporting-Pflichten, keine Board-Meetings, keine Exit-Erwartungen' },
     ],
     cons: [
-      { text: 'Langsameres Wachstum moglich', detail: 'Ohne Kapitalspritze kann es langer dauern, Marktanteile zu gewinnen' },
-      { text: 'Begrenztes Kapital fur Experimente', detail: 'Weniger Budget fur Marketing, Hiring und Produktentwicklung' },
-      { text: 'Hohes personliches Risiko', detail: 'Dein eigenes Geld steht auf dem Spiel' },
-      { text: 'Schwieriger in winner-takes-all Markten', detail: 'In Markten mit Netzwerkeffekten kann Geschwindigkeit entscheidend sein' },
+      { text: 'Langsameres Wachstum möglich', detail: 'Ohne Kapitalspritze kann es länger dauern, Marktanteile zu gewinnen' },
+      { text: 'Begrenztes Kapital für Experimente', detail: 'Weniger Budget für Marketing, Hiring und Produktentwicklung' },
+      { text: 'Hohes persönliches Risiko', detail: 'Dein eigenes Geld steht auf dem Spiel' },
+      { text: 'Schwieriger in winner-takes-all Märkten', detail: 'In Märkten mit Netzwerkeffekten kann Geschwindigkeit entscheidend sein' },
     ],
-    timeline: '18-36 Monate bis Profitabilitat',
+    timeline: '18-36 Monate bis Profitabilität',
     effort: 'Mittel bis Hoch',
     risk: 'Moderat',
   },
   investor: {
     title: 'Investor',
     subtitle: 'Mit Kapital skalieren',
-    description: 'Hole externes Kapital fur schnelleres Wachstum. Du gibst dafur Anteile und einen Teil der Kontrolle ab, bekommst aber Zugang zu Kapital, Netzwerk und Expertise.',
+    description: 'Hole externes Kapital für schnelleres Wachstum. Du gibst dafür Anteile und einen Teil der Kontrolle ab, bekommst aber Zugang zu Kapital, Netzwerk und Expertise.',
     icon: Briefcase,
     color: '#ec4899',
     gradient: 'from-pink-500 to-rose-600',
     pros: [
-      { text: 'Schnelleres Wachstum moglich', detail: 'Mit Kapital kannst du schneller Marktanteile gewinnen und skalieren' },
+      { text: 'Schnelleres Wachstum möglich', detail: 'Mit Kapital kannst du schneller Marktanteile gewinnen und skalieren' },
       { text: 'Zugang zu Netzwerk und Expertise', detail: 'Gute Investoren bringen Kontakte, Erfahrung und strategische Beratung mit' },
-      { text: 'Mehr Runway fur Experimente', detail: 'Du kannst groser denken und mehr ausprobieren, bevor Profitabilitat notig ist' },
-      { text: 'Signal-Effekt im Markt', detail: 'Bekannte Investoren geben deinem Startup Glaubwurdigkeit' },
+      { text: 'Mehr Runway für Experimente', detail: 'Du kannst größer denken und mehr ausprobieren, bevor Profitabilität nötig ist' },
+      { text: 'Signal-Effekt im Markt', detail: 'Bekannte Investoren geben deinem Startup Glaubwürdigkeit' },
     ],
     cons: [
       { text: 'Verwasserung deiner Anteile', detail: 'Bei jeder Finanzierungsrunde gibst du einen Teil deines Unternehmens ab' },
-      { text: 'Reporting-Pflichten', detail: 'Regelmasige Updates und Board-Meetings werden erwartet' },
-      { text: 'Weniger Kontrolle uber Entscheidungen', detail: 'Investoren haben Mitspracherecht bei strategischen Entscheidungen' },
+      { text: 'Reporting-Pflichten', detail: 'Regelmäßige Updates und Board-Meetings werden erwartet' },
+      { text: 'Weniger Kontrolle über Entscheidungen', detail: 'Investoren haben Mitspracherecht bei strategischen Entscheidungen' },
       { text: 'Erwartung von schnellem Exit', detail: 'VCs erwarten typischerweise Exit innerhalb von 7-10 Jahren' },
     ],
     timeline: '6-12 Monate bis zur ersten Runde',
@@ -86,21 +86,21 @@ const routeDetails: Record<RecommendedRoute, {
   hybrid: {
     title: 'Hybrid',
     subtitle: 'Das Beste aus beiden Welten',
-    description: 'Starte Bootstrap und raise strategisch, wenn es Sinn macht. Du validierst dein Geschaftsmodell erst mit eigenen Mitteln und holst dann Kapital zu besseren Konditionen.',
+    description: 'Starte Bootstrap und raise strategisch, wenn es Sinn macht. Du validierst dein Geschäftsmodell erst mit eigenen Mitteln und holst dann Kapital zu besseren Konditionen.',
     icon: GitMerge,
     color: '#7c3aed',
     gradient: 'from-violet-500 to-purple-600',
     pros: [
-      { text: 'Flexibilitat behalten', detail: 'Du kannst je nach Situation entscheiden, welchen Weg du einschlagst' },
-      { text: 'Bessere Bewertung bei Raise', detail: 'Mit Traktion und Umsatz verhandelst du aus einer starkeren Position' },
+      { text: 'Flexibilität behalten', detail: 'Du kannst je nach Situation entscheiden, welchen Weg du einschlägst' },
+      { text: 'Bessere Bewertung bei Raise', detail: 'Mit Traktion und Umsatz verhandelst du aus einer stärkeren Position' },
       { text: 'Kontrolle in der Anfangsphase', detail: 'Du bewahrst dir die Freiheit, solange du sie am meisten brauchst' },
-      { text: 'Option auf beide Wege offen', detail: 'Du kannst spater entscheiden, ob du Investoren willst oder nicht' },
+      { text: 'Option auf beide Wege offen', detail: 'Du kannst später entscheiden, ob du Investoren willst oder nicht' },
     ],
     cons: [
-      { text: 'Erfordert disziplinierte Execution', detail: 'Du musst sowohl Bootstrap-Skills als auch Fundraising-Fahigkeiten entwickeln' },
-      { text: 'Timing des Raises kritisch', detail: 'Zu fruh oder zu spat zu raisen kann teuer werden' },
-      { text: 'Mogliche Opportunity Costs', detail: 'Wahrend du bootstrappst, konnte ein Wettbewerber mit Kapital schneller wachsen' },
-      { text: 'Komplexere Planung notig', detail: 'Du musst fur mehrere Szenarien planen und vorbereitet sein' },
+      { text: 'Erfordert disziplinierte Execution', detail: 'Du musst sowohl Bootstrap-Skills als auch Fundraising-Fähigkeiten entwickeln' },
+      { text: 'Timing des Raises kritisch', detail: 'Zu früh oder zu spät zu raisen kann teuer werden' },
+      { text: 'Mögliche Opportunity Costs', detail: 'Während du bootstrappst, könnte ein Wettbewerber mit Kapital schneller wachsen' },
+      { text: 'Komplexere Planung nötig', detail: 'Du musst für mehrere Szenarien planen und vorbereitet sein' },
     ],
     timeline: '12-24 Monate Bootstrap, dann Raise',
     effort: 'Hoch (beides lernen)',
@@ -132,7 +132,7 @@ export const RouteRecommendation = ({ result }: RouteRecommendationProps) => {
         </div>
 
         <div className="relative">
-          <p className="text-white/70 text-sm mb-2">Unsere Empfehlung fur dich</p>
+          <p className="text-white/70 text-sm mb-2">Unsere Empfehlung für dich</p>
 
           <div className="flex flex-col md:flex-row md:items-center gap-6 mb-6">
             <motion.div
@@ -239,8 +239,8 @@ export const RouteRecommendation = ({ result }: RouteRecommendationProps) => {
             {result.confidence >= 80
               ? 'Sehr hohe Sicherheit - deine Eingaben zeigen ein klares Bild.'
               : result.confidence >= 60
-              ? 'Gute Sicherheit - einige Faktoren konnten noch verfeinert werden.'
-              : 'Moderate Sicherheit - weitere Details wurden die Analyse verbessern.'}
+              ? 'Gute Sicherheit - einige Faktoren könnten noch verfeinert werden.'
+              : 'Moderate Sicherheit - weitere Details würden die Analyse verbessern.'}
           </p>
         </motion.div>
 
@@ -368,7 +368,7 @@ export const RouteRecommendation = ({ result }: RouteRecommendationProps) => {
           Wichtigste Einflussfaktoren
         </h3>
         <p className="text-charcoal/60 mb-6">
-          Diese Faktoren aus deinen Eingaben haben die Empfehlung am starksten beeinflusst:
+          Diese Faktoren aus deinen Eingaben haben die Empfehlung am stärksten beeinflusst:
         </p>
         <div className="space-y-3">
           {result.reasons.slice(0, 6).map((reason, i) => (
@@ -459,10 +459,10 @@ export const RouteRecommendation = ({ result }: RouteRecommendationProps) => {
       >
         <h3 className="font-display font-semibold text-charcoal mb-4 flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-purple-600" />
-          Alternative Uberlegungen
+          Alternative Überlegungen
         </h3>
         <p className="text-charcoal/60 mb-4">
-          Unabhangig von der Hauptempfehlung konntest du auch diese Optionen in Betracht ziehen:
+          Unabhängig von der Hauptempfehlung könntest du auch diese Optionen in Betracht ziehen:
         </p>
         <div className="space-y-3">
           {result.alternativeConsiderations.map((alt, i) => (

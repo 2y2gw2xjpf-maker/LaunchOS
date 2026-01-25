@@ -7,8 +7,8 @@ const bootstrapPhases: ActionPhase[] = [
     tasks: [
       {
         id: 'b1-1',
-        title: 'Problem-Interviews durchfuhren',
-        description: 'Sprich mit 10-20 potenziellen Kunden uber ihr Problem',
+        title: 'Problem-Interviews durchführen',
+        description: 'Sprich mit 10-20 potenziellen Kunden über ihr Problem',
         priority: 'critical',
         estimatedHours: 20,
         tools: ['Calendly', 'Zoom', 'Notion'],
@@ -44,7 +44,7 @@ const bootstrapPhases: ActionPhase[] = [
         type: 'course',
         url: 'https://www.momtestbook.com/',
         cost: 'paid',
-        description: 'Das wichtigste Buch fur Customer Discovery',
+        description: 'Das wichtigste Buch für Customer Discovery',
       },
     ],
   },
@@ -69,7 +69,7 @@ const bootstrapPhases: ActionPhase[] = [
       {
         id: 'b2-3',
         title: 'Feedback-Loop etablieren',
-        description: 'System fur kontinuierliches Feedback',
+        description: 'System für kontinuierliches Feedback',
         priority: 'medium',
         estimatedHours: 8,
       },
@@ -97,7 +97,7 @@ const bootstrapPhases: ActionPhase[] = [
       {
         id: 'b3-2',
         title: 'Payment-System integrieren',
-        description: 'Stripe, Paddle oder ahnliches einrichten',
+        description: 'Stripe, Paddle oder ähnliches einrichten',
         priority: 'critical',
         estimatedHours: 8,
       },
@@ -144,7 +144,7 @@ const investorPhases: ActionPhase[] = [
       {
         id: 'i1-3',
         title: 'Data Room vorbereiten',
-        description: 'Alle Dokumente fur Due Diligence',
+        description: 'Alle Dokumente für Due Diligence',
         priority: 'medium',
         estimatedHours: 15,
       },
@@ -172,14 +172,14 @@ const investorPhases: ActionPhase[] = [
       {
         id: 'i2-2',
         title: 'Warm Intros organisieren',
-        description: 'Netzwerk fur Introductions nutzen',
+        description: 'Netzwerk für Introductions nutzen',
         priority: 'critical',
         estimatedHours: 20,
       },
       {
         id: 'i2-3',
         title: 'Pitch trainieren',
-        description: '20+ Ubungspitches durchfuhren',
+        description: '20+ Übungspitches durchführen',
         priority: 'high',
         estimatedHours: 15,
       },
@@ -188,7 +188,7 @@ const investorPhases: ActionPhase[] = [
     timePerWeek: { min: 25, max: 40 },
     milestones: [
       '50+ Investoren kontaktiert',
-      '10+ Erstgesprache',
+      '10+ Erstgespräche',
       '3+ Follow-up Meetings',
     ],
     resources: [],
@@ -207,7 +207,7 @@ const investorPhases: ActionPhase[] = [
       {
         id: 'i3-2',
         title: 'Legal vorbereiten',
-        description: 'Anwalt fur Investment-Docs',
+        description: 'Anwalt für Investment-Docs',
         priority: 'critical',
         estimatedHours: 20,
       },
@@ -287,7 +287,7 @@ const hybridPhases: ActionPhase[] = [
       {
         id: 'h2-3',
         title: 'Parallel weiter bootstrappen',
-        description: 'Revenue-Wachstum nicht vernachlassigen',
+        description: 'Revenue-Wachstum nicht vernachlässigen',
         priority: 'critical',
         estimatedHours: 40,
       },
@@ -297,7 +297,7 @@ const hybridPhases: ActionPhase[] = [
     milestones: [
       '3+ strategische Investoren in Pipeline',
       'MRR weiter wachsend',
-      'Optionalitat erhalten',
+      'Optionalität erhalten',
     ],
     resources: [],
   },
@@ -362,7 +362,7 @@ function generateRiskFactors(data: WizardData, route: RecommendedRoute): string[
   const risks: string[] = [];
 
   if (data.personalSituation.teamSize === 'solo') {
-    risks.push('Als Solo-Grunder: Burnout-Risiko und Engpass bei Skills');
+    risks.push('Als Solo-Gründer: Burnout-Risiko und Engpass bei Skills');
   }
 
   if ((data.personalSituation.runwayMonths || 12) < 12) {
@@ -376,7 +376,7 @@ function generateRiskFactors(data: WizardData, route: RecommendedRoute): string[
 
   if (route === 'bootstrap') {
     risks.push('Langsameres Wachstum als VC-finanzierte Konkurrenz');
-    risks.push('Personliches finanzielles Risiko');
+    risks.push('Persönliches finanzielles Risiko');
   }
 
   return risks;
@@ -387,7 +387,7 @@ function generateSuccessMetrics(route: RecommendedRoute): string[] {
     bootstrap: [
       'MRR-Wachstum pro Monat',
       'Customer Lifetime Value',
-      'Profitabilitat Timeline',
+      'Profitabilität Timeline',
       'Net Revenue Retention',
     ],
     investor: [
@@ -400,7 +400,7 @@ function generateSuccessMetrics(route: RecommendedRoute): string[] {
       'Revenue + Funding Mix',
       'Bewertungs-Entwicklung',
       'Strategische Partner',
-      'Optionalitat Score',
+      'Optionalität Score',
     ],
   };
 

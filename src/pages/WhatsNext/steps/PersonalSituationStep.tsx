@@ -14,9 +14,9 @@ const TIER_LEVELS: Record<DataSharingTier, number> = {
 
 const teamOptions = [
   { value: 'solo', label: 'Solo', description: 'Nur ich', icon: <User className="w-5 h-5 text-navy" /> },
-  { value: 'cofounders', label: 'Co-Founder', description: '2-3 Grunder', icon: <Users className="w-5 h-5 text-navy" /> },
+  { value: 'cofounders', label: 'Co-Founder', description: '2-3 Gründer', icon: <Users className="w-5 h-5 text-navy" /> },
   { value: 'small_team', label: 'Kleines Team', description: '4-10 Leute', icon: <Building className="w-5 h-5 text-navy" /> },
-  { value: 'larger_team', label: 'Grosseres Team', description: '10+ Leute', icon: <Building className="w-5 h-5 text-navy" /> },
+  { value: 'larger_team', label: 'Größeres Team', description: '10+ Leute', icon: <Building className="w-5 h-5 text-navy" /> },
 ];
 
 const commitmentOptions = [
@@ -43,9 +43,9 @@ export const PersonalSituationStep = () => {
     <div className="space-y-8">
       {/* TIER 1+ (ALL TIERS): Team size and commitment */}
       <QuestionCard
-        question="Wie gross ist dein Team?"
+        question="Wie groß ist dein Team?"
         required
-        helpText="Die Team-Grosse beeinflusst sowohl die Bewertung als auch den empfohlenen Weg."
+        helpText="Die Team-Größe beeinflusst sowohl die Bewertung als auch den empfohlenen Weg."
       >
         <OptionGrid
           options={teamOptions}
@@ -88,7 +88,7 @@ export const PersonalSituationStep = () => {
             question="Wie ist deine finanzielle Situation?"
             required
             description="Dies hilft uns, realistische Empfehlungen zu geben."
-            helpText="Wir fragen nicht nach genauen Zahlen - nur nach einer groben Einschatzung."
+            helpText="Wir fragen nicht nach genauen Zahlen - nur nach einer groben Einschätzung."
           >
             <OptionGrid
               options={financialOptions}
@@ -100,8 +100,8 @@ export const PersonalSituationStep = () => {
 
           <QuestionCard
             question="Hast du relevante Erfahrung in der Branche?"
-            description="Vorherige Erfahrung in ahnlichen Rollen oder Branchen."
-            helpText="Branchenerfahrung reduziert das Ausfuhrungsrisiko aus Investorensicht."
+            description="Vorherige Erfahrung in ähnlichen Rollen oder Branchen."
+            helpText="Branchenerfahrung reduziert das Ausführungsrisiko aus Investorensicht."
           >
             <div className="flex gap-4 mb-4">
               <OptionButton

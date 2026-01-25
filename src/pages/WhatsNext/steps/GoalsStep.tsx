@@ -14,8 +14,8 @@ const TIER_LEVELS: Record<DataSharingTier, number> = {
 
 const exitOptions = [
   { value: 'lifestyle', label: 'Lifestyle Business', description: 'Solides Einkommen, volle Kontrolle', icon: <Heart className="w-5 h-5 text-navy" /> },
-  { value: 'acquisition', label: 'Acquisition', description: 'Verkauf an grosseres Unternehmen', icon: <Building2 className="w-5 h-5 text-navy" /> },
-  { value: 'ipo', label: 'IPO', description: 'Borsengang anstreben', icon: <Rocket className="w-5 h-5 text-navy" /> },
+  { value: 'acquisition', label: 'Acquisition', description: 'Verkauf an größeres Unternehmen', icon: <Building2 className="w-5 h-5 text-navy" /> },
+  { value: 'ipo', label: 'IPO', description: 'Börsengang anstreben', icon: <Rocket className="w-5 h-5 text-navy" /> },
   { value: 'unsure', label: 'Noch unsicher', description: 'Will Optionen offen halten', icon: <HelpCircle className="w-5 h-5 text-navy" /> },
 ];
 
@@ -46,7 +46,7 @@ export const GoalsStep = () => {
       <QuestionCard
         question="Was ist dein langfristiges Ziel?"
         required
-        helpText="Dein Exit-Ziel beeinflusst massgeblich, ob Investoren der richtige Weg sind."
+        helpText="Dein Exit-Ziel beeinflusst maßgeblich, ob Investoren der richtige Weg sind."
       >
         <OptionGrid
           options={exitOptions}
@@ -97,8 +97,8 @@ export const GoalsStep = () => {
           </QuestionCard>
 
           <QuestionCard
-            question="Bist du offen fur Investoren?"
-            description="Grundsatzliche Offenheit, externe Kapitalgeber ins Boot zu holen."
+            question="Bist du offen für Investoren?"
+            description="Grundsätzliche Offenheit, externe Kapitalgeber ins Boot zu holen."
           >
             <div className="flex gap-4">
               <OptionButton
@@ -113,7 +113,7 @@ export const GoalsStep = () => {
               />
               <OptionButton
                 label="Vielleicht"
-                description="Abhangig von Konditionen"
+                description="Abhängig von Konditionen"
                 selected={goals.openToInvestors === undefined}
                 onClick={() => setGoals({ openToInvestors: undefined })}
               />
@@ -141,8 +141,8 @@ export const GoalsStep = () => {
           </QuestionCard>
 
           <QuestionCard
-            question="Bist du offen fur Co-Founder?"
-            description="Wurden du einen weiteren Grunder aufnehmen?"
+            question="Bist du offen für Co-Founder?"
+            description="Würdest du einen weiteren Gründer aufnehmen?"
           >
             <div className="flex gap-4">
               <OptionButton
@@ -163,19 +163,19 @@ export const GoalsStep = () => {
       {/* TIER 4 (FULL): Profitability vs growth tradeoff */}
       {tierLevel >= 4 && (
         <QuestionCard
-          question="Profitabilitat vs. Wachstum?"
-          description="Wenn du wahlen musstest - was ist wichtiger?"
+          question="Profitabilität vs. Wachstum?"
+          description="Wenn du wählen müsstest - was ist wichtiger?"
         >
           <div className="flex gap-4">
             <OptionButton
-              label="Profitabilitat"
+              label="Profitabilität"
               description="Lieber weniger wachsen aber profitabel sein"
               selected={goals.prioritizeProfitability === true}
               onClick={() => setGoals({ prioritizeProfitability: true })}
             />
             <OptionButton
               label="Wachstum"
-              description="Lieber schneller wachsen, Profitabilitat spater"
+              description="Lieber schneller wachsen, Profitabilität später"
               selected={goals.prioritizeProfitability === false}
               onClick={() => setGoals({ prioritizeProfitability: false })}
             />

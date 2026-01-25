@@ -57,19 +57,19 @@ export function calculateVCMethod(input: VCMethodInput): ValuationMethodResult {
   const notes: string[] = [];
 
   if (expectedReturn > 15) {
-    notes.push('Erwartete Rendite ist hoch - typisch fur Seed/Pre-Seed');
+    notes.push('Erwartete Rendite ist hoch - typisch für Seed/Pre-Seed');
   }
 
   if (yearsToExit > 7) {
-    notes.push('Langer Zeithorizont erhoht Unsicherheit der Projektion');
+    notes.push('Langer Zeithorizont erhöht Unsicherheit der Projektion');
   }
 
   if (impliedOwnership > 30) {
-    notes.push('Hoher Eigentumsanteil fur Investor - Verhandlungsspielraum prufen');
+    notes.push('Hoher Eigentumsanteil für Investor - Verhandlungsspielraum prüfen');
   }
 
   if (dilutionAssumption > 40) {
-    notes.push('Starke Verdunnung angenommen - plane mehr Fundraising-Runden ein');
+    notes.push('Starke Verdünnung angenommen - plane mehr Fundraising-Runden ein');
   }
 
   return {
@@ -91,10 +91,10 @@ export function suggestVCMethodImprovements(
 
   if (increaseNeeded > 0) {
     suggestions.push(
-      `Um ${increaseNeeded.toFixed(0)}% hohere Bewertung zu erreichen:`
+      `Um ${increaseNeeded.toFixed(0)}% höhere Bewertung zu erreichen:`
     );
-    suggestions.push('- Exit-Wert durch Marktexpansion erhohen');
-    suggestions.push('- Kurzeren Zeithorizont durch schnelleres Wachstum');
+    suggestions.push('- Exit-Wert durch Marktexpansion erhöhen');
+    suggestions.push('- Kürzeren Zeithorizont durch schnelleres Wachstum');
     suggestions.push('- Niedrigere Rendite-Erwartung durch bessere Traktion');
   }
 

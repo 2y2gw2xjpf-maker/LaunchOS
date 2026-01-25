@@ -46,7 +46,7 @@ export function calculateComparables(
       value: 0,
       confidence: 0,
       inputs: input as unknown as Record<string, unknown>,
-      notes: ['Keine Vergleichsunternehmen ausgewahlt'],
+      notes: ['Keine Vergleichsunternehmen ausgewählt'],
     };
   }
 

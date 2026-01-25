@@ -92,10 +92,10 @@ export const TierSelectionPage = () => {
                 <CheckCircle className="w-5 h-5 text-purple-600" />
                 <div>
                   <p className="text-sm font-medium text-purple-900">
-                    Aktuell ausgewahlt: <span className="font-bold">{TIER_CONFIGS.find(t => t.tier === selectedTier)?.label}</span>
+                    Aktuell ausgewählt: <span className="font-bold">{TIER_CONFIGS.find(t => t.tier === selectedTier)?.label}</span>
                   </p>
                   <p className="text-xs text-purple-700/70">
-                    Du kannst dein Daten-Level jederzeit andern. Eine Anderung kann die Genauigkeit deiner Analyse beeinflussen.
+                    Du kannst dein Daten-Level jederzeit ändern. Eine Änderung kann die Genauigkeit deiner Analyse beeinflussen.
                   </p>
                 </div>
               </div>
@@ -103,11 +103,11 @@ export const TierSelectionPage = () => {
           )}
 
           <h1 className="font-display text-display-sm md:text-display-md text-text-primary mb-4">
-            Wie viel mochtest du teilen?
+            Wie viel möchtest du teilen?
           </h1>
           <p className="text-text-secondary text-lg mb-8">
             Je mehr du teilst, desto genauer unsere Analyse. Aber du entscheidest -
-            und wir sind bei jeder Stufe ehrlich, was wir damit anfangen konnen.
+            und wir sind bei jeder Stufe ehrlich, was wir damit anfangen können.
           </p>
 
           <div className="space-y-4 mb-12">
@@ -138,8 +138,8 @@ export const TierSelectionPage = () => {
                 </h3>
                 <p className="text-text-secondary">
                   LaunchOS speichert nichts auf Servern. Alle Berechnungen passieren
-                  lokal in deinem Browser. Wenn du den Tab schliesst, ist alles weg -
-                  ausser du exportierst es selbst.
+                  lokal in deinem Browser. Wenn du den Tab schließt, ist alles weg -
+                  außer du exportierst es selbst.
                 </p>
               </div>
             </div>

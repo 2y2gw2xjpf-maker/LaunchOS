@@ -224,7 +224,7 @@ export function ChatWidget() {
 
   const handleDeleteSession = async (sessionId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('Chat wirklich loeschen?')) {
+    if (confirm('Chat wirklich löschen?')) {
       await deleteSession(sessionId);
     }
   };
@@ -323,7 +323,7 @@ export function ChatWidget() {
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
                   className="p-2 hover:bg-white/10 rounded-xl transition-colors"
-                  title={isExpanded ? 'Verkleinern' : 'Vergrossern'}
+                  title={isExpanded ? 'Verkleinern' : 'Vergrößern'}
                 >
                   {isExpanded ? (
                     <Minimize2 className="w-4 h-4 text-white" />

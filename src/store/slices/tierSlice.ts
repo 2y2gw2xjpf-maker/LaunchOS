@@ -4,13 +4,13 @@ import type { DataSharingTier, TierConfig } from '@/types';
 export const TIER_CONFIGS: TierConfig[] = [
   {
     tier: 'minimal',
-    label: 'Nur das Notigste',
-    description: 'Du teilst nur Kategorie und Stage - keine Details uber deine Idee.',
+    label: 'Nur das Nötigste',
+    description: 'Du teilst nur Kategorie und Stage - keine Details über deine Idee.',
     whatWeAsk: [
       'Branche/Kategorie (z.B. "SaaS", "E-Commerce")',
       'Entwicklungsstand (Idee/MVP/Beta/Live)',
       'Zielgruppe (B2B/B2C)',
-      'Deine personliche Situation',
+      'Deine persönliche Situation',
     ],
     whatWeNeverAsk: [
       'Was genau dein Produkt macht',
@@ -20,17 +20,17 @@ export const TIER_CONFIGS: TierConfig[] = [
     ],
     confidenceRange: [30, 50],
     analysisDepth: 'Grobe Richtungsempfehlung basierend auf Branchenstandards',
-    example: 'Wie ein Berater, der nur weiss "SaaS B2B, MVP-Phase, Solo-Grunder"',
+    example: 'Wie ein Berater, der nur weiß "SaaS B2B, MVP-Phase, Solo-Gründer"',
   },
   {
     tier: 'basic',
     label: 'Grundlegende Infos',
-    description: 'Du beschreibst dein Produkt in 2-3 Satzen - ohne Geheimrezept.',
+    description: 'Du beschreibst dein Produkt in 2-3 Sätzen - ohne Geheimrezept.',
     whatWeAsk: [
       'Alles aus Tier 1, plus:',
       'Kurze Produktbeschreibung (was es tut, nicht wie)',
-      'Hauptproblem das du lost',
-      'Ungefähre Zielgruppengrosse',
+      'Hauptproblem das du löst',
+      'Ungefähre Zielgruppengröße',
       'Aktuelle Metriken (falls vorhanden)',
     ],
     whatWeNeverAsk: [
@@ -54,14 +54,14 @@ export const TIER_CONFIGS: TierConfig[] = [
       'Pricing-Struktur (falls vorhanden)',
       'Bekannte Wettbewerber',
     ],
-    whatWeNeverAsk: ['Source Code', 'Interne Dokumentation', 'Passworter oder API-Keys'],
+    whatWeNeverAsk: ['Source Code', 'Interne Dokumentation', 'Passwörter oder API-Keys'],
     confidenceRange: [70, 85],
-    analysisDepth: 'Detaillierte Analyse mit konkreten Verbesserungsvorschlagen',
-    example: 'Wie ein Angel Investor beim ersten Gesprach',
+    analysisDepth: 'Detaillierte Analyse mit konkreten Verbesserungsvorschlägen',
+    example: 'Wie ein Angel Investor beim ersten Gespräch',
   },
   {
     tier: 'full',
-    label: 'Vollstandige Analyse',
+    label: 'Vollständige Analyse',
     description: 'Du teilst alles - Repo, Docs, alles. Maximale Tiefe.',
     whatWeAsk: [
       'Alles aus Tier 3, plus:',
@@ -70,10 +70,10 @@ export const TIER_CONFIGS: TierConfig[] = [
       'Business Plan / Pitch Deck',
       'Finanzielle Projektionen',
     ],
-    whatWeNeverAsk: ['Personliche Passworter', 'Bankdaten'],
+    whatWeNeverAsk: ['Persönliche Passwörter', 'Bankdaten'],
     confidenceRange: [85, 95],
     analysisDepth: 'Umfassende Due-Diligence-artige Analyse',
-    example: 'Wie ein VC der Term Sheet-ready pruft',
+    example: 'Wie ein VC der Term Sheet-ready prüft',
   },
 ];
 

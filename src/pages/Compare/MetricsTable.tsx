@@ -161,7 +161,7 @@ export const generateComparisonSummary = (
     );
     if (bestAnalysis) {
       summaries.push(
-        `"${bestAnalysis.analysisName}" hat die hochste Konfidenz (${maxConfidence}%).`
+        `"${bestAnalysis.analysisName}" hat die höchste Konfidenz (${maxConfidence}%).`
       );
     }
   }

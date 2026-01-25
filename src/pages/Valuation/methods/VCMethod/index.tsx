@@ -34,8 +34,8 @@ export const VCMethodPage = () => {
           Über die VC-Methode
         </h3>
         <p className="text-charcoal/70 mb-3">
-          Die VC-Methode rechnet vom erwarteten Exit-Wert zuruck. Sie zeigt, welche
-          Pre-Money Bewertung ein Investor akzeptieren wurde, um seine Rendite-Erwartung
+          Die VC-Methode rechnet vom erwarteten Exit-Wert zurück. Sie zeigt, welche
+          Pre-Money Bewertung ein Investor akzeptieren würde, um seine Rendite-Erwartung
           zu erreichen.
         </p>
         <div className="bg-white/50 p-3 rounded-lg text-sm">
@@ -60,7 +60,7 @@ export const VCMethodPage = () => {
               value={vcMethodInput.expectedExitValue}
               onChange={(v) => setVCMethodInput({ expectedExitValue: v || 0 })}
               label="Erwarteter Exit-Wert"
-              hint="Typisch: 10-100 Mio. € fur erfolgreichen Exit"
+              hint="Typisch: 10-100 Mio. € für erfolgreichen Exit"
             />
             <NumberInput
               value={vcMethodInput.yearsToExit}
@@ -104,7 +104,7 @@ export const VCMethodPage = () => {
             onChange={(v) => setVCMethodInput({ dilutionAssumption: v })}
             min={0}
             max={60}
-            label="Erwartete Verdunnung"
+            label="Erwartete Verwässerung"
             formatValue={(v) => `${v}%`}
             leftLabel="Keine weiteren Runden"
             rightLabel="Mehrere Runden geplant"
@@ -136,7 +136,7 @@ export const VCMethodPage = () => {
               <CurrencyDisplay value={result.breakdown.preMoneyValuation} animated={false} className="text-purple-700" />
             </div>
             <div className="flex justify-between py-2 text-sm text-charcoal/60">
-              <span>Implizierter Anteil fur Investor</span>
+              <span>Implizierter Anteil für Investor</span>
               <span>{result.breakdown.impliedOwnership.toFixed(1)}%</span>
             </div>
           </div>

@@ -54,7 +54,7 @@ export const ScorecardMethodPage = () => {
         <h3 className="font-display font-semibold text-charcoal mb-2">Über die Scorecard-Methode</h3>
         <p className="text-charcoal/70">
           Die Scorecard-Methode vergleicht dein Startup mit einem durchschnittlichen Pre-Seed
-          Unternehmen. Faktoren werden gewichtet und bewertet - uber 100% bedeutet besser als
+          Unternehmen. Faktoren werden gewichtet und bewertet - über 100% bedeutet besser als
           Durchschnitt.
         </p>
         <label className="flex items-center gap-2 mt-4 cursor-pointer">
@@ -81,7 +81,7 @@ export const ScorecardMethodPage = () => {
         <CurrencyInput
           value={baseValuation}
           onChange={(v) => setBaseValuation(v || 1500000)}
-          hint="Typisch: 1-2 Mio. € fur DACH"
+          hint="Typisch: 1-2 Mio. € für DACH"
         />
       </Card>
 
@@ -177,7 +177,7 @@ export const ScorecardMethodPage = () => {
         <div className="mt-4 pt-4 border-t border-white/10">
           <p className="text-sm text-white/70">
             {result.value > baseValuation
-              ? `${((result.value / baseValuation - 1) * 100).toFixed(0)}% uber Durchschnitt`
+              ? `${((result.value / baseValuation - 1) * 100).toFixed(0)}% über Durchschnitt`
               : `${((1 - result.value / baseValuation) * 100).toFixed(0)}% unter Durchschnitt`}
           </p>
         </div>

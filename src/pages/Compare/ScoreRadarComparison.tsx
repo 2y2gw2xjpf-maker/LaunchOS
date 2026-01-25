@@ -62,7 +62,7 @@ export const ScoreRadarComparison = ({ analyses }: ScoreRadarComparisonProps) =>
         animate={{ opacity: 1, y: 0 }}
         className="bg-white rounded-2xl p-6 shadow-soft"
       >
-        <h3 className="font-display text-lg text-navy mb-4">Score-Ubersicht</h3>
+        <h3 className="font-display text-lg text-navy mb-4">Score-Übersicht</h3>
 
         <div className="h-[400px]">
           <ResponsiveContainer width="100%" height="100%">

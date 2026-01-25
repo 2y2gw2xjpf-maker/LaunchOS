@@ -158,28 +158,28 @@ function generateConfidenceExplanation(
   // Tier explanation
   const tierExplanation: Record<DataSharingTier, string> = {
     minimal:
-      'Mit minimalen Daten konnen wir nur grobe Schatzungen liefern',
-    basic: 'Grundlegende Infos ermoglichen fundierte Empfehlungen',
+      'Mit minimalen Daten können wir nur grobe Schätzungen liefern',
+    basic: 'Grundlegende Infos ermöglichen fundierte Empfehlungen',
     detailed:
-      'Detaillierte Daten erlauben prazisere Analysen',
-    full: 'Vollstandige Daten ermoglichen maximale Analysetiefe',
+      'Detaillierte Daten erlauben präzisere Analysen',
+    full: 'Vollständige Daten ermöglichen maximale Analysetiefe',
   };
   explanations.push(tierExplanation[tier]);
 
   if (factors.dataCompleteness < 0.5) {
-    explanations.push('Einige wichtige Felder sind noch nicht ausgefullt');
+    explanations.push('Einige wichtige Felder sind noch nicht ausgefüllt');
   } else if (factors.dataCompleteness > 0.8) {
-    explanations.push('Daten sind sehr vollstandig - gute Analysebasis');
+    explanations.push('Daten sind sehr vollständig - gute Analysebasis');
   }
 
   if (factors.methodAgreement < 0.5) {
     explanations.push('Bewertungsmethoden zeigen unterschiedliche Ergebnisse');
   } else if (factors.methodAgreement > 0.7) {
-    explanations.push('Bewertungsmethoden stimmen gut uberein');
+    explanations.push('Bewertungsmethoden stimmen gut überein');
   }
 
   if (factors.marketDataQuality < 0.4) {
-    explanations.push('Mehr Marktdaten wurden die Analyse verbessern');
+    explanations.push('Mehr Marktdaten würden die Analyse verbessern');
   }
 
   return explanations;

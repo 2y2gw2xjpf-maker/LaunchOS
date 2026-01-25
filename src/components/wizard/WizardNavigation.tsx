@@ -28,8 +28,8 @@ export const WizardNavigation = ({
   isLastStep = false,
   className,
   nextLabel = 'Weiter',
-  prevLabel = 'Zuruck',
-  completeLabel = 'Abschliessen',
+  prevLabel = 'Zurück',
+  completeLabel = 'Abschließen',
 }: WizardNavigationProps) => {
   const isFirst = currentStep === 0;
 

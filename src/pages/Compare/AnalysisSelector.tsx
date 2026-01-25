@@ -141,12 +141,12 @@ export const AnalysisSelector = ({ onStartComparison }: AnalysisSelectorProps) =
               <>
                 Du hast {incompleteCount} Analyse{incompleteCount > 1 ? 'n' : ''}, aber{' '}
                 {incompleteCount > 1 ? 'diese sind' : 'diese ist'} noch nicht abgeschlossen.
-                Schliesse mindestens 2 Analysen ab (bis zur Route-Empfehlung), um sie vergleichen zu konnen.
+                Schließe mindestens 2 Analysen ab (bis zur Route-Empfehlung), um sie vergleichen zu können.
               </>
             ) : (
               <>
-                Du benotigst mindestens 2 abgeschlossene Analysen, um einen Vergleich
-                durchfuhren zu konnen. Erstelle weitere Analysen, um verschiedene
+                Du benötigst mindestens 2 abgeschlossene Analysen, um einen Vergleich
+                durchführen zu können. Erstelle weitere Analysen, um verschiedene
                 Szenarien zu vergleichen.
               </>
             )}
@@ -191,14 +191,14 @@ export const AnalysisSelector = ({ onStartComparison }: AnalysisSelectorProps) =
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="font-display text-lg text-navy">
-              Wahle Analysen zum Vergleichen
+              Wähle Analysen zum Vergleichen
             </h2>
             <p className="text-sm text-charcoal/60">
-              Wahle 2-4 Analysen aus, um sie zu vergleichen
+              Wähle 2-4 Analysen aus, um sie zu vergleichen
             </p>
           </div>
           <div className="text-sm text-charcoal/60">
-            {getComparisonCount()} von 4 ausgewahlt
+            {getComparisonCount()} von 4 ausgewählt
           </div>
         </div>
 

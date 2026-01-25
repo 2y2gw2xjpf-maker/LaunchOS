@@ -231,7 +231,7 @@ export const ProjectFolder = ({
                 className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
               >
                 <Trash2 className="w-4 h-4" />
-                Ordner loschen
+                Ordner löschen
               </button>
             </motion.div>
           )}

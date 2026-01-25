@@ -22,11 +22,11 @@ const SCORE_FACTORS: ScoreFactor[] = [
       const marketType = data.marketAnalysis.marketType;
 
       if (marketType === 'winner_takes_all') {
-        return { bootstrap: 20, investor: 80, reason: 'Winner-takes-all Markte erfordern schnelles Wachstum' };
+        return { bootstrap: 20, investor: 80, reason: 'Winner-takes-all Märkte erfordern schnelles Wachstum' };
       }
 
       if (category === 'saas' || category === 'marketplace') {
-        return { bootstrap: 50, investor: 65, reason: 'Skalierbare Modelle sind fur beide Wege geeignet' };
+        return { bootstrap: 50, investor: 65, reason: 'Skalierbare Modelle sind für beide Wege geeignet' };
       }
 
       if (category === 'service') {
@@ -59,7 +59,7 @@ const SCORE_FACTORS: ScoreFactor[] = [
         return { bootstrap: 40, investor: 80, reason: 'Scaling-Phase profitiert von Kapitalspritze' };
       }
 
-      return { bootstrap: 60, investor: 55, reason: 'MVP/Beta-Phase: Guter Zeitpunkt fur beide Wege' };
+      return { bootstrap: 60, investor: 55, reason: 'MVP/Beta-Phase: Guter Zeitpunkt für beide Wege' };
     },
   },
   {
@@ -78,10 +78,10 @@ const SCORE_FACTORS: ScoreFactor[] = [
       }
 
       if (teamSize === 'cofounders') {
-        return { bootstrap: 55, investor: 70, reason: 'Co-Founder-Teams sind attraktiver fur VCs' };
+        return { bootstrap: 55, investor: 70, reason: 'Co-Founder-Teams sind attraktiver für VCs' };
       }
 
-      return { bootstrap: 50, investor: 65, reason: 'Team vorhanden: Beide Wege moglich' };
+      return { bootstrap: 50, investor: 65, reason: 'Team vorhanden: Beide Wege möglich' };
     },
   },
   {
@@ -92,15 +92,15 @@ const SCORE_FACTORS: ScoreFactor[] = [
       const situation = data.personalSituation.financialSituation;
 
       if (runway < 6) {
-        return { bootstrap: 30, investor: 75, reason: 'Kurzer Runway: Kapital notig fur Uberleben' };
+        return { bootstrap: 30, investor: 75, reason: 'Kurzer Runway: Kapital nötig für Überleben' };
       }
 
       if (runway >= 18 && situation === 'comfortable') {
-        return { bootstrap: 85, investor: 45, reason: 'Langer Runway ermoglicht organisches Wachstum' };
+        return { bootstrap: 85, investor: 45, reason: 'Langer Runway ermöglicht organisches Wachstum' };
       }
 
       if (runway >= 12) {
-        return { bootstrap: 70, investor: 55, reason: 'Ausreichend Runway fur beide Wege' };
+        return { bootstrap: 70, investor: 55, reason: 'Ausreichend Runway für beide Wege' };
       }
 
       return { bootstrap: 50, investor: 65, reason: 'Moderater Runway: Planung wichtig' };
@@ -128,20 +128,20 @@ const SCORE_FACTORS: ScoreFactor[] = [
     },
   },
   {
-    name: 'Kontroll-Praferenz',
+    name: 'Kontroll-Präferenz',
     weight: 12,
     calculate: (data) => {
       const control = data.goals.controlImportance || 5;
 
       if (control >= 8) {
-        return { bootstrap: 90, investor: 25, reason: 'Hohe Kontroll-Praferenz spricht gegen Investoren' };
+        return { bootstrap: 90, investor: 25, reason: 'Hohe Kontroll-Präferenz spricht gegen Investoren' };
       }
 
       if (control <= 4) {
-        return { bootstrap: 40, investor: 70, reason: 'Offen fur externe Einflussnahme' };
+        return { bootstrap: 40, investor: 70, reason: 'Offen für externe Einflussnahme' };
       }
 
-      return { bootstrap: 60, investor: 55, reason: 'Moderate Kontroll-Praferenz' };
+      return { bootstrap: 60, investor: 55, reason: 'Moderate Kontroll-Präferenz' };
     },
   },
   {
@@ -162,7 +162,7 @@ const SCORE_FACTORS: ScoreFactor[] = [
         return { bootstrap: 35, investor: 75, reason: 'Aggressives Wachstum braucht Ressourcen' };
       }
 
-      return { bootstrap: 60, investor: 55, reason: 'Moderates Wachstum erlaubt Flexibilitat' };
+      return { bootstrap: 60, investor: 55, reason: 'Moderates Wachstum erlaubt Flexibilität' };
     },
   },
   {
@@ -172,7 +172,7 @@ const SCORE_FACTORS: ScoreFactor[] = [
       const risk = data.personalSituation.riskTolerance || 5;
 
       if (risk >= 8) {
-        return { bootstrap: 45, investor: 70, reason: 'Hohe Risiko-Toleranz: VC-Weg moglich' };
+        return { bootstrap: 45, investor: 70, reason: 'Hohe Risiko-Toleranz: VC-Weg möglich' };
       }
 
       if (risk <= 3) {
@@ -197,19 +197,19 @@ function getTierConfidenceMultiplier(tier: DataSharingTier): number {
 function generateAlternatives(recommendation: RecommendedRoute): string[] {
   const alternatives: Record<RecommendedRoute, string[]> = {
     bootstrap: [
-      'Du konntest spater immer noch Investoren reinholen, wenn du Traktion hast',
+      'Du könntest später immer noch Investoren reinholen, wenn du Traktion hast',
       'Crowdfunding als Mittelweg zwischen Bootstrap und VC',
       'Revenue-based Financing als nicht-verwassernde Alternative',
     ],
     investor: [
       'Ein Angel statt VC gibt dir mehr Kontrolle',
       'Bootstrappe bis zum MVP, dann raise mit besserer Bewertung',
-      'Accelerator-Programme als Einstieg ins Okosystem',
+      'Accelerator-Programme als Einstieg ins Ökosystem',
     ],
     hybrid: [
       'Starte Bootstrap, validiere, dann raise strategisch',
       'Finde einen Angel als "Smart Money" statt reines Kapital',
-      'Grants und Forderprogramme als nicht-verwassernde Finanzierung',
+      'Grants und Förderprogramme als nicht-verwässernde Finanzierung',
     ],
   };
   return alternatives[recommendation];
@@ -223,7 +223,7 @@ function generateWarnings(data: WizardData): string[] {
   }
 
   if (data.personalSituation.teamSize === 'solo' && data.goals.exitGoal === 'ipo') {
-    warnings.push('Solo-Grunder mit IPO-Ambitionen: VCs erwarten typischerweise ein Team');
+    warnings.push('Solo-Gründer mit IPO-Ambitionen: VCs erwarten typischerweise ein Team');
   }
 
   if (
