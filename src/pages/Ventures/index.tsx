@@ -451,8 +451,8 @@ export function VenturesPage() {
                     </div>
                   </div>
 
-                  {/* Beschreibung - flex-grow to push button to bottom */}
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2 flex-grow">
+                  {/* Beschreibung - fixed height for consistent button alignment */}
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-2 h-10">
                     {venture.demoDescription}
                   </p>
 

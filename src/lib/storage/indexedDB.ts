@@ -386,7 +386,7 @@ const DEMO_VENTURE_ANALYSIS_MAP: Record<string, string> = {
 
 /**
  * Ensure a demo analysis exists and is linked to its venture
- * Returns the analysis ID if found/created, null otherwise
+ * Returns the analysis if found/created, null otherwise
  */
 export const ensureDemoAnalysisLinked = async (ventureId: string): Promise<SavedAnalysis | null> => {
   const analysisName = DEMO_VENTURE_ANALYSIS_MAP[ventureId];
@@ -395,21 +395,24 @@ export const ensureDemoAnalysisLinked = async (ventureId: string): Promise<Saved
     return null;
   }
 
+  console.log('[LaunchOS] ensureDemoAnalysisLinked called for:', ventureId, 'expecting name:', analysisName);
+
   const allAnalyses = await getAllAnalyses();
+  console.log('[LaunchOS] All analyses count:', allAnalyses.length);
 
   // First, try to find an analysis already linked to this venture
-  let linkedAnalysis = allAnalyses.find(a => a.ventureId === ventureId);
+  const linkedAnalysis = allAnalyses.find(a => a.ventureId === ventureId);
   if (linkedAnalysis) {
-    console.log('[LaunchOS] Found linked demo analysis:', linkedAnalysis.name);
+    console.log('[LaunchOS] Found already linked demo analysis:', linkedAnalysis.name, linkedAnalysis.id);
     return linkedAnalysis;
   }
 
-  // Second, try to find an analysis by name and link it
-  const matchingAnalysis = allAnalyses.find(a => a.name === analysisName);
-  if (matchingAnalysis) {
-    console.log('[LaunchOS] Linking existing analysis to demo venture:', matchingAnalysis.name);
+  // Second, try to find an analysis by name (exact match) and link it
+  const matchingByName = allAnalyses.find(a => a.name === analysisName);
+  if (matchingByName) {
+    console.log('[LaunchOS] Found analysis by name, linking to venture:', matchingByName.name, matchingByName.id);
     const updatedAnalysis: SavedAnalysis = {
-      ...matchingAnalysis,
+      ...matchingByName,
       ventureId,
       updatedAt: new Date().toISOString(),
     };
@@ -417,26 +420,236 @@ export const ensureDemoAnalysisLinked = async (ventureId: string): Promise<Saved
     return updatedAnalysis;
   }
 
-  // Third, create test analyses if they don't exist
-  console.log('[LaunchOS] Creating test analyses for demo venture:', ventureId);
-  const testAnalyses = await createTestAnalyses();
+  // Third, look for test analyses that might have slightly different names
+  const testAnalyses = allAnalyses.filter(a =>
+    a.id.startsWith('test-') ||
+    a.tags?.includes('test') ||
+    a.name.toLowerCase().includes(analysisName.toLowerCase().split(' ')[0]) // Match first word
+  );
+  console.log('[LaunchOS] Found test analyses:', testAnalyses.map(a => ({ id: a.id, name: a.name })));
 
-  // Find the newly created analysis for this venture
-  const newAnalysis = testAnalyses.find(a => a.ventureId === ventureId);
-  if (newAnalysis) {
-    console.log('[LaunchOS] Created and linked demo analysis:', newAnalysis.name);
-    return newAnalysis;
+  // Try to match based on scenario type
+  const scenarioType = ventureId.replace('demo-', '').replace('-venture', ''); // e.g. 'bootstrap'
+  const matchingTest = testAnalyses.find(a =>
+    a.name.toLowerCase().includes(scenarioType) ||
+    a.routeResult?.recommendation === scenarioType
+  );
+
+  if (matchingTest) {
+    console.log('[LaunchOS] Found matching test analysis, linking:', matchingTest.name);
+    const updatedAnalysis: SavedAnalysis = {
+      ...matchingTest,
+      ventureId,
+      updatedAt: new Date().toISOString(),
+    };
+    await saveAnalysis(updatedAnalysis);
+    return updatedAnalysis;
   }
 
-  // Last resort: check all analyses again after creation
-  const refreshedAnalyses = await getAllAnalyses();
-  const finalAnalysis = refreshedAnalyses.find(a => a.ventureId === ventureId);
-  if (finalAnalysis) {
-    return finalAnalysis;
+  // Fourth, force create new test analyses (bypass the existence check by deleting old ones first)
+  console.log('[LaunchOS] No matching analysis found, will create fresh test analyses');
+
+  // Delete any old test analyses without ventureId to allow fresh creation
+  const oldTestAnalyses = allAnalyses.filter(a =>
+    (a.id.startsWith('test-') || a.tags?.includes('test')) && !a.ventureId
+  );
+  for (const old of oldTestAnalyses) {
+    console.log('[LaunchOS] Removing old unlinked test analysis:', old.id, old.name);
+    await deleteAnalysis(old.id);
+  }
+
+  // Now create fresh ones
+  const newTestAnalyses = await forceCreateTestAnalyses();
+  const newAnalysis = newTestAnalyses.find(a => a.ventureId === ventureId);
+
+  if (newAnalysis) {
+    console.log('[LaunchOS] Created and linked new demo analysis:', newAnalysis.name);
+    return newAnalysis;
   }
 
   console.warn('[LaunchOS] Could not find or create demo analysis for:', ventureId);
   return null;
+};
+
+/**
+ * Force create test analyses (ignoring existence check)
+ */
+const forceCreateTestAnalyses = async (): Promise<SavedAnalysis[]> => {
+  const now = new Date().toISOString();
+  const yesterday = new Date(Date.now() - 86400000).toISOString();
+  const twoDaysAgo = new Date(Date.now() - 172800000).toISOString();
+
+  const testAnalysis1 = {
+    id: `test-${Date.now()}-1`,
+    name: 'Bootstrap Szenario',
+    createdAt: yesterday,
+    updatedAt: yesterday,
+    projectId: null,
+    ventureId: 'demo-bootstrap-venture',
+    tier: 'detailed',
+    wizardData: {
+      tier: 'detailed',
+      projectBasics: {},
+      personalSituation: {},
+      goals: {},
+      marketAnalysis: {},
+      detailedInput: {},
+      completedSteps: [0, 1, 2, 3],
+    },
+    routeResult: {
+      recommendation: 'bootstrap',
+      confidence: 78,
+      scores: { bootstrap: 82, investor: 45, hybrid: 65 },
+      reasons: [],
+      actionPlan: {
+        route: 'bootstrap',
+        phases: [
+          {
+            title: 'Phase 1: Vorbereitung',
+            duration: '2-4 Wochen',
+            tasks: [
+              { id: 'task-1', title: 'Marktforschung', description: 'Markt analysieren', priority: 'high', estimatedHours: 20 },
+              { id: 'task-2', title: 'MVP definieren', description: 'MVP planen', priority: 'high', estimatedHours: 10 },
+            ],
+            budget: { min: 2500, max: 7500, currency: 'EUR' },
+            timePerWeek: { min: 10, max: 20 },
+            milestones: ['MVP Launch'],
+            resources: [],
+          },
+        ],
+        totalBudget: { min: 5000, max: 15000, currency: 'EUR' },
+        totalDuration: '3-6 Monate',
+        criticalPath: ['MVP Launch'],
+        riskFactors: [],
+        successMetrics: [],
+      },
+      alternativeConsiderations: [],
+      warnings: [],
+    },
+    valuationResults: { methodResults: [], finalResult: null },
+    completedTasks: [],
+    taskTimeTracking: [],
+    tags: ['test', 'demo'],
+    notes: 'Demo-Analyse für Bootstrap-Szenario',
+    isFavorite: false,
+  } as SavedAnalysis;
+
+  const testAnalysis2 = {
+    id: `test-${Date.now()}-2`,
+    name: 'Investor Szenario',
+    createdAt: now,
+    updatedAt: now,
+    projectId: null,
+    ventureId: 'demo-investor-venture',
+    tier: 'detailed',
+    wizardData: {
+      tier: 'detailed',
+      projectBasics: {},
+      personalSituation: {},
+      goals: {},
+      marketAnalysis: {},
+      detailedInput: {},
+      completedSteps: [0, 1, 2, 3],
+    },
+    routeResult: {
+      recommendation: 'investor',
+      confidence: 85,
+      scores: { bootstrap: 35, investor: 88, hybrid: 60 },
+      reasons: [],
+      actionPlan: {
+        route: 'investor',
+        phases: [
+          {
+            title: 'Phase 1: Fundraising',
+            duration: '4-8 Wochen',
+            tasks: [
+              { id: 'task-1', title: 'Pitch Deck erstellen', description: 'Pitch vorbereiten', priority: 'high', estimatedHours: 30 },
+              { id: 'task-2', title: 'Investoren recherchieren', description: 'VCs finden', priority: 'high', estimatedHours: 15 },
+            ],
+            budget: { min: 25000, max: 75000, currency: 'EUR' },
+            timePerWeek: { min: 20, max: 40 },
+            milestones: ['Seed Runde'],
+            resources: [],
+          },
+        ],
+        totalBudget: { min: 50000, max: 150000, currency: 'EUR' },
+        totalDuration: '6-12 Monate',
+        criticalPath: ['Seed Runde'],
+        riskFactors: [],
+        successMetrics: [],
+      },
+      alternativeConsiderations: [],
+      warnings: [],
+    },
+    valuationResults: { methodResults: [], finalResult: null },
+    completedTasks: [],
+    taskTimeTracking: [],
+    tags: ['test', 'demo'],
+    notes: 'Demo-Analyse für Investor-Szenario',
+    isFavorite: false,
+  } as SavedAnalysis;
+
+  const testAnalysis3 = {
+    id: `test-${Date.now()}-3`,
+    name: 'Hybrid Szenario',
+    createdAt: twoDaysAgo,
+    updatedAt: twoDaysAgo,
+    projectId: null,
+    ventureId: 'demo-hybrid-venture',
+    tier: 'detailed',
+    wizardData: {
+      tier: 'detailed',
+      projectBasics: {},
+      personalSituation: {},
+      goals: {},
+      marketAnalysis: {},
+      detailedInput: {},
+      completedSteps: [0, 1, 2, 3],
+    },
+    routeResult: {
+      recommendation: 'hybrid',
+      confidence: 72,
+      scores: { bootstrap: 55, investor: 60, hybrid: 75 },
+      reasons: [],
+      actionPlan: {
+        route: 'hybrid',
+        phases: [
+          {
+            title: 'Phase 1: Bootstrap Start',
+            duration: '3-6 Wochen',
+            tasks: [
+              { id: 'task-1', title: 'MVP entwickeln', description: 'Erstes Produkt bauen', priority: 'high', estimatedHours: 40 },
+              { id: 'task-2', title: 'Erste Kunden gewinnen', description: 'Traction aufbauen', priority: 'high', estimatedHours: 25 },
+            ],
+            budget: { min: 10000, max: 30000, currency: 'EUR' },
+            timePerWeek: { min: 15, max: 30 },
+            milestones: ['MVP Launch', 'Erste Kunden'],
+            resources: [],
+          },
+        ],
+        totalBudget: { min: 20000, max: 60000, currency: 'EUR' },
+        totalDuration: '6-9 Monate',
+        criticalPath: ['MVP Launch', 'Erste Kunden'],
+        riskFactors: [],
+        successMetrics: [],
+      },
+      alternativeConsiderations: [],
+      warnings: [],
+    },
+    valuationResults: { methodResults: [], finalResult: null },
+    completedTasks: [],
+    taskTimeTracking: [],
+    tags: ['test', 'demo'],
+    notes: 'Demo-Analyse für Hybrid-Szenario',
+    isFavorite: false,
+  } as SavedAnalysis;
+
+  await saveAnalysis(testAnalysis1);
+  await saveAnalysis(testAnalysis2);
+  await saveAnalysis(testAnalysis3);
+
+  console.log('[LaunchOS] Force-created test analyses with ventureIds');
+  return [testAnalysis1, testAnalysis2, testAnalysis3];
 };
 
 /**
