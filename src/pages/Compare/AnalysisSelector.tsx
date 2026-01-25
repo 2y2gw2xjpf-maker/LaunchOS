@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils/cn';
 import { Button } from '@/components/ui';
 import { useStore } from '@/store';
 import { NewAnalysisDialog } from '@/components/dialogs/NewAnalysisDialog';
+import { cleanupDuplicateTestAnalyses } from '@/lib/storage';
 
 interface AnalysisSelectorProps {
   onStartComparison?: () => void;
@@ -25,24 +26,29 @@ export const AnalysisSelector = ({ onStartComparison }: AnalysisSelectorProps) =
   );
 
   React.useEffect(() => {
-    // Only attempt auto-create once after loading is complete
+    // Only attempt cleanup/auto-create once after loading is complete
     if (isHistoryLoading || hasAttemptedAutoCreate.current) {
       return;
     }
 
-    console.log('[Compare] Checking for auto-create:', {
-      loading: isHistoryLoading,
-      totalAnalyses: analyses.length,
-      withResults: analysesWithResults.length,
-      attempted: hasAttemptedAutoCreate.current
-    });
-
-    if (analysesWithResults.length < 3) {
+    const initTestAnalyses = async () => {
       hasAttemptedAutoCreate.current = true;
-      console.log('[Compare] Auto-creating test analyses because only', analysesWithResults.length, 'exist with results');
-      createTestAnalyses();
-    }
-  }, [isHistoryLoading, analyses.length, analysesWithResults.length, createTestAnalyses]);
+
+      // First, cleanup any duplicate test analyses
+      const deletedCount = await cleanupDuplicateTestAnalyses();
+      if (deletedCount > 0) {
+        console.log('[Compare] Cleaned up', deletedCount, 'duplicate analyses');
+      }
+
+      // Then check if we need to create test analyses
+      if (analysesWithResults.length < 3) {
+        console.log('[Compare] Auto-creating test analyses because only', analysesWithResults.length, 'exist with results');
+        await createTestAnalyses();
+      }
+    };
+
+    initTestAnalyses();
+  }, [isHistoryLoading, analysesWithResults.length, createTestAnalyses]);
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('de-DE', {

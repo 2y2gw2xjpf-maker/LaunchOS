@@ -183,15 +183,16 @@ export const getProjectCount = async (): Promise<number> => {
  * Will skip creation if test analyses already exist
  */
 export const createTestAnalyses = async (): Promise<SavedAnalysis[]> => {
-  // Check if test analyses already exist
+  // Check if test analyses already exist by name (more reliable than ID)
   const existingAnalyses = await getAllAnalyses();
+  const testNames = ['Bootstrap Szenario', 'Investor Szenario', 'Hybrid Szenario'];
   const existingTestAnalyses = existingAnalyses.filter(a =>
-    a.id.startsWith('test-') || a.tags?.includes('test')
+    testNames.includes(a.name) || a.id.startsWith('test-') || a.tags?.includes('test')
   );
 
   if (existingTestAnalyses.length >= 3) {
-    console.log('[LaunchOS] Test analyses already exist, skipping creation');
-    return existingTestAnalyses;
+    console.log('[LaunchOS] Test analyses already exist, skipping creation:', existingTestAnalyses.length);
+    return existingTestAnalyses.slice(0, 3); // Return max 3
   }
 
   const now = new Date().toISOString();
@@ -371,4 +372,33 @@ export const createTestAnalyses = async (): Promise<SavedAnalysis[]> => {
 
   console.log('[LaunchOS] Created test analyses:', testAnalysis1.id, testAnalysis2.id, testAnalysis3.id);
   return [testAnalysis1, testAnalysis2, testAnalysis3];
+};
+
+/**
+ * Remove duplicate test analyses, keeping only the most recent of each type
+ */
+export const cleanupDuplicateTestAnalyses = async (): Promise<number> => {
+  const existingAnalyses = await getAllAnalyses();
+  const testNames = ['Bootstrap Szenario', 'Investor Szenario', 'Hybrid Szenario'];
+
+  let deletedCount = 0;
+
+  for (const name of testNames) {
+    // Find all analyses with this name
+    const matchingAnalyses = existingAnalyses
+      .filter(a => a.name === name)
+      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+
+    // Keep the first (most recent), delete the rest
+    for (let i = 1; i < matchingAnalyses.length; i++) {
+      await deleteAnalysis(matchingAnalyses[i].id);
+      deletedCount++;
+    }
+  }
+
+  if (deletedCount > 0) {
+    console.log('[LaunchOS] Cleaned up', deletedCount, 'duplicate test analyses');
+  }
+
+  return deletedCount;
 };
