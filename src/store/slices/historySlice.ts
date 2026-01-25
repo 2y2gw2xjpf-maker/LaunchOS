@@ -548,11 +548,14 @@ export const createHistorySlice: StateCreator<HistorySlice & CombinedStoreState,
 
   // Load a demo analysis for a demo venture (ensures it exists and is linked)
   loadDemoAnalysis: async (ventureId: string) => {
+    console.log('[LaunchOS] loadDemoAnalysis START for venture:', ventureId);
     try {
       console.log('[LaunchOS] Loading demo analysis for venture:', ventureId);
 
       // Ensure the demo analysis exists and is linked
+      console.log('[LaunchOS] Calling ensureDemoAnalysisLinked...');
       const demoAnalysis = await db.ensureDemoAnalysisLinked(ventureId);
+      console.log('[LaunchOS] ensureDemoAnalysisLinked returned:', demoAnalysis ? demoAnalysis.name : 'null');
 
       if (!demoAnalysis) {
         console.warn('[LaunchOS] Could not find or create demo analysis for:', ventureId);
@@ -600,10 +603,11 @@ export const createHistorySlice: StateCreator<HistorySlice & CombinedStoreState,
         methodResults: demoAnalysis.valuationResults?.methodResults || [],
       });
 
-      console.log('[LaunchOS] Demo analysis loaded successfully:', demoAnalysis.name);
+      console.log('[LaunchOS] Demo analysis loaded successfully:', demoAnalysis.name, 'currentStep set to:', currentStep);
       return true;
     } catch (error) {
       console.error('[LaunchOS] Failed to load demo analysis:', error);
+      console.error('[LaunchOS] Error stack:', error instanceof Error ? error.stack : 'no stack');
       return false;
     }
   },

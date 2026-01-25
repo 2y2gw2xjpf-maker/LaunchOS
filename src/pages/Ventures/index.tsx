@@ -371,12 +371,21 @@ export function VenturesPage() {
                   'transition-shadow cursor-pointer group flex flex-col'
                 )}
                 onClick={async () => {
+                  console.log('[Ventures] Demo venture clicked:', venture.id);
                   enterDemoMode(venture.id);
                   // Load the demo analysis (creates/links if needed)
-                  const success = await loadDemoAnalysis(venture.id);
-                  // Wait for React to propagate the state changes before navigating
-                  await new Promise(resolve => setTimeout(resolve, 50));
-                  navigate('/whats-next');
+                  console.log('[Ventures] Calling loadDemoAnalysis...');
+                  try {
+                    const success = await loadDemoAnalysis(venture.id);
+                    console.log('[Ventures] loadDemoAnalysis returned:', success);
+                    // Wait for React to propagate the state changes before navigating
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    console.log('[Ventures] Navigating to /whats-next');
+                    navigate('/whats-next');
+                  } catch (error) {
+                    console.error('[Ventures] Error in loadDemoAnalysis:', error);
+                    navigate('/whats-next');
+                  }
                 }}
               >
                 {/* Gradient Header */}
