@@ -3,10 +3,11 @@
  * Globaler State für das aktive Venture und Demo-Ventures
  */
 
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, useContext, useMemo, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { useVentures } from '@/hooks/useVentures';
 import { useDemoVentures } from '@/hooks/useDemoVentures';
+import { useStore } from '@/store';
 import type { Venture, UseVenturesReturn, TierData } from '@/hooks/useVentures';
 import type { DemoVenture } from '@/data/demoVentures';
 
@@ -38,6 +39,32 @@ interface VentureProviderProps {
 export function VentureProvider({ children }: VentureProviderProps) {
   const ventureState = useVentures();
   const demoState = useDemoVentures();
+  const { findAnalysisForVenture, restoreAnalysisToStore, activeAnalysisId } = useStore();
+
+  // Track last loaded venture to prevent unnecessary reloads
+  const lastLoadedVentureRef = useRef<string | null>(null);
+
+  // Auto-load analysis when active venture changes
+  useEffect(() => {
+    const loadAnalysisForActiveVenture = async () => {
+      const activeVenture = ventureState.activeVenture;
+
+      // Skip if no active venture or already loaded
+      if (!activeVenture || lastLoadedVentureRef.current === activeVenture.id) {
+        return;
+      }
+
+      // Find the analysis for this venture
+      const analysis = findAnalysisForVenture(activeVenture.id);
+      if (analysis && analysis.id !== activeAnalysisId) {
+        console.log('[VentureContext] Auto-loading analysis for active venture:', activeVenture.name);
+        await restoreAnalysisToStore(analysis.id);
+        lastLoadedVentureRef.current = activeVenture.id;
+      }
+    };
+
+    loadAnalysisForActiveVenture();
+  }, [ventureState.activeVenture, findAnalysisForVenture, restoreAnalysisToStore, activeAnalysisId]);
 
   // Kombiniere echte und Demo-Ventures
   const allVentures = useMemo(() => {

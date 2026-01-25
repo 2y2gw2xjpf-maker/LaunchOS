@@ -65,13 +65,19 @@ export function VenturesPage() {
     demoVentures,
     enterDemoMode,
   } = useVentureContext();
-  const { loadDemoAnalysis } = useStore();
+  const { loadDemoAnalysis, findAnalysisForVenture, restoreAnalysisToStore } = useStore();
   const [menuOpenId, setMenuOpenId] = React.useState<string | null>(null);
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
 
   const handleSetActive = async (id: string) => {
     await setActiveVenture(id);
     setMenuOpenId(null);
+
+    // Load the associated analysis into the store so Chat has context
+    const existingAnalysis = findAnalysisForVenture(id);
+    if (existingAnalysis) {
+      await restoreAnalysisToStore(existingAnalysis.id);
+    }
   };
 
   const handleDelete = async (id: string) => {
