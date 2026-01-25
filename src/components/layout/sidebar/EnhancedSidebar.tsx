@@ -866,8 +866,18 @@ export const EnhancedSidebar = () => {
                           {demoVentures.map((venture) => (
                             <button
                               key={venture.id}
-                              onClick={() => {
+                              onClick={async () => {
                                 enterDemoMode(venture.id);
+                                // Find and load the demo analysis for this venture
+                                const demoAnalysis = findAnalysisForVenture(venture.id);
+                                if (demoAnalysis) {
+                                  const success = await restoreAnalysisToStore(demoAnalysis.id);
+                                  if (success) {
+                                    navigate('/whats-next');
+                                    return;
+                                  }
+                                }
+                                // Fallback: just navigate to whats-next
                                 navigate('/whats-next');
                               }}
                               className={cn(

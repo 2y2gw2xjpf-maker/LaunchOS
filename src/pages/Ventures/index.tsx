@@ -29,6 +29,7 @@ import { Header, PageContainer } from '@/components/layout';
 import { EnhancedSidebar } from '@/components/layout/sidebar/EnhancedSidebar';
 import { Card, Button } from '@/components/ui';
 import { useVentureContext } from '@/contexts/VentureContext';
+import { useStore } from '@/store';
 import { cn } from '@/lib/utils/cn';
 
 // Stage Labels
@@ -64,6 +65,7 @@ export function VenturesPage() {
     demoVentures,
     enterDemoMode,
   } = useVentureContext();
+  const { findAnalysisForVenture, restoreAnalysisToStore } = useStore();
   const [menuOpenId, setMenuOpenId] = React.useState<string | null>(null);
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
 
@@ -364,12 +366,22 @@ export function VenturesPage() {
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -4, scale: 1.01 }}
                 className={cn(
-                  'relative bg-white rounded-2xl border border-amber-200/50 overflow-hidden',
+                  'relative bg-white rounded-2xl border border-amber-200/50 overflow-hidden h-full',
                   'shadow-sm hover:shadow-lg hover:shadow-amber-100/50',
-                  'transition-shadow cursor-pointer group'
+                  'transition-shadow cursor-pointer group flex flex-col'
                 )}
-                onClick={() => {
+                onClick={async () => {
                   enterDemoMode(venture.id);
+                  // Find and load the demo analysis for this venture
+                  const demoAnalysis = findAnalysisForVenture(venture.id);
+                  if (demoAnalysis) {
+                    const success = await restoreAnalysisToStore(demoAnalysis.id);
+                    if (success) {
+                      navigate('/whats-next');
+                      return;
+                    }
+                  }
+                  // Fallback: just navigate to whats-next
                   navigate('/whats-next');
                 }}
               >
@@ -381,7 +393,7 @@ export function VenturesPage() {
                   venture.demoScenario === 'hybrid' && 'from-purple-500 to-pink-500'
                 )} />
 
-                <div className="p-5">
+                <div className="p-5 flex flex-col h-full">
                   {/* Header mit Badge */}
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
@@ -442,14 +454,14 @@ export function VenturesPage() {
                     </div>
                   </div>
 
-                  {/* Beschreibung */}
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                  {/* Beschreibung - flex-grow to push button to bottom */}
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-2 flex-grow">
                     {venture.demoDescription}
                   </p>
 
-                  {/* CTA */}
+                  {/* CTA - mt-auto ensures it's at the bottom */}
                   <button className={cn(
-                    'w-full flex items-center justify-center gap-2 py-2.5 rounded-xl',
+                    'w-full flex items-center justify-center gap-2 py-2.5 rounded-xl mt-auto',
                     'bg-amber-50 text-amber-700 font-medium text-sm',
                     'group-hover:bg-amber-100 transition-colors'
                   )}>
