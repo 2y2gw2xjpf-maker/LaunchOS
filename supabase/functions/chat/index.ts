@@ -656,7 +656,7 @@ serve(async (req) => {
 
   try {
     // ═══════════════════════════════════════════════════════════════
-    // AUTHENTICATION - Verify user JWT token
+    // AUTHENTICATION - Verify user JWT token or allow demo mode
     // ═══════════════════════════════════════════════════════════════
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
@@ -666,23 +666,7 @@ serve(async (req) => {
       );
     }
 
-    // Create Supabase client with user's JWT for RLS
-    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-      global: {
-        headers: { Authorization: authHeader },
-      },
-    });
-
-    // Verify the user is authenticated
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - Invalid or expired token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
+    // Parse request body first to check for demo mode
     const {
       messages,
       userContext,
@@ -691,8 +675,31 @@ serve(async (req) => {
       journeyContext,
     } = await req.json();
 
-    // Use authenticated user ID instead of trusting client-provided userId
-    const userId = user.id;
+    const isDemoMode = userContext?.isDemoMode === true;
+
+    // Create Supabase client with user's JWT for RLS
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+      global: {
+        headers: { Authorization: authHeader },
+      },
+    });
+
+    // Try to verify the user - but allow demo mode with anon key
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    // If not authenticated and not in demo mode, reject
+    if ((authError || !user) && !isDemoMode) {
+      return new Response(
+        JSON.stringify({ error: 'Nicht eingeloggt - bitte zuerst anmelden oder Demo-Modus nutzen.' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // For demo mode, we allow access but won't save messages to DB
+    const isAuthenticated = !authError && user;
+
+    // Use authenticated user ID or null for demo mode
+    const userId = isAuthenticated ? user.id : null;
 
     if (!messages || !Array.isArray(messages)) {
       throw new Error('Messages array is required');
@@ -864,8 +871,8 @@ serve(async (req) => {
           }
         }
 
-        // Save assistant message to database
-        if (sessionId && userId && fullResponse) {
+        // Save assistant message to database (skip in demo mode)
+        if (sessionId && userId && fullResponse && isAuthenticated) {
           await supabase.from('chat_messages').insert({
             session_id: sessionId,
             user_id: userId,

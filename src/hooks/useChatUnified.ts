@@ -7,6 +7,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useOptionalVentureContext } from '@/contexts/VentureContext';
+import { useStore } from '@/store';
 
 // Helper to check if error is an AbortError (cleanup-related)
 const isAbortError = (err: unknown): boolean => {
@@ -129,6 +130,11 @@ export function useChatUnified(options: UseChatUnifiedOptions = {}): UseChatUnif
   const { user, profile } = useAuth();
   const ventureContext = useOptionalVentureContext();
   const activeVenture = ventureContext?.activeVenture;
+  const activeDemoVenture = ventureContext?.activeDemoVenture;
+  const isDemoMode = ventureContext?.isDemoMode || false;
+
+  // Get current analysis data from store for rich context
+  const { routeResult, wizardData } = useStore();
 
   const [session, setSession] = useState<ChatSession | null>(null);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
@@ -476,13 +482,58 @@ export function useChatUnified(options: UseChatUnifiedOptions = {}): UseChatUnif
     abortControllerRef.current = new AbortController();
 
     try {
-      // Build venture context
-      const ventureContext = activeVenture ? `
-Du hilfst dem Gründer von "${activeVenture.name}".
-Branche: ${activeVenture.industry || 'Nicht angegeben'}
-Stage: ${activeVenture.stage || 'Nicht angegeben'}
-Funding-Strategie: ${activeVenture.fundingPath || 'Nicht angegeben'}
-` : '';
+      // Determine the current venture (real or demo)
+      const currentVenture = isDemoMode ? activeDemoVenture : activeVenture;
+
+      // Build rich venture context including analysis data
+      let ventureContextStr = '';
+      if (currentVenture) {
+        ventureContextStr = `
+## Aktives Venture: "${currentVenture.name}"
+- Tagline: ${currentVenture.tagline || 'Nicht angegeben'}
+- Branche: ${currentVenture.industry || 'Nicht angegeben'}
+- Stage: ${currentVenture.stage || 'Nicht angegeben'}
+- Funding-Strategie: ${currentVenture.fundingPath || 'Nicht angegeben'}
+- Monatlicher Umsatz: ${currentVenture.monthlyRevenue ? `€${currentVenture.monthlyRevenue.toLocaleString('de-DE')}` : 'Nicht angegeben'}
+- Teamgröße: ${currentVenture.teamSize || 'Nicht angegeben'}
+`;
+        // Add demo-specific info
+        if (isDemoMode && activeDemoVenture) {
+          ventureContextStr += `\n[Demo-Modus: ${activeDemoVenture.demoScenario} Szenario - ${activeDemoVenture.demoDescription}]`;
+        }
+      }
+
+      // Build analysis context with actionable tasks
+      let analysisContextStr = '';
+      if (routeResult) {
+        analysisContextStr = `
+## Analyse-Ergebnis
+- Empfehlung: ${routeResult.recommendation} (${routeResult.confidence}% Confidence)
+- Bootstrap Score: ${routeResult.scores?.bootstrap || 0}
+- Investor Score: ${routeResult.scores?.investor || 0}
+- Hybrid Score: ${routeResult.scores?.hybrid || 0}
+`;
+        // Add pending tasks from action plan
+        if (routeResult.actionPlan?.phases) {
+          const allTasks: string[] = [];
+          routeResult.actionPlan.phases.forEach((phase: { title: string; tasks?: Array<{ title: string; priority?: string }> }) => {
+            if (phase.tasks) {
+              phase.tasks.forEach((task: { title: string; priority?: string }) => {
+                allTasks.push(`- ${task.title}${task.priority === 'critical' || task.priority === 'high' ? ' (Priorität!)' : ''}`);
+              });
+            }
+          });
+          if (allTasks.length > 0) {
+            analysisContextStr += `
+## Offene Aufgaben aus dem Action Plan:
+${allTasks.slice(0, 10).join('\n')}
+${allTasks.length > 10 ? `\n... und ${allTasks.length - 10} weitere Aufgaben` : ''}
+
+WICHTIG: Frage den User welche dieser Aufgaben er als erstes angehen möchte und hilf ihm dann konkret dabei!
+`;
+          }
+        }
+      }
 
       // Build user context
       const userContextStr = profile ? `
@@ -491,11 +542,14 @@ Unternehmen: ${profile.company_name || 'Nicht angegeben'}
 ` : '';
 
       const systemPrompt = options.systemPrompt || `Du bist ein erfahrener Startup-Berater und Co-Pilot für Gründer.
-${ventureContext}
+${ventureContextStr}
+${analysisContextStr}
 ${userContextStr}
 Antworte auf Deutsch, sei freundlich aber professionell.
 Bei einfachen Fragen antworte direkt ohne Tools.
-Nutze Tools nur wenn nötig (z.B. für Investoren-Suche, Dokument-Generierung).`;
+Nutze Tools nur wenn nötig (z.B. für Investoren-Suche, Dokument-Generierung).
+
+WICHTIG: Wenn der User einen Chat startet und es offene Aufgaben gibt, frage proaktiv "Welche der offenen Aufgaben möchtest du als erstes angehen?" und liste die wichtigsten auf.`;
 
       // Prepare messages for API
       const apiMessages = messages
@@ -507,8 +561,11 @@ Nutze Tools nur wenn nötig (z.B. für Investoren-Suche, Dokument-Generierung).`
 
       apiMessages.push({ role: 'user', content });
 
-      // Get auth session for JWT
+      // Get auth session for JWT - handle demo mode gracefully
       const { data: { session: authSession } } = await supabase.auth.getSession();
+
+      // In demo mode without auth, we'll use anon key but the edge function may still reject
+      // For a full solution, the edge function would need to allow demo mode
       const authHeader = authSession?.access_token
         ? `Bearer ${authSession.access_token}`
         : `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`;
@@ -526,12 +583,20 @@ Nutze Tools nur wenn nötig (z.B. für Investoren-Suche, Dokument-Generierung).`
             systemPrompt,
             userContext: {
               userName: profile?.full_name,
-              companyName: profile?.company_name,
-              industry: profile?.industry || activeVenture?.industry,
-              stage: profile?.stage || activeVenture?.stage,
+              companyName: profile?.company_name || currentVenture?.name,
+              industry: profile?.industry || currentVenture?.industry,
+              stage: profile?.stage || currentVenture?.stage,
+              fundingPath: currentVenture?.fundingPath,
+              isDemoMode,
             },
             sessionId: currentSessionId,
             attachments: processedAttachments,
+            journeyContext: routeResult?.actionPlan ? {
+              currentStep: routeResult.actionPlan.phases?.[0]?.title,
+              pendingTasks: routeResult.actionPlan.phases?.flatMap(
+                (p: { tasks?: Array<{ title: string }> }) => p.tasks?.map((t: { title: string }) => t.title) || []
+              ).slice(0, 5),
+            } : undefined,
           }),
           signal: abortControllerRef.current.signal,
         }
@@ -666,7 +731,7 @@ Nutze Tools nur wenn nötig (z.B. für Investoren-Suche, Dokument-Generierung).`
       setIsStreaming(false);
       abortControllerRef.current = null;
     }
-  }, [user, profile, messages, activeVenture, options, createSession, saveMessage, updateSessionTitle]);
+  }, [user, profile, messages, activeVenture, activeDemoVenture, isDemoMode, routeResult, options, createSession, saveMessage, updateSessionTitle]);
 
   const stopStreaming = useCallback(() => {
     abortControllerRef.current?.abort();
